@@ -20,7 +20,7 @@ fi
 
 echo "The $target project is $([[ "$updated" == 'true' ]] && eho 'updated' || echo 'not updated') since the last build."
 
-for setter in "##vso[task.setvariable variable=updated]$updated" "##vso[task.setvariable=updated;isOutput=true]$updated"; do
+for setter in "##vso[task.setvariable variable=updated]$updated" "##vso[task.setvariable variable=updated;isOutput=true]$updated"; do
 	echo "$setter"
 	echo "'$setter"
 done
