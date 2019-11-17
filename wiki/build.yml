@@ -1,0 +1,6 @@
+steps:
+  - bash: |
+      docker build . -t mediawiki:$(git rev-list -1 HEAD)
+    workingDirectory: wiki
+    displayName: Build mediawiki docker image
+    condition: and(succeeded(), eq(variables.updated, 'true'))

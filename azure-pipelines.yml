@@ -1,0 +1,13 @@
+# Build pushes to master so we can release merged changes
+trigger:
+ - master
+# Build pull requests so we can test them
+pr:
+  - master
+
+jobs:
+  - template: .azure-pipelines/templates/build-service.job.yaml
+    parameters:
+      serviceName: wiki
+      subPath: wiki
+      stepsTemplate: wiki/build.yaml

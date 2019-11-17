@@ -1,0 +1,56 @@
+/*!
+ * VisualEditor UserInterface LinearContextItem styles.
+ *
+ * @copyright 2011-2019 VisualEditor Team and others; see http://ve.mit-license.org
+ */
+
+.ve-ui-linearContextItem-head {
+	display: table;
+	width: 100%;
+}
+
+.ve-ui-linearContextItem-title {
+	padding: 0.5em 1em;
+	white-space: nowrap;
+}
+
+.ve-ui-linearContextItem-title > .oo-ui-labelWidget {
+	margin-left: 0.3em;
+}
+
+/* Only used in mobile contexts (hidden in ve.ui.DesktopContext) */
+.ve-ui-linearContextItem-info {
+	display: table-cell;
+	position: relative;
+	width: 99%;
+}
+
+.ve-ui-linearContextItem-description {
+	color: #72777d;
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	line-height: 3.6em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ve-ui-linearContextItem-actions {
+	white-space: nowrap;
+	display: table-cell;
+	width: 1%;
+	padding: 0.5em;
+}
+
+/* Only used in desktop contexts (hidden in ve.ui.MobileContext) */
+.ve-ui-linearContextItem-body {
+	max-height: 15em;
+	overflow: auto;
+}
+
+.ve-ui-linearContextItem-body:not( :empty ) {
+	padding: 0 1em 1em 1em;
+}
