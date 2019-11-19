@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: <service name>
+  namespace: jamboree21
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: <service name>
+    spec:
+      containers:
+        image: %IMAGE%
+        imagePullPolicy: IfNotPresent
+        name: wiki
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  name: <service name>
+  namespace: jamboree21
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: <service name>
