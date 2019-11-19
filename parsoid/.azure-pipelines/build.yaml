@@ -17,7 +17,7 @@ steps:
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - bash: |
       ${{ format('sed -i .bak k8s/mediawiki.yaml \
-        -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion }}
+        -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion) }}
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
