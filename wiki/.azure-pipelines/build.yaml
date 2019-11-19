@@ -1,23 +1,26 @@
+parameters:
+  serviceName: ''
+
 steps:
   - bash: |
-      docker build . -t scouterna.azurecr.io/mediawiki:$BUILD_SOURCEBRANCHNAME-$BUILD_SOURCEVERSION
+      ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion }}
     workingDirectory: wiki
     displayName: Build mediawiki docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - task: Docker@2
     inputs:
       containerRegistry: 'acr'
-      repository: $(Build.Repository.Name)
+      repository: <SERVICENAMEHERE>
       command: 'push'
       tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
     displayName: Push mediawiki docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - bash: |
-      sed -i .bak k8s/mediawiki.yaml \
-        -e "s@%IMAGE%@scouterna.azurecr.io/mediawiki:$BUILD_SOURCEBRANCHNAME-$BUILD_SOURCEVERSION"
+      ${{ format("sed -i .bak k8s/mediawiki.yaml \
+        -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}", parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion }}
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: 'wiki/k8s'
+      PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
       ArtifactName: 'j21wiki-k8s'
       publishLocation: 'Container'
     condition: and(succeeded(), eq(variables.updated, 'true'))

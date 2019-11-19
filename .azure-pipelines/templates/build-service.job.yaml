@@ -16,6 +16,8 @@ jobs:
           serviceName: ${{ parameters.serviceName }}
           subPath: ${{ parameters.subPath }}
       - template:  ${{ format('{0}/{1}', variables.Build.SourcesDirectory, parameters.stepsTemplate) }}
+        parameters:
+          serviceName: ${{ parameters.serviceName }}
       - template: tag-build.step.yaml
         parameters:
           serviceName: ${{ parameters.serviceName }}
