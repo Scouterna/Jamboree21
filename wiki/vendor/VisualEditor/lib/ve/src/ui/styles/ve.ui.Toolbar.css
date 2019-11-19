@@ -1,0 +1,35 @@
+/*!
+ * VisualEditor Toolbar styles.
+ *
+ * @copyright 2011-2019 VisualEditor Team and others; see http://ve.mit-license.org
+ */
+
+.ve-ui-toolbar {
+	/* Used by mobile context position hack */
+	position: relative;
+}
+
+.ve-ui-toolbar > .oo-ui-toolbar-bar {
+	/* Make sure the toolbar is shown on top of surface contents even when not floating,
+	   for correct rendering of dropdowns, popups etc. */
+	z-index: 2;
+}
+
+/* PositionedTargetToolbar */
+
+.ve-ui-toolbar-floating > .oo-ui-toolbar-bar {
+	position: fixed;
+	top: 0;
+	border-top: 0;
+}
+
+.ve-ui-toolbar.oo-ui-toolbar-position-bottom > .oo-ui-toolbar-bar {
+	/* For bottom toolbars though (e.g. Flow), we apparently want the toolbar to be below the surface
+	   overlay, but its dropdowns, popups etc. to be above it - this seems to work… (T169076) */
+	z-index: auto;
+}
+
+.ve-ui-toolbar > .oo-ui-toolbar-bar .oo-ui-toolbar-bar {
+	/* Dumb broken nested toolbars ruin everything again (T169617) */
+	z-index: auto;
+}

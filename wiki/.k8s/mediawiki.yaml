@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations: {}
+  name: wikiimages
+  namespace: jamboree21
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: azurefile
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: mediawiki
+  namespace: jamboree21
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mediawiki
+    spec:
+      containers:
+      - env:
+        - name: MEDIAWIKI_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              key: postgres_db
+              name: db-credentials
+        - name: MEDIAWIKI_DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: postgres_user
+              name: db-credentials
+        - name: MEDIAWIKI_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres_password
+              name: db-credentials
+        envFrom:
+        - configMapRef:
+            name: mediawiki-env
+        image: scouterna.azurecr.io/mediawiki:dev-visualeditor2
+        imagePullPolicy: Always
+        name: wiki
+        volumeMounts:
+        - mountPath: /var/www/html/images
+          name: images
+      volumes:
+      - name: images
+        persistentVolumeClaim:
+          claimName: wikiimages
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  name: mediawiki
+  namespace: jamboree21
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: mediawiki
