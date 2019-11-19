@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: parsoid
+  namespace: jamboree21
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: parsoid
+    spec:
+      containers:
+        - image: scouterna.azurecr.io/parsoid:nujavlar5
+          imagePullPolicy: Always
+          name: parsoid
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN", "CAP_NET_BIND_SERVICE"]
+          env:
+          - name: PARSOID_PORT
+            value: '8142'
+          - name: PARSOID_DOMAIN_jamboree21
+            value: https://wiki.internal.jamboree.se.webservices.scouterna.net/parsoid
+          - name: PARSOID_NUM_WORKERS
+            value: '0'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  name: parsoid
+  namespace: jamboree21
+spec:
+  ports:
+  - port: 8142
+    protocol: TCP
+    targetPort: 8142
+  selector:
+    app: parsoid

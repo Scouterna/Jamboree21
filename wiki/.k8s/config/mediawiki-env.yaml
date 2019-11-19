@@ -1,0 +1,18 @@
+apiVersion: v1
+data:
+  MEDIAWIKI_ADMIN_PASS: admin
+  MEDIAWIKI_ADMIN_USER: admin
+  MEDIAWIKI_DB_HOST: wikidb
+  MEDIAWIKI_DB_PORT: "3306"
+  MEDIAWIKI_DB_TYPE: mysql
+  MEDIAWIKI_SITE_LANG: sv
+  MEDIAWIKI_SITE_NAME: Jamboree21 wiki
+  MEDIAWIKI_SITE_SERVER: wiki.internal.jamboree.se.webservices.scouterna.net
+  MEDIAWIKI_UPDATE: "false"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app: mediawiki
+  name: mediawiki-env
+  namespace: jamboree21

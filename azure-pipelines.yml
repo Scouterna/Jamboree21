@@ -1,0 +1,18 @@
+# Build pushes to master so we can release merged changes
+trigger:
+ - master
+# Build pull requests so we can test them
+pr:
+  - master
+
+jobs:
+  - template: .azure-pipelines/templates/build-service.job.yaml
+    parameters:
+      serviceName: wiki
+      subPath: wiki
+      stepsTemplate: wiki/.azure-pipelines/build.yaml
+  - template: .azure-pipelines/templates/build-service.job.yaml
+    parameters:
+      serviceName: parsoid
+      subPath: parsoid
+      stepsTemplate: parsoid/.azure-pipelines/build.yaml
