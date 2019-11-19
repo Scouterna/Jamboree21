@@ -10,4 +10,9 @@ jobs:
     parameters:
       serviceName: wiki
       subPath: wiki
-      stepsTemplate: wiki/build.yaml
+      stepsTemplate: wiki/.azure-pipelines/build.yaml
+  - template: .azure-pipelines/templates/build-service.job.yaml
+    parameters:
+      serviceName: parsoid
+      subPath: parsoid
+      stepsTemplate: parsoid/.azure-pipelines/build.yaml
