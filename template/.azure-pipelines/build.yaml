@@ -3,21 +3,21 @@ parameters:
 
 steps:
   - bash: |
-      ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion }}
+      ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion) }}
     workingDirectory: wiki
     displayName: Build mediawiki docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - task: Docker@2
     inputs:
       containerRegistry: 'acr'
-      repository: <SERVICENAMEHERE>
+      repository: $(parameters.serviceName)
       command: 'push'
       tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
     displayName: Push mediawiki docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - bash: |
-      ${{ format("sed -i .bak k8s/mediawiki.yaml \
-        -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}", parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion }}
+      ${{ format('sed -i .bak k8s/mediawiki.yaml \
+        -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, variables.Build.SourceBranchName, variables.Build.SourceVersion }}
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
