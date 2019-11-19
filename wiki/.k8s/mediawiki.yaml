@@ -45,22 +45,16 @@ spec:
         envFrom:
         - configMapRef:
             name: mediawiki-env
-        image: %IMAGE%
-        imagePullPolicy: IfNotPresent
+        image: scouterna.azurecr.io/mediawiki:dev-visualeditor2
+        imagePullPolicy: Always
         name: wiki
         volumeMounts:
         - mountPath: /var/www/html/images
           name: images
-        - mountPath: /var/www/html/LocalSettings.php
-          name: config
-          subPath: LocalSettings.php
       volumes:
       - name: images
         persistentVolumeClaim:
           claimName: wikiimages
-      - configMap:
-          name: mediawiki-config
-        name: config
 ---
 apiVersion: v1
 kind: Service
