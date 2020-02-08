@@ -90,3 +90,4 @@ RUN set -eux; \
 # install extensions
 COPY vendor/VisualEditor extensions/VisualEditor
 COPY LocalSettings.php LocalSettings.php
+COPY vendor/MobileFrontend extensions/MobileFrontend
