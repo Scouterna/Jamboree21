@@ -16,7 +16,7 @@ steps:
     displayName: Push mediawiki docker image
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - bash: |
-      ${{ format('sed -i .bak k8s/mediawiki.yaml \
+      ${{ format('sed -i .bak .k8s/mediawiki.yaml \
         -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - task: PublishBuildArtifacts@1
