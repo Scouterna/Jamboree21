@@ -55,7 +55,7 @@ spec:
         envFrom:
         - configMapRef:
             name: mediawiki-env
-        image: scouterna.azurecr.io/mediawiki:dev-visualeditor2
+        image: %IMAGE%
         imagePullPolicy: Always
         name: wiki
         volumeMounts:
