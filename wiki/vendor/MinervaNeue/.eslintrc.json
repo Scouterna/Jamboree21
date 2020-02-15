@@ -1,0 +1,53 @@
+{
+	"root": true,
+	"extends": [
+		"wikimedia/client",
+		"wikimedia/jquery"
+	],
+	"env": {
+		"commonjs": true
+	},
+	"globals": {
+		"OO": "readonly",
+		"mw": "readonly",
+		"require": "readonly"
+	},
+	"rules": {
+		"no-restricted-properties": [
+			"error",
+			{
+				"property": "define",
+				"message": "The method `define` if used with mw.mobileFrontend is deprecated. Please use `module.exports`."
+			},
+			{
+				"property": "done",
+				"message": "The method `done` if used with Deferred objects is incompatible with ES6 Promises. Please use `then`."
+			},
+			{
+				"property": "fail",
+				"message": "The method `fail` if used with Deferred objects is incompatible with ES6 Promises. Please use `then`."
+			},
+			{
+				"property": "always",
+				"message": "The method `always` if used with Deferred objects is incompatible with ES6 Promises. Please use `then`."
+			}
+		],
+		"valid-jsdoc": [
+			"error",
+			{
+				"requireParamDescription": false,
+				"requireReturnDescription": false,
+				"requireReturn": false,
+				"preferType": {
+					"Boolean": "boolean",
+					"Number": "number",
+					"object": "Object",
+					"String": "string"
+				}
+			}
+		],
+		"object-property-newline": "error",
+		"no-use-before-define": "off",
+		"no-underscore-dangle": "off"
+	}
+}

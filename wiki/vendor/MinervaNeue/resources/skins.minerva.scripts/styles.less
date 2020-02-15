@@ -1,0 +1,55 @@
+@import '../../minerva.less/minerva.variables.less';
+@import '../../minerva.less/minerva.mixins.less';
+@import 'mediawiki.mixins.animation';
+
+@animationDuration: 0.3s;
+
+// Flip the arrow in table of contents when toggled
+.toctogglecheckbox:checked ~ .toctitle .mw-ui-icon:last-child {
+	&:before {
+		.transform( rotate( -180deg ) );
+	}
+}
+
+// Last modified bar styles
+.last-modified-bar {
+	&.active {
+		background-color: @lastModifiedBarActiveBackgroundColor;
+		color: #fff;
+
+		a {
+			color: #fff;
+		}
+	}
+}
+
+// Used by last modified and Main Menu items
+.truncated-text {
+	.truncated-text();
+}
+
+@-webkit-keyframes fadeInImage {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeInImage {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+// When the image has loaded transition background color and image opacity
+// for a fade-in effect
+img.image-lazy-loaded {
+	.animation( fadeInImage @animationDuration ease-in );
+}
