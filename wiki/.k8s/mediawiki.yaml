@@ -42,10 +42,20 @@ spec:
             secretKeyRef:
               key: postgres_password
               name: db-credentials
+        - name: MEDIAWIKI_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: mediawiki_secret_key
+              name: mediawiki-secrets
+        - name: MEDIAWIKI_UPGRADE_KEY
+          valueFrom:
+            secretKeyRef:
+              key: mediawiki_upgrade_key
+              name: mediawiki-secrets
         envFrom:
         - configMapRef:
             name: mediawiki-env
-        image: scouterna.azurecr.io/mediawiki:dev-visualeditor2
+        image: %IMAGE%
         imagePullPolicy: Always
         name: wiki
         volumeMounts:
