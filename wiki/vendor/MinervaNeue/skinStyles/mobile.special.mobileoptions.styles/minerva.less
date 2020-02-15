@@ -1,0 +1,32 @@
+@import '../../minerva.less/minerva.variables.less';
+
+@media all and ( min-width: @width-breakpoint-tablet ) {
+	.ns-special .pre-content {
+		background: #fff;
+		margin-bottom: 15px;
+
+		.tagline,
+		h1 {
+			margin: 0 @contentMargin;
+		}
+	}
+
+	.ns-special #content {
+		background: @colorGray14;
+
+		form {
+			background: #fff;
+		}
+	}
+}
+
+#mobile-options &.indicator-circle {
+	overflow: initial;
+
+	&:before {
+		content: '\2022';
+		color: @colorProgressive;
+		margin-right: 0.3em;
+		font-size: 1.2em;
+	}
+}
