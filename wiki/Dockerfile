@@ -91,3 +91,4 @@ RUN set -eux; \
 COPY vendor/VisualEditor extensions/VisualEditor
 COPY LocalSettings.php LocalSettings.php
 COPY vendor/MobileFrontend extensions/MobileFrontend
+COPY vendor/MinervaNeue skins/MinervaNeue

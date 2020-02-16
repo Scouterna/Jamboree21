@@ -1,0 +1,79 @@
+// Additional Styles for no-js editing mode
+@import '../../minerva.less/minerva.mixins.less';
+
+.mw-editform {
+	textarea {
+		.editor-textarea();
+	}
+
+	.editHelp, .cancelLink {
+		display: none;
+	}
+
+	> #wpTextbox1 {
+		border: 1px solid @colorGray12;
+		max-height: 70vh;
+	}
+}
+
+.action-submit,
+.action-edit {
+	#page-secondary-actions,
+	#page-actions {
+		display: none;
+	}
+
+	.heading-holder {
+		padding-bottom: 8px;
+		padding-top: 0;
+		font-weight: bold;
+	}
+
+	#mw-anon-edit-warning {
+		padding: 8px;
+
+		> p {
+			margin: 0;
+		}
+	}
+
+	// Parsing information doesn't need to be so big
+	.mw-editnotice,
+	.mw-editTools,
+	.preview-limit-report-wrapper,
+	// neither to headers for diffs
+	.diff-otitle,
+	.diff-ntitle,
+	// neither does the page title
+	#section_0,
+	// neither do all the warnings
+	#editpage-copywarn,
+	#mw-anon-edit-warning {
+		.secondary-text();
+	}
+
+	// add separation btween
+	.mw-editnotice {
+		margin-bottom: 8px;
+
+		li {
+			margin-bottom: 0;
+		}
+	}
+
+	// Preview header is hidden given the warning box already
+	// tells the user they are in preview mode.
+	.previewnote h2 {
+		display: none;
+	}
+
+	// show changes specific
+	#wikiDiff table {
+		margin-top: 0;
+
+		.diff-otitle,
+		.diff-ntitle {
+			text-align: left;
+		}
+	}
+}

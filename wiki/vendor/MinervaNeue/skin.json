@@ -1,0 +1,678 @@
+{
+	"name": "MinervaNeue",
+	"namemsg": "skinname-minerva",
+	"descriptionmsg": "minerva-skin-desc",
+	"author": [
+		"[https://www.mediawiki.org/wiki/Reading/Web/Team Readers Web Team]",
+		"Bahodir Mansurov",
+		"Joaquin Hernandez",
+		"Jon Robson",
+		"Juliusz Gonera",
+		"Ryan Kaldari",
+		"Florian Schmidt",
+		"Sam Smith"
+	],
+	"type": "skin",
+	"url": "https://www.mediawiki.org/wiki/Skin:MinervaNeue",
+	"license-name": "GPL-2.0-or-later",
+	"requires": {
+		"MediaWiki": ">= 1.34.0",
+		"extensions": {
+			"MobileFrontend": ">= 2.1.0"
+		}
+	},
+	"config": {
+		"MinervaCountErrors": false,
+		"MinervaErrorLogSamplingRate": 0,
+		"MinervaDownloadNamespaces": [ 0 ],
+		"MinervaEnableSiteNotice": false,
+		"MinervaCustomLogos": [],
+		"MinervaApplyKnownTemplateHacks": false,
+		"MinervaPageActions": [
+			"edit",
+			"talk",
+			"watch",
+			"switch-language"
+		],
+		"MinervaAlwaysShowLanguageButton": true,
+		"MinervaTalkAtTop": {
+			"base": false,
+			"beta": false,
+			"amc": true
+		},
+		"MinervaAdvancedMainMenu": {
+			"base": false,
+			"beta": false,
+			"amc": true
+		},
+		"MinervaPersonalMenu": {
+			"base": false,
+			"beta": false,
+			"amc": true
+		},
+		"MinervaHistoryInPageActions": {
+			"base": false,
+			"beta": false,
+			"amc": true
+		},
+		"MinervaOverflowInPageActions": {
+			"base": false,
+			"beta": false,
+			"amc": true
+		},
+		"MinervaShowCategoriesButton": {
+			"base": false,
+			"beta": true
+		},
+		"MinervaPageIssuesNewTreatment": {
+			"base": false,
+			"beta": true
+		},
+		"MinervaShowShareButton": {
+			"base": false,
+			"beta": false
+		},
+		"MinervaEnableBackToTop": {
+			"base": false,
+			"beta": true
+		},
+		"MinervaABSamplingRate": 0
+	},
+	"ValidSkinNames": {
+		"minerva": "MinervaNeue"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Minerva\\Menu\\": "includes/menu/",
+		"MediaWiki\\Minerva\\Permissions\\": "includes/permissions/"
+	},
+	"AutoloadClasses": {
+		"MinervaUI": "includes/MinervaUI.php",
+		"MinervaHooks": "includes/MinervaHooks.php",
+		"MinervaTemplate": "includes/skins/MinervaTemplate.php",
+		"SkinMinerva": "includes/skins/SkinMinerva.php",
+		"SkinMinervaNeue": "includes/skins/SkinMinerva.php",
+		"MediaWiki\\Minerva\\Menu\\Group": "includes/menu/Group.php",
+		"MediaWiki\\Minerva\\MenuBuilder": "includes/menu/Group.php",
+		"MediaWiki\\Minerva\\ResourceLoaderLessVarFileModule": "includes/ResourceLoaderLessVarFileModule.php",
+		"MediaWiki\\Minerva\\SkinOptions": "includes/SkinOptions.php",
+		"MediaWiki\\Minerva\\LanguagesHelper": "includes/LanguagesHelper.php",
+		"MediaWiki\\Minerva\\SkinUserPageHelper": "includes/skins/SkinUserPageHelper.php"
+	},
+	"ConfigRegistry": {
+		"minerva": "GlobalVarConfig::newInstance"
+	},
+	"Hooks": {
+		"UserLogoutComplete": [
+			"MinervaHooks::onUserLogoutComplete"
+		],
+		"FetchChangesList": [
+			"MinervaHooks::onFetchChangesList"
+		],
+		"MobileFrontendFeaturesRegistration": [
+			"MinervaHooks::onMobileFrontendFeaturesRegistration"
+		],
+		"RequestContextCreateSkinMobile": [
+			"MinervaHooks::onRequestContextCreateSkinMobile"
+		],
+		"SpecialPageBeforeExecute": [
+			"MinervaHooks::onSpecialPageBeforeExecute"
+		],
+		"ResourceLoaderGetConfigVars": [
+			"MinervaHooks::onResourceLoaderGetConfigVars"
+		]
+
+	},
+	"MessagesDirs": {
+		"MinervaNeue": [
+			"i18n"
+		]
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteSkinPath": "MinervaNeue"
+	},
+	"ResourceModuleSkinStyles": {
+		"minerva": {
+			"mediawiki.rcfilters.filters.ui": [
+				"skinStyles/mediawiki.rcfilters.filters.ui.less"
+			],
+			"mediawiki.action.history.styles": [
+				"skinStyles/mediawiki.action.history.styles.less"
+			],
+			"mediawiki.interface.helpers.styles": [
+				"skinStyles/mediawiki.interface.helpers.styles.less"
+			],
+			"mediawiki.rcfilters.highlightCircles.seenunseen.styles": [],
+			"ext.confirmEdit.fancyCaptcha.styles": [
+				"skinStyles/ext.confirmEdit.fancyCaptcha.styles/minerva.less"
+			],
+			"mobile.special.mobileoptions.styles": [
+				"skinStyles/mobile.special.mobileoptions.styles/minerva.less"
+			],
+			"mediawiki.page.gallery.styles": [
+				"skinStyles/mediawiki.page.gallery.styles/tablet.less"
+			],
+			"mediawiki.special.userlogin.common.styles": [
+				"skinStyles/mediawiki.special.userlogin.common.styles/minerva.less"
+			],
+			"mediawiki.special.search.styles": [
+				"skinStyles/mediawiki.special.search.styles/minerva.less"
+			],
+			"mediawiki.skinning.content.parsoid": [
+				"skinStyles/mediawiki.skinning.content.parsoid/minerva.less"
+			],
+			"mediawiki.hlist": [
+				"skinStyles/mediawiki.hlist/minerva.less"
+			],
+			"mediawiki.ui.icon": [
+				"skinStyles/mediawiki.ui.icon/mediawiki.ui.icon.less"
+			],
+			"mobile.languages.structured": [
+				"skinStyles/mobile.languages.structured/LanguageSearcher.less"
+			],
+			"mobile.startup": [
+				"skinStyles/mobile.startup/mobile.startup.less"
+			],
+			"mediawiki.special": [
+				"skinStyles/mobile.special.styles/minerva.less"
+			],
+			"mobile.special.styles": [
+				"skinStyles/mobile.special.styles/minerva.less"
+			],
+			"ext.echo.styles.special": [
+				"skinStyles/ext.echo.styles.special/SpecialNotificationsOverlay.less"
+			],
+			"mediawiki.editfont.styles": [
+				"skinStyles/mediawiki.editfont.styles/minerva.css"
+			],
+			"mediawiki.notification": [
+				"skinStyles/mobile.startup/drawers.less",
+				"skinStyles/mobile.startup/toast.less"
+			],
+			"mediawiki.action.edit.styles": [
+				"skinStyles/mediawiki.action.edit.styles/minerva.less"
+			],
+			"mobile.special.mobilemenu.styles": [
+				"skinStyles/mobile.special.mobilemenu.styles/minerva.less"
+			],
+			"mobile.notifications.overlay": [
+				"skinStyles/mobile.notifications.overlay/minerva.less"
+			],
+			"mediawiki.content.json": [
+				"skinStyles/mediawiki.content-json/minerva.less"
+			],
+			"mediawiki.special.changeslist": [
+				"skinStyles/mediawiki.special.changeslist.less"
+			],
+			"mediawiki.special.changeslist.legend": [
+				"skinStyles/mediawiki.special.changeslist.legend.less"
+			]
+		}
+	},
+	"EventLoggingSchemas": {
+		"WebClientError": 18340282,
+		"MobileWebShareButton": 18923688
+	},
+	"ResourceModules": {
+		"skins.minerva.base.styles": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"styles": [
+				"resources/skins.minerva.base.styles/reset.less",
+				"resources/skins.minerva.base.styles/ui.less",
+				"resources/skins.minerva.base.styles/pageactions.less",
+				"resources/skins.minerva.base.styles/userMenu.less",
+				"resources/skins.minerva.base.styles/common.less",
+				"resources/skins.minerva.base.styles/images.less",
+				"resources/skins.minerva.base.styles/footer.less",
+				"resources/skins.minerva.base.styles/print/styles.less"
+			]
+		},
+		"skins.minerva.content.styles": {
+			"class": "MediaWiki\\Minerva\\ResourceLoaderLessVarFileModule",
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"styles": [
+				"resources/skins.minerva.content.styles/styles.less",
+				"resources/skins.minerva.content.styles/tablet/styles.less"
+			]
+		},
+		"skins.minerva.content.styles.images": {
+			"class": "ResourceLoaderImageModule",
+			"selectorWithoutVariant": "{name}",
+			"selectorWithVariant": "{name}--{variant}",
+			"defaultColor": "#36c",
+			"useDataURI": false,
+			"variants": {
+				"reference": {
+					"color": "#69f",
+					"global": true
+				}
+			},
+			"images": {
+				"input.search,.mw-ui-icon-minerva-magnifying-glass:before": "resources/skins.minerva.content.styles.images/magnifying-glass.svg",
+				"a.external": {
+					"file": {
+						"ltr": "resources/skins.minerva.content.styles.images/link-external-ltr.svg",
+						"rtl": "resources/skins.minerva.content.styles.images/link-external-rtl.svg"
+					}
+				}
+			}
+		},
+		"skins.minerva.icons.loggedin": {
+			"class": "ResourceLoaderOOUIIconPackModule",
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"useDataURI": false,
+			"defaultColor": "#54595d",
+			"variants": [],
+			"selectorWithoutVariant": ".mw-ui-icon-wikimedia-{name}-base20:before",
+			"icons": [ "bellOutline" ]
+		},
+		"skins.minerva.amc.styles": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"styles": [
+				"resources/skins.minerva.amc.styles/index.less"
+			]
+		},
+		"wikimedia.ui": {
+			"selectorWithoutVariant": ".wikimedia-ui-{name}-base20:before",
+			"useDataURI": false,
+			"defaultColor": "#54595d",
+			"class": "ResourceLoaderOOUIIconPackModule",
+			"icons": [ "articleRedirect", "infoFilled", "link", "listBullet",
+				"logoWikidata",
+				"logoWikimedia",
+				"quotes",
+				"upload",
+				"userAvatarOutline",
+				"userTalk",
+				"userAvatar",
+				"userGroup"
+			]
+		},
+		"skins.minerva.icons.wikimedia": {
+			"selectorWithVariant": ".mw-ui-icon-wikimedia-{name}-{variant}:before",
+			"selectorWithoutVariant": ".mw-ui-icon-wikimedia-{name}-base20:before, .mw-ui-background-icon-{name}",
+			"useDataURI": false,
+			"defaultColor": "#54595d",
+			"class": "ResourceLoaderOOUIIconPackModule",
+			"icons": [ "search", "userAvatar", "star", "unStar" ]
+		},
+		"skins.minerva.icons.images": {
+			"class": "ResourceLoaderImageModule",
+			"selectorWithoutVariant": ".mw-ui-icon-minerva-{name}:before",
+			"selectorWithVariant": ".mw-ui-icon-minerva-{name}-{variant}:before",
+			"useDataURI": false,
+			"defaultColor": "#54595d",
+			"variants": {
+				"invert": {
+					"color": "#fff",
+					"global": false
+				},
+				"base20": {
+					"color": "#54595d",
+					"global": false
+				}
+			},
+			"images": {
+				"toc": {
+					"file": {
+						"ltr": "resources/skins.minerva.icons.images/toc-ltr.svg",
+						"rtl": "resources/skins.minerva.icons.images/toc-rtl.svg"
+					}
+				},
+				"warning": "resources/skins.minerva.icons.images/warning.svg",
+				"mainmenu": "resources/skins.minerva.icons.images/hamburger.svg",
+				"edit": "resources/skins.minerva.icons.images/editLocked.svg",
+				"edit-enabled": "resources/skins.minerva.icons.images/edit.svg",
+				"language-switcher": {
+					"file": "resources/skins.minerva.icons.images/languageSwitcher.svg",
+					"variants": [ "base20" ]
+				},
+				"clock": {
+					"file": "resources/skins.minerva.icons.images/clock.svg",
+					"variants": [ "invert" ]
+				},
+				"page-actions-overflow": "resources/skins.minerva.icons.images/page-actions-overflow.svg"
+			}
+		},
+		"skins.minerva.icons.images.scripts": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"dependencies": [
+				"skins.minerva.icons.images.scripts.misc",
+				"skins.minerva.icons.page.issues.uncolored",
+				"skins.minerva.icons.page.issues.default.color",
+				"skins.minerva.icons.page.issues.medium.color"
+			]
+		},
+		"skins.minerva.icons.images.scripts.misc": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-minerva-{name}:before",
+			"images": {
+				"download": "resources/skins.minerva.icons.images.scripts.misc/download.svg"
+			}
+		},
+		"skins.minerva.icons.page.issues.uncolored": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-minerva-{name}:before",
+			"images": {
+				"issue-severity-low-lowColor": "resources/skins.minerva.icons.page.issues.uncolored/issue-severity-low.svg",
+				"issue-type-move-defaultColor": "resources/skins.minerva.icons.page.issues.uncolored/issue-type-move.svg"
+			}
+		},
+		"skins.minerva.icons.page.issues.default.color": {
+			"class": "ResourceLoaderImageModule",
+			"selectorWithoutVariant": ".mw-ui-icon-minerva-{name}-defaultColor:before",
+			"selectorWithVariant": ".mw-ui-icon-minerva-{name}-{variant}:before",
+			"defaultColor": "#54595d",
+			"variants": {
+				"lowColor": { "color": "#fc3", "global": true },
+				"mediumColor": { "color": "#ff5d01", "global": true },
+				"highColor": { "color": "#d33", "global": true }
+			},
+			"images": {
+				"issue-generic": "resources/skins.minerva.icons.page.issues.default.color/issue-generic.svg"
+			}
+		},
+		"skins.minerva.icons.page.issues.medium.color": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-minerva-{name}-mediumColor:before",
+			"defaultColor": "#ff5d01",
+			"images": {
+				"issue-severity-medium": "resources/skins.minerva.icons.page.issues.medium.color/issue-severity-medium.svg",
+				"issue-type-point-of-view": "resources/skins.minerva.icons.page.issues.medium.color/issue-type-point-of-view.svg"
+			}
+		},
+		"skins.minerva.mainPage.styles": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"styles": [
+				"resources/skins.minerva.mainPage.styles/common.less"
+			]
+		},
+		"skins.minerva.userpage.icons": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-mf-{name}:before",
+			"images": {
+				"talk": "resources/skins.minerva.userpage.icons/talk.svg"
+			}
+		},
+		"skins.minerva.userpage.styles": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"styles": [
+				"resources/skins.minerva.userpage.styles/userpage.less"
+			]
+		},
+		"skins.minerva.personalMenu.icons": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-minerva-{name}:before",
+			"defaultColor": "#4A4F53",
+			"images": {
+				"login": {
+					"file": {
+						"ltr": "resources/skins.minerva.mainMenu.icons/logIn-ltr.svg",
+						"rtl": "resources/skins.minerva.mainMenu.icons/logIn-rtl.svg"
+					}
+				},
+				"logout": {
+					"file": {
+						"ltr": "resources/skins.minerva.mainMenu.icons/logOut-ltr.svg",
+						"rtl": "resources/skins.minerva.mainMenu.icons/logOut-rtl.svg"
+					}
+				},
+				"watchlist": "resources/skins.minerva.mainMenu.icons/watchlist.svg",
+				"userSandbox": "resources/skins.minerva.personalMenu.icons/userSandbox.svg"
+			}
+		},
+		"skins.minerva.mainMenu.advanced.icons": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-minerva-{name}:before",
+			"defaultColor": "#4A4F53",
+			"images": {
+				"recentchanges": {
+					"file": {
+						"ltr":"resources/skins.minerva.mainMenu.advanced.icons/recentChanges-ltr.svg",
+						"rtl": "resources/skins.minerva.mainMenu.advanced.icons/recentChanges-rtl.svg"
+					}
+				},
+				"specialpages": {
+					"file": {
+						"ltr":"resources/skins.minerva.mainMenu.advanced.icons/specialpages-ltr.svg",
+						"rtl": "resources/skins.minerva.mainMenu.advanced.icons/specialpages-rtl.svg"
+					}
+				},
+				"communityportal": {
+					"file": {
+						"ltr": "resources/skins.minerva.mainMenu.advanced.icons/communityportal-ltr.svg",
+						"rtl": "resources/skins.minerva.mainMenu.advanced.icons/communityportal-rtl.svg"
+					}
+				}
+			}
+		},
+		"skins.minerva.mainMenu.icons": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-minerva-{name}:before",
+			"defaultColor": "#4A4F53",
+			"images": {
+				"contributions": {
+					"file": {
+						"ltr": "resources/skins.minerva.mainMenu.icons/contributions-ltr.svg",
+						"rtl":  "resources/skins.minerva.mainMenu.icons/contributions-rtl.svg"
+					}
+				},
+				"login": {
+					"file": {
+						"ltr": "resources/skins.minerva.mainMenu.icons/logIn-ltr.svg",
+						"rtl": "resources/skins.minerva.mainMenu.icons/logIn-rtl.svg"
+					}
+				},
+				"home": "resources/skins.minerva.mainMenu.icons/home.svg",
+				"logout": {
+					"file": {
+						"ltr": "resources/skins.minerva.mainMenu.icons/logOut-ltr.svg",
+						"rtl": "resources/skins.minerva.mainMenu.icons/logOut-rtl.svg"
+					}
+				},
+				"nearby": "resources/skins.minerva.mainMenu.icons/nearby.svg",
+				"random": "resources/skins.minerva.mainMenu.icons/random.svg",
+				"settings": "resources/skins.minerva.mainMenu.icons/settings.svg",
+				"watchlist": "resources/skins.minerva.mainMenu.icons/watchlist.svg"
+			}
+		},
+		"skins.minerva.mainMenu.styles": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"styles": [
+				"resources/skins.minerva.mainMenu.styles/MainMenu.less",
+				"resources/skins.minerva.mainMenu.styles/MainMenuItem.less",
+				"resources/skins.minerva.mainMenu.styles/MainMenuFooter.less",
+				"resources/skins.minerva.mainMenu.styles/NotificationsOverlay.less"
+			]
+		},
+		"skins.minerva.loggedin.styles": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"styles": [
+				"resources/skins.minerva.loggedin.styles/styles.less"
+			]
+		},
+		"skins.minerva.scripts": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"dependencies": [
+				"skins.minerva.icons.wikimedia",
+				"mediawiki.ui.anchor",
+				"wikimedia.ui",
+				"skins.minerva.mainMenu.icons",
+				"skins.minerva.mainMenu.styles",
+				"jquery.cookie",
+				"skins.minerva.icons.images.scripts",
+				"mediawiki.util",
+				"mediawiki.router",
+				"mediawiki.Title",
+				"mediawiki.Uri",
+				"mobile.startup",
+				"mediawiki.user",
+				"mediawiki.storage",
+				"mediawiki.experiments"
+			],
+			"messages": [
+				"echo-badge-count",
+				"mobile-frontend-notifications-filter",
+				"skin-minerva-issue-learn-more",
+				"mobile-frontend-meta-data-issues",
+				"minerva-meta-data-issues-section-header",
+				"mobile-frontend-meta-data-issues-talk",
+				"mobile-frontend-meta-data-issues-categories",
+				"mobile-frontend-meta-data-issues-header",
+				"mobile-frontend-meta-data-issues-header-talk",
+				"mobile-frontend-languages-not-available",
+				"mobile-frontend-cookies-required",
+				"mobile-frontend-editor-redlink-create",
+				"mobile-frontend-editor-redlink-leave",
+				"mobile-frontend-editor-redlink-explain",
+				"minerva-download",
+				"mobile-frontend-redirected-from"
+			],
+			"styles": [
+				"resources/skins.minerva.scripts/styles.less",
+				"resources/skins.minerva.scripts/page-issues/overlay/pageIssuesOverlay.less"
+			],
+			"templates": {
+				"badge.mustache": "includes/skins/userNotifications.mustache",
+				"IssueNotice.mustache": "resources/skins.minerva.scripts/page-issues/overlay/IssueNotice.mustache",
+				"menu.mustache": "resources/skins.minerva.scripts/menu/menu.mustache",
+				"menuGroup.mustache": "resources/skins.minerva.scripts/menu/menuGroup.mustache"
+			},
+			"packageFiles": [
+				"resources/skins.minerva.scripts/init.js",
+				"resources/skins.minerva.scripts/NotificationBadge.js",
+				"resources/skins.minerva.scripts/notifications.js",
+				"resources/skins.minerva.scripts/menu/MainMenu.js",
+				"resources/skins.minerva.scripts/menu.js",
+				"resources/skins.minerva.scripts/errorLogging.js",
+				"resources/skins.minerva.scripts/preInit.js",
+				"resources/skins.minerva.scripts/downloadPageAction.js",
+				"resources/skins.minerva.scripts/page-issues/parser.js",
+				"resources/skins.minerva.scripts/AB.js",
+				"resources/skins.minerva.scripts/page-issues/overlay/IssueNotice.js",
+				"resources/skins.minerva.scripts/page-issues/overlay/IssueList.js",
+				"resources/skins.minerva.scripts/page-issues/overlay/pageIssuesOverlay.js",
+				"resources/skins.minerva.scripts/page-issues/page/PageIssueLearnMoreLink.js",
+				"resources/skins.minerva.scripts/page-issues/page/PageIssueLink.js",
+				"resources/skins.minerva.scripts/page-issues/page/pageIssueFormatter.js",
+				"resources/skins.minerva.scripts/page-issues/index.js",
+				"resources/skins.minerva.scripts/UriUtil.js",
+				"resources/skins.minerva.scripts/TitleUtil.js",
+				"components/ToggleList/ToggleList.js",
+				"resources/skins.minerva.scripts/TabScroll.js",
+				"resources/skins.minerva.scripts/Toolbar.js",
+				"resources/skins.minerva.scripts/mobileRedirect.js",
+				"resources/skins.minerva.scripts/search.js",
+				"resources/skins.minerva.scripts/references.js",
+				"resources/skins.minerva.scripts/talk.js",
+				"resources/skins.minerva.scripts/watchstar.js"
+			]
+		},
+		"skins.minerva.options.share.icon": {
+			"class": "ResourceLoaderImageModule",
+			"selector": ".mw-ui-icon-minerva-{name}:before",
+			"images": {
+				"share": "resources/skins.minerva.options/share.svg"
+			}
+		},
+		"skins.minerva.options": {
+			"targets": [
+				"mobile",
+				"desktop"
+			],
+			"dependencies": [
+				"skins.minerva.scripts",
+				"mediawiki.language",
+				"mobile.startup",
+				"skins.minerva.options.share.icon"
+			],
+			"messages": [
+				"skin-minerva-share"
+			],
+			"templates": {
+				"BackToTopOverlay.mustache": "resources/skins.minerva.options/BackToTopOverlay.mustache"
+			},
+			"styles": [
+				"resources/skins.minerva.options/backtotop.less"
+			],
+			"packageFiles": [
+				"resources/skins.minerva.options/index.js",
+				"resources/skins.minerva.options/BackToTopOverlay.js",
+				"resources/skins.minerva.options/backtotop.js",
+				"resources/skins.minerva.options/categories.js",
+				"resources/skins.minerva.options/trackShare.js",
+				"resources/skins.minerva.options/shareIcon.js",
+				"resources/skins.minerva.options/share.js"
+			]
+		}
+	},
+	"QUnitTestModule": {
+		"localBasePath": "",
+		"remoteSkinPath": "MinervaNeue",
+		"dependencies": [
+			"mobile.startup",
+			"mediawiki.user",
+			"mediawiki.experiments"
+		],
+		"templates": {
+			"badge.mustache": "includes/skins/userNotifications.mustache"
+		},
+		"packageFiles": [
+			"tests/qunit/skins.minerva.scripts/index.js",
+			"resources/skins.minerva.scripts/NotificationBadge.js",
+			"resources/skins.minerva.scripts/page-issues/parser.js",
+			"resources/skins.minerva.scripts/downloadPageAction.js",
+			"resources/skins.minerva.scripts/AB.js",
+			"resources/skins.minerva.scripts/page-issues/overlay/IssueNotice.js",
+			"resources/skins.minerva.scripts/page-issues/overlay/IssueList.js",
+			"resources/skins.minerva.scripts/page-issues/overlay/pageIssuesOverlay.js",
+			"resources/skins.minerva.scripts/page-issues/page/PageIssueLearnMoreLink.js",
+			"resources/skins.minerva.scripts/page-issues/page/PageIssueLink.js",
+			"resources/skins.minerva.scripts/page-issues/page/pageIssueFormatter.js",
+			"resources/skins.minerva.scripts/page-issues/index.js",
+			"resources/skins.minerva.scripts/UriUtil.js",
+			"resources/skins.minerva.scripts/TitleUtil.js",
+			"tests/qunit/skins.minerva.scripts/downloadPageAction.test.js",
+			"tests/qunit/skins.minerva.scripts/page-issues/parser.test.js",
+			"tests/qunit/skins.minerva.scripts/AB.test.js",
+			"tests/qunit/skins.minerva.scripts/page-issues/index.test.js",
+			"tests/qunit/skins.minerva.scripts/UriUtil.test.js",
+			"tests/qunit/skins.minerva.scripts/TitleUtil.test.js",
+			"tests/qunit/skins.minerva.scripts/NotificationBadge.test.js"
+		]
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"manifest_version": 1
+}
