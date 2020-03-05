@@ -32,7 +32,7 @@ ve.init.mw.MobileArticleTarget = function VeInitMwMobileArticleTarget( overlay, 
 	this.section = config.section;
 
 	// Initialization
-	this.$element.addClass( 've-init-mw-mobileArticleTarget' );
+	this.$element.addClass( 've-init-mw-mobileArticleTarget ve-init-mobileTarget' );
 };
 
 /* Inheritance */
@@ -45,7 +45,8 @@ ve.init.mw.MobileArticleTarget.static.toolbarGroups = [
 	// History
 	{
 		name: 'history',
-		include: [ 'undo' ] },
+		include: [ 'undo' ]
+	},
 	// Style
 	{
 		name: 'style',
@@ -67,8 +68,6 @@ ve.init.mw.MobileArticleTarget.static.toolbarGroups = [
 	{
 		name: 'reference'
 	}
-	// "Done" tool is added in setupToolbar as it not part of the
-	// standard config (i.e. shouldn't be inhertied by TargetWidget)
 ];
 
 ve.init.mw.MobileArticleTarget.static.trackingName = 'mobile';
@@ -88,13 +87,69 @@ ve.init.mw.MobileArticleTarget.static.parseSaveError = null;
 /* Methods */
 
 /**
- * Destroy the target
+ * @inheritdoc
  */
-ve.init.mw.MobileArticleTarget.prototype.destroy = function () {
+ve.init.mw.MobileArticleTarget.prototype.deactivateSurfaceForToolbar = function () {
 	// Parent method
-	ve.init.mw.MobileArticleTarget.super.prototype.destroy.call( this );
+	ve.init.mw.MobileArticleTarget.super.prototype.deactivateSurfaceForToolbar.call( this );
 
-	this.$overlay.css( 'padding-top', '' );
+	if ( this.wasSurfaceActive && ve.init.platform.constructor.static.isIos() ) {
+		this.prevScrollPosition = this.getSurface().$scrollContainer.scrollTop();
+	}
+};
+
+/**
+ * @inheritdoc
+ */
+ve.init.mw.MobileArticleTarget.prototype.activateSurfaceForToolbar = function () {
+	// Parent method
+	ve.init.mw.MobileArticleTarget.super.prototype.activateSurfaceForToolbar.call( this );
+
+	if ( this.wasSurfaceActive && ve.init.platform.constructor.static.isIos() ) {
+		// Setting the cursor can cause unwanted scrolling on iOS, so manually
+		// restore the scroll offset from before the toolbar was opened (T218650).
+		this.getSurface().$scrollContainer.scrollTop( this.prevScrollPosition );
+	}
+};
+
+ve.init.mw.MobileArticleTarget.prototype.updateIosContextPadding = function () {
+	var browserMenuCollapsedHeight, currentHeight;
+
+	if ( !this.$screenMeasure ) {
+		this.$screenMeasure = $( '<div>' ).addClass( 've-init-mw-mobileArticleTarget-iosScreenMeasure' );
+	}
+
+	this.$screenMeasure.appendTo( document.body );
+	// This element is sized using 'vh' units, which iOS does not actually update to match the
+	// viewport when viewport size changes due to browser menu bar collapsing/expanding.
+	browserMenuCollapsedHeight = this.$screenMeasure.height();
+	this.$screenMeasure.detach();
+
+	currentHeight = window.innerHeight;
+
+	if ( browserMenuCollapsedHeight === currentHeight ) {
+		// Looks like the browser menu bar is collapsed. Tapping near the bottom of the screen will not
+		// trigger any events on our widgets, but instead it will expand the browser menu bar. Reserve
+		// some space where the browser menu bar will appear.
+		this.surface.getContext().$element.css( 'padding-bottom', 44 );
+	} else {
+		// Looks like the browser menu is expanded, so we can remove the silly padding. Even if our
+		// check here breaks in future versions of iOS, that's okay, the user will just need to tap
+		// things in this area twice.
+		this.surface.getContext().$element.css( 'padding-bottom', 0 );
+	}
+};
+
+/**
+ * @inheritdoc
+ */
+ve.init.mw.MobileArticleTarget.prototype.clearSurfaces = function () {
+	if ( ve.init.platform.constructor.static.isIos() && this.viewportZoomHandler ) {
+		this.viewportZoomHandler.detach();
+		this.viewportZoomHandler = null;
+	}
+	// Parent method
+	ve.init.mw.MobileArticleTarget.super.prototype.clearSurfaces.call( this );
 };
 
 /**
@@ -104,7 +159,11 @@ ve.init.mw.MobileArticleTarget.prototype.onContainerScroll = function () {
 	var surfaceView, isActiveWithKeyboard, $header, $overlaySurface;
 	// Editor may not have loaded yet, in which case `this.surface` is undefined
 	surfaceView = this.surface && this.surface.getView();
-	isActiveWithKeyboard = surfaceView && surfaceView.isFocused() && !surfaceView.deactivated;
+	isActiveWithKeyboard = surfaceView && surfaceView.isFocused() && !surfaceView.isDeactivated();
+
+	if ( ve.init.platform.constructor.static.isIos() ) {
+		this.updateIosContextPadding();
+	}
 
 	$header = this.overlay.$el.find( '.overlay-header-container' );
 	$overlaySurface = this.$overlaySurface;
@@ -167,26 +226,11 @@ ve.init.mw.MobileArticleTarget.prototype.onContainerScroll = function () {
 			$overlaySurface.css( 'transform', '' );
 			document.body.scrollTop = scrollPos;
 
-			this.onContainerScrollTimer = setTimeout( function () {
-				// Recheck, because weird things happen when you scroll to the bottom of the page.
-				// window.innerHeight *actually changes to accomodate the keyboard*, like it should, except
-				// it is off by a few pixels so we can't actually use it, and also nothing else in the
-				// browser seems to be aware of that, so positioning puts our toolbar offscreen again.
-				pos = $header[ 0 ].getBoundingClientRect().top - headerTranslateY;
-				if ( pos < -1 ) {
-					// `pos` is negative, so this scrolls up
-					$( document.body ).animate( { scrollTop: scrollPos + pos }, 250 );
-				}
-
-				// Animate toolbar sliding into view
-				$header.addClass( 'toolbar-shown' ).css( 'transform', '' );
-				setTimeout( function () {
-					$header.addClass( 'toolbar-shown-done' );
-				}, 250 );
-
-			// There has to be a delay here as well. If this is 0, then the getBoundingClientRect call
-			// returns bogus values and we scroll crazily all over the place.
-			}, 50 );
+			// Animate toolbar sliding into view
+			$header.addClass( 'toolbar-shown' ).css( 'transform', '' );
+			setTimeout( function () {
+				$header.addClass( 'toolbar-shown-done' );
+			}, 250 );
 		} );
 	}, 250 );
 };
@@ -197,7 +241,7 @@ ve.init.mw.MobileArticleTarget.prototype.onContainerScroll = function () {
 ve.init.mw.MobileArticleTarget.prototype.onSurfaceScroll = function () {
 	var nativeSelection, range;
 
-	if ( ve.init.platform.constructor.static.isIos() ) {
+	if ( ve.init.platform.constructor.static.isIos() && this.getSurface() ) {
 		// iOS has a bug where if you change the scroll offset of a
 		// contentEditable or textarea with a cursor visible, it disappears.
 		// This function works around it by removing and reapplying the selection.
@@ -250,8 +294,7 @@ ve.init.mw.MobileArticleTarget.prototype.setSurface = function ( surface ) {
  * @inheritdoc
  */
 ve.init.mw.MobileArticleTarget.prototype.surfaceReady = function () {
-	var surfaceModel,
-		surface = this.getSurface();
+	var surfaceModel;
 
 	if ( this.teardownPromise ) {
 		// Loading was cancelled, the overlay is already closed at this point. Do nothing.
@@ -259,59 +302,59 @@ ve.init.mw.MobileArticleTarget.prototype.surfaceReady = function () {
 		return;
 	}
 
+	// Calls scrollSelectionIntoView so must be called before parent,
+	// which calls goToHeading. (T225292)
+	this.adjustContentPadding();
+
+	// Deactivate the surface so any initial selection set in surfaceReady
+	// listeners doesn't cause the keyboard to be shown.
+	this.getSurface().getView().deactivate( false );
+
 	// Parent method
 	ve.init.mw.MobileArticleTarget.super.prototype.surfaceReady.apply( this, arguments );
 
+	// If no selection has been set yet, set it to the start of the document.
 	surfaceModel = this.getSurface().getModel();
-	surfaceModel.connect( this, {
-		blur: 'onSurfaceBlur',
-		focus: 'onSurfaceFocus'
-	} );
-	this[ surfaceModel.getSelection().isNull() ? 'onSurfaceBlur' : 'onSurfaceFocus' ]();
+	if ( surfaceModel.getSelection().isNull() ) {
+		surfaceModel.selectFirstContentOffset();
+	}
 
 	this.events.trackActivationComplete();
 
-	this.overlay.hideSpinner();
-
-	surface.getContext().connect( this, { resize: 'adjustContentPadding' } );
-	this.adjustContentPadding();
-
 	this.maybeShowWelcomeDialog();
+
+	if ( ve.init.platform.constructor.static.isIos() ) {
+		if ( this.viewportZoomHandler ) {
+			this.viewportZoomHandler.detach();
+		}
+		this.viewportZoomHandler = new ve.init.mw.ViewportZoomHandler();
+		this.viewportZoomHandler.attach( this.getSurface() );
+	}
+};
+
+/**
+ * @inheritdoc
+ */
+ve.init.mw.MobileArticleTarget.prototype.maybeShowWelcomeDialog = function () {
+	// Never show the dialog (T227670), but set up this promise in case something depends on it
+	this.welcomeDialogPromise = $.Deferred().reject();
 };
 
 /**
  * Match the content padding to the toolbar height
  */
 ve.init.mw.MobileArticleTarget.prototype.adjustContentPadding = function () {
-	var toolbarHeight = this.getToolbar().$element.outerHeight(),
-		surface = this.getSurface();
-	surface.setToolbarHeight( toolbarHeight );
-	this.$overlay.css( 'padding-top', toolbarHeight );
-	this.getSurface().scrollCursorIntoView();
-};
+	var surface = this.getSurface(),
+		surfaceView = surface.getView(),
+		toolbarHeight = this.getToolbar().$element[ 0 ].clientHeight;
 
-/**
- * Handle surface blur events
- */
-ve.init.mw.MobileArticleTarget.prototype.onSurfaceBlur = function () {
-	this.getToolbar().$group.addClass( 've-init-mw-mobileArticleTarget-editTools-hidden' );
-	this.pageToolbar.$element.removeClass( 've-init-mw-mobileArticleTarget-pageToolbar-hidden' );
-
-	if ( ve.init.platform.constructor.static.isIos() ) {
-		this.getSurface().$element.css( 'padding-bottom', '' );
-	}
-};
-
-/**
- * Handle surface focus events
- */
-ve.init.mw.MobileArticleTarget.prototype.onSurfaceFocus = function () {
-	this.getToolbar().$group.removeClass( 've-init-mw-mobileArticleTarget-editTools-hidden' );
-	this.pageToolbar.$element.addClass( 've-init-mw-mobileArticleTarget-pageToolbar-hidden' );
-
-	if ( ve.init.platform.constructor.static.isIos() ) {
-		this.getSurface().$element.css( 'padding-bottom', this.$element.height() - this.getToolbar().$element.height() );
-	}
+	surface.setPadding( {
+		top: toolbarHeight
+	} );
+	surfaceView.$attachedRootNode.css( 'padding-top', toolbarHeight );
+	surface.$placeholder.css( 'padding-top', toolbarHeight );
+	surfaceView.emit( 'position' );
+	surface.scrollSelectionIntoView();
 };
 
 /**
@@ -334,21 +377,6 @@ ve.init.mw.MobileArticleTarget.prototype.getSaveButtonLabel = function ( startPr
 /**
  * @inheritdoc
  */
-ve.init.mw.MobileArticleTarget.prototype.createTargetWidget = function ( config ) {
-	// Parent method
-	var targetWidget = ve.init.mw.MobileArticleTarget.super.prototype.createTargetWidget.call( this, config );
-
-	targetWidget.once( 'setup', function () {
-		// Append the context to the toolbar
-		targetWidget.getToolbar().$bar.append( targetWidget.getSurface().getContext().$element );
-	} );
-
-	return targetWidget;
-};
-
-/**
- * @inheritdoc
- */
 ve.init.mw.MobileArticleTarget.prototype.loadFail = function ( key, text ) {
 	// Parent method
 	ve.init.mw.MobileArticleTarget.super.prototype.loadFail.apply( this, arguments );
@@ -361,17 +389,23 @@ ve.init.mw.MobileArticleTarget.prototype.loadFail = function ( key, text ) {
  * @inheritdoc
  */
 ve.init.mw.MobileArticleTarget.prototype.editSource = function () {
-	var target = this;
-	// If changes have been made tell the user they have to save first
-	if ( !this.getSurface().getModel().hasBeenModified() ) {
-		this.overlay.switchToSourceEditor();
-	} else {
-		OO.ui.confirm( mw.msg( 'mobile-frontend-editor-switch-confirm' ) ).then( function ( confirmed ) {
-			if ( confirmed ) {
-				target.showSaveDialog();
-			}
+	var modified = this.fromEditedState || this.getSurface().getModel().hasBeenModified();
+
+	this.switchToWikitextEditor( modified );
+};
+
+/**
+ * @inheritdoc
+ */
+ve.init.mw.MobileArticleTarget.prototype.switchToWikitextEditor = function ( modified ) {
+	var dataPromise;
+	if ( modified ) {
+		dataPromise = this.getWikitextDataPromiseForDoc( modified ).then( function ( response ) {
+			var content = ve.getProp( response, 'visualeditoredit', 'content' );
+			return { text: content };
 		} );
 	}
+	this.overlay.switchToSourceEditor( dataPromise );
 };
 
 /**
@@ -401,35 +435,38 @@ ve.init.mw.MobileArticleTarget.prototype.showSaveDialog = function () {
 /**
  * @inheritdoc
  */
-ve.init.mw.MobileArticleTarget.prototype.saveComplete = function () {
-	var fragment = this.getSectionFragmentFromPage();
+ve.init.mw.MobileArticleTarget.prototype.saveComplete = function ( html, categoriesHtml, newRevId ) {
+	// TODO: parsing this is expensive just for the section details. We should
+	// change MobileFrontend+this to behave like desktop does and just rerender
+	// the page with the provided HTML (T219420).
+	var fragment = this.getSectionFragmentFromPage( $.parseHTML( html ) );
 	// Parent method
 	ve.init.mw.MobileArticleTarget.super.prototype.saveComplete.apply( this, arguments );
 
 	this.overlay.sectionId = fragment;
-	this.overlay.onSaveComplete();
+	this.overlay.onSaveComplete( newRevId );
 };
 
 /**
  * @inheritdoc
  */
-ve.init.mw.MobileArticleTarget.prototype.saveFail = function ( doc, saveData, wasRetry, jqXHR, status, response ) {
-
+ve.init.mw.MobileArticleTarget.prototype.saveFail = function ( doc, saveData, wasRetry, jqXHR, status, data ) {
 	// parent method
 	ve.init.mw.MobileArticleTarget.super.prototype.saveFail.apply( this, arguments );
 
-	this.overlay.onSaveFailure( this.constructor.static.parseSaveError( response, status ) );
+	// Massage errorformat=html responses to look more like errorformat=bc expected by MF
+	if ( data.errors ) {
+		data.error = data.errors[ 0 ];
+	}
+
+	this.overlay.onSaveFailure( this.constructor.static.parseSaveError( data, status ) );
 };
 
 /**
  * @inheritdoc
  */
 ve.init.mw.MobileArticleTarget.prototype.tryTeardown = function () {
-	// Parent method
-	ve.init.mw.MobileArticleTarget.super.prototype.tryTeardown.apply( this, arguments )
-		.then( function () {
-			window.history.back();
-		} );
+	window.history.back();
 };
 
 /**
@@ -455,37 +492,44 @@ ve.init.mw.MobileArticleTarget.prototype.load = function () {
  * @inheritdoc
  */
 ve.init.mw.MobileArticleTarget.prototype.setupToolbar = function ( surface ) {
-	var $header = this.overlay.$el.find( '.overlay-header-container' );
+	var originalToolbarGroups = this.constructor.static.toolbarGroups;
+
+	// We don't want any of these tools to show up in subordinate widgets, so we
+	// temporarily add them here. We need to do it _here_ rather than in their
+	// own static variable to make sure that other tools which meddle with
+	// toolbarGroups (Cite, mostly) have a chance to do so.
+	this.constructor.static.toolbarGroups = [].concat(
+		[
+			// Back
+			{
+				name: 'back',
+				include: [ 'back' ]
+			}
+		],
+		ve.init.mw.MobileArticleTarget.static.toolbarGroups,
+		[
+			{
+				name: 'editMode',
+				type: 'list',
+				icon: 'edit',
+				title: OO.ui.deferMsg( 'visualeditor-mweditmode-tooltip' ),
+				include: [ 'editModeVisual', 'editModeSource' ]
+			},
+			{
+				name: 'save',
+				type: 'bar',
+				include: [ 'showMobileSave' ]
+			}
+		]
+	);
 
 	// Parent method
 	ve.init.mw.MobileArticleTarget.super.prototype.setupToolbar.call( this, surface );
 
-	this.getToolbar().setup(
-		this.constructor.static.toolbarGroups.concat( [
-			// Done with editing toolbar
-			{
-				name: 'done',
-				include: [ 'done' ]
-			}
-		] ),
-		surface
-	);
+	this.constructor.static.toolbarGroups = originalToolbarGroups;
 
+	this.toolbar.$group.addClass( 've-init-mw-mobileArticleTarget-editTools' );
 	this.toolbar.$element.addClass( 've-init-mw-mobileArticleTarget-toolbar' );
-	// Append the context to the toolbar
-	this.toolbar.$bar.append( surface.getContext().$element );
-
-	// Animate the toolbar sliding into place.
-	// Do not animate if we're replacing the wikitext editor toolbar.
-	if ( !this.overlay.options.switched ) {
-		$header.addClass( 'toolbar-hidden' );
-		setTimeout( function () {
-			$header.addClass( 'toolbar-shown' );
-			setTimeout( function () {
-				$header.addClass( 'toolbar-shown-done' );
-			}, 250 );
-		} );
-	}
 };
 
 /**
@@ -500,54 +544,8 @@ ve.init.mw.MobileArticleTarget.prototype.attachToolbar = function () {
 /**
  * @inheritdoc
  */
-ve.init.mw.MobileArticleTarget.prototype.attachToolbarSaveButton = function () {
-	var surface = this.getSurface();
-
-	if ( !this.pageToolbar ) {
-		this.pageToolbar = new ve.ui.TargetToolbar( this, { actions: true } );
-	}
-
-	this.pageToolbar.setup( [
-		// Back
-		{
-			name: 'back',
-			include: [ 'back' ]
-		},
-		{
-			name: 'editMode',
-			type: 'list',
-			icon: 'edit',
-			title: ve.msg( 'visualeditor-mweditmode-tooltip' ),
-			include: [ 'editModeVisual', 'editModeSource' ]
-		}
-	], surface );
-
-	this.pageToolbar.emit( 'updateState' );
-
-	if ( !this.$title ) {
-		this.$title = $( '<div>' ).addClass( 've-init-mw-mobileArticleTarget-title-container' ).append(
-			$( '<div>' ).addClass( 've-init-mw-mobileArticleTarget-title' ).text(
-				new mw.Title( ve.init.target.getPageName() ).getMainText()
-			)
-		);
-	}
-
-	// Insert title between 'back' and 'advanced'
-	this.$title.insertAfter( this.pageToolbar.items[ 0 ].$element );
-
-	this.pageToolbar.$element.addClass( 've-init-mw-mobileArticleTarget-pageToolbar' );
-	this.pageToolbar.$actions.append(
-		this.toolbarSaveButton.$element
-	);
-
-	this.toolbar.$element.append( this.pageToolbar.$element );
-	this.pageToolbar.initialize();
-
-	this.pageToolbar.$group.addClass( 've-init-mw-mobileArticleTarget-pageTools' );
-	this.toolbar.$group.addClass( 've-init-mw-mobileArticleTarget-editTools' );
-
-	// Don't wait for the first surface focus/blur event to hide one of the toolbars
-	this.onSurfaceBlur();
+ve.init.mw.MobileArticleTarget.prototype.setupToolbarSaveButton = function () {
+	this.toolbarSaveButton = this.toolbar.getToolGroupByName( 'save' ).items[ 0 ];
 };
 
 /**
@@ -561,6 +559,7 @@ ve.init.mw.MobileArticleTarget.prototype.goToHeading = function ( headingNode ) 
  * Done with the editing toolbar
  */
 ve.init.mw.MobileArticleTarget.prototype.done = function () {
+	this.getSurface().getModel().setNullSelection();
 	this.getSurface().getView().blur();
 };
 
@@ -608,31 +607,15 @@ ve.ui.MWBackCommand.prototype.execute = function () {
 ve.ui.commandRegistry.register( new ve.ui.MWBackCommand() );
 
 /**
- * Done tool
+ * Mobile save tool
  */
-ve.ui.MWDoneTool = function VeUiMWDoneTool() {
-	// Parent constructor
-	ve.ui.MWDoneTool.super.apply( this, arguments );
+ve.ui.MWMobileSaveTool = function VeUiMWMobileSaveTool() {
+	// Parent Constructor
+	ve.ui.MWMobileSaveTool.super.apply( this, arguments );
 };
-OO.inheritClass( ve.ui.MWDoneTool, ve.ui.Tool );
-ve.ui.MWDoneTool.static.name = 'done';
-ve.ui.MWDoneTool.static.group = 'navigation';
-ve.ui.MWDoneTool.static.group.autoAddToCatchall = false;
-ve.ui.MWDoneTool.static.icon = 'check';
-ve.ui.MWDoneTool.static.title =
-	OO.ui.deferMsg( 'visualeditor-donebutton-tooltip' );
-ve.ui.MWDoneTool.static.commandName = 'done';
-ve.ui.toolFactory.register( ve.ui.MWDoneTool );
+OO.inheritClass( ve.ui.MWMobileSaveTool, ve.ui.MWSaveTool );
+ve.ui.MWMobileSaveTool.static.name = 'showMobileSave';
+ve.ui.MWMobileSaveTool.static.icon = 'next';
+ve.ui.MWMobileSaveTool.static.displayBothIconAndLabel = false;
 
-/**
- * Done command
- */
-ve.ui.MWDoneCommand = function VeUiMwDoneCommand() {
-	// Parent constructor
-	ve.ui.MWDoneCommand.super.call( this, 'done' );
-};
-OO.inheritClass( ve.ui.MWDoneCommand, ve.ui.Command );
-ve.ui.MWDoneCommand.prototype.execute = function () {
-	ve.init.target.done();
-};
-ve.ui.commandRegistry.register( new ve.ui.MWDoneCommand() );
+ve.ui.toolFactory.register( ve.ui.MWMobileSaveTool );

@@ -10,7 +10,8 @@
 			"Movses",
 			"Okras",
 			"Perevod16",
-			"Smigles"
+			"Smigles",
+			"Vlad5250"
 		]
 	},
 	"apierror-visualeditor-badcachekey": "Не найдено кэшированной сериализации с этим ключом",
@@ -21,7 +22,7 @@
 	"apihelp-visualeditor-description": "Возвращает HTML5 для страницы с сервиса Parsoid.",
 	"apihelp-visualeditor-param-basetimestamp": "При сохранении, установите время изменения. Это используется для обнаружения конфликтов редактирования.",
 	"apihelp-visualeditor-param-cachekey": "Для сериализации или просмотра различий, использовать результат предыдущего запроса serializeforcache с этим ключом. Пренебрегает $1html.",
-	"apihelp-visualeditor-param-editintro": "Изменить введение, чтобы добавить к уведомлениям.",
+	"apihelp-visualeditor-param-editintro": "Изменение введения, которое добавляется к уведомлениям.",
 	"apihelp-visualeditor-param-etag": "ETag для отправки.",
 	"apihelp-visualeditor-param-format": "Формат вывода.",
 	"apihelp-visualeditor-param-html": "HTML для отправки в Parsoid для конвертации в вики-текст.",
@@ -33,6 +34,7 @@
 	"apihelp-visualeditor-param-pst": "Предварительно сохраните преобразование Вики-текста перед отправкой его в Parsoid (paction=parsefragment).",
 	"apihelp-visualeditor-param-section": "Раздел, с которым нужно что-то совершить.",
 	"apihelp-visualeditor-param-starttimestamp": "При сохранении, установите время изменения. Это используется для обнаружения конфликтов редактирования.",
+	"apihelp-visualeditor-param-stash": "При сохранении установите этот параметр на ''true'', если хотите использовать API «скрытного хранения» (stashing).",
 	"apihelp-visualeditor-param-wikitext": "Вики-текст, отправляемый Parsoid для его конвертации в HTML (paction=parsefragment).",
 	"apihelp-visualeditor-summary": "Возвращает HTML5 для страницы с сервиса Parsoid.",
 	"apihelp-visualeditoredit-description": "Сохранить HTML5-страницу в MediaWiki (конвертировать вики-текста с помощью службы Parsoid).",

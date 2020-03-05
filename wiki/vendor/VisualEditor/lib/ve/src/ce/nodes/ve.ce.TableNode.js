@@ -21,6 +21,7 @@ ve.ce.TableNode = function VeCeTableNode() {
 	this.surface = null;
 	this.active = false;
 	this.startCell = null;
+	this.endCell = null;
 	// Stores the original table selection as
 	// a fragment when entering cell edit mode
 	this.editingFragment = null;
@@ -53,6 +54,11 @@ ve.ce.TableNode.prototype.onSetup = function () {
 	// Overlay
 	this.$selectionBox = $( '<div>' ).addClass( 've-ce-tableNodeOverlay-selection-box' );
 	this.$selectionBoxAnchor = $( '<div>' ).addClass( 've-ce-tableNodeOverlay-selection-box-anchor' );
+	if ( OO.ui.isMobile() ) {
+		this.nodeContext = new ve.ui.TableLineContext( this, 'table' );
+	} else {
+		this.nodeContext = null;
+	}
 	this.colContext = new ve.ui.TableLineContext( this, 'col' );
 	this.rowContext = new ve.ui.TableLineContext( this, 'row' );
 
@@ -61,6 +67,7 @@ ve.ce.TableNode.prototype.onSetup = function () {
 		.append( [
 			this.$selectionBox,
 			this.$selectionBoxAnchor,
+			this.nodeContext ? this.nodeContext.$element : undefined,
 			this.colContext.$element,
 			this.rowContext.$element,
 			this.$rowBracket,
@@ -83,7 +90,10 @@ ve.ce.TableNode.prototype.onSetup = function () {
 	// sure that this.selectedRectangle is up to date before redrawing.
 	this.updateOverlayDebounced = ve.debounce( this.updateOverlay.bind( this ) );
 	this.surface.getModel().connect( this, { select: 'onSurfaceModelSelect' } );
-	this.surface.connect( this, { position: this.updateOverlayDebounced } );
+	this.surface.connect( this, {
+		position: this.updateOverlayDebounced,
+		activation: 'onSurfaceActivation'
+	} );
 };
 
 /**
@@ -139,17 +149,6 @@ ve.ce.TableNode.prototype.onTableMouseDown = function ( e ) {
 		return;
 	}
 
-	// Right-click on a cell which isn't being edited
-	if ( e.which === OO.ui.MouseButtons.RIGHT && !this.getActiveCellNode() ) {
-		// Select the cell to the browser renders the correct context menu
-		ve.selectElement( cellNode.$element[ 0 ] );
-		setTimeout( function () {
-			// Trigger onModelSelect to restore the selection
-			node.surface.onModelSelect();
-		} );
-		return;
-	}
-
 	endCell = this.getModel().getMatrix().lookupCell( cellNode.getModel() );
 	if ( !endCell ) {
 		e.preventDefault();
@@ -164,19 +163,32 @@ ve.ce.TableNode.prototype.onTableMouseDown = function ( e ) {
 		} else {
 			startCell = this.getModel().getMatrix().lookupCell( this.getActiveCellNode().getModel() );
 		}
+	} else if (
+		( e.which === OO.ui.MouseButtons.RIGHT || this.surface.isDeactivated() ) &&
+		selection instanceof ve.dm.TableSelection &&
+		selection.containsCell( endCell )
+	) {
+		// Right click within the current selection, or any click in deactviated selection:
+		// leave selection as is
+		newSelection = selection;
+		// Make sure there's a startCell
+		startCell = this.startCell || endCell;
 	} else {
 		// Select single cell
 		startCell = endCell;
 	}
 
-	newSelection = new ve.dm.TableSelection(
-		this.getModel().getOuterRange(),
-		startCell.col,
-		startCell.row,
-		endCell.col,
-		endCell.row
-	);
-	newSelection = newSelection.expand( this.getModel().getDocument() );
+	if ( !newSelection ) {
+		newSelection = new ve.dm.TableSelection(
+			this.getModel().getOuterRange(),
+			startCell.col,
+			startCell.row,
+			endCell.col,
+			endCell.row
+		);
+		newSelection = newSelection.expand( this.getModel().getDocument() );
+	}
+
 	if ( this.editingFragment ) {
 		if ( newSelection.equals( this.editingFragment.getSelection() ) ) {
 			// Clicking on the editing cell, don't prevent default
@@ -186,11 +198,38 @@ ve.ce.TableNode.prototype.onTableMouseDown = function ( e ) {
 		}
 	}
 	this.surface.getModel().setSelection( newSelection );
+	// Ensure surface is active as native 'focus' event won't be fired
+	this.surface.activate();
+
+	// Right-click on a cell which isn't being edited
+	if ( e.which === OO.ui.MouseButtons.RIGHT && !this.getActiveCellNode() ) {
+		// The same technique is used in ve.ce.FocusableNode
+		// Make ce=true so we get cut/paste options in the context menu
+		cellNode.$element.prop( 'contentEditable', true );
+		// Select the clicked element so we get a copy option in the context menu
+		ve.selectElement( cellNode.$element[ 0 ] );
+		setTimeout( function () {
+			// Undo ce=true as soon as the context menu is shown
+			cellNode.$element.prop( 'contentEditable', 'false' );
+			// Trigger onModelSelect to restore the selection
+			node.surface.onModelSelect();
+		} );
+		return;
+	}
+
 	this.startCell = startCell;
-	this.surface.$document.on( {
-		'mouseup touchend': this.onTableMouseUpHandler,
-		'mousemove touchmove': this.onTableMouseMoveHandler
-	} );
+	this.endCell = endCell;
+	if ( !( selection instanceof ve.dm.TableSelection ) && OO.ui.isMobile() ) {
+		// On mobile, fall through to the double-click behavior on a single tap --
+		// this will place the cursor within the cell, rather than remaining in
+		// table-selection mode.
+		this.onTableDblClick( e );
+	} else {
+		this.surface.$document.on( {
+			'mouseup touchend': this.onTableMouseUpHandler,
+			'mousemove touchmove': this.onTableMouseMoveHandler
+		} );
+	}
 	e.preventDefault();
 };
 
@@ -260,21 +299,23 @@ ve.ce.TableNode.prototype.getNearestCellNode = function ( element ) {
  * @param {jQuery.Event} e Mouse/touch move event
  */
 ve.ce.TableNode.prototype.onTableMouseMove = function ( e ) {
-	var cell, selection, cellNode;
+	var endCellNode, endCell, selection;
 
-	cellNode = this.getCellNodeFromEvent( e );
-	if ( !cellNode ) {
+	endCellNode = this.getCellNodeFromEvent( e );
+	if ( !endCellNode ) {
 		return;
 	}
 
-	cell = this.getModel().matrix.lookupCell( cellNode.getModel() );
-	if ( !cell ) {
+	endCell = this.getModel().matrix.lookupCell( endCellNode.getModel() );
+	if ( !endCell || endCell === this.endCell ) {
 		return;
 	}
+
+	this.endCell = endCell;
 
 	selection = new ve.dm.TableSelection(
 		this.getModel().getOuterRange(),
-		this.startCell.col, this.startCell.row, cell.col, cell.row
+		this.startCell.col, this.startCell.row, endCell.col, endCell.row
 	);
 	selection = selection.expand( this.getModel().getDocument() );
 	this.surface.getModel().setSelection( selection );
@@ -287,6 +328,7 @@ ve.ce.TableNode.prototype.onTableMouseMove = function ( e ) {
  */
 ve.ce.TableNode.prototype.onTableMouseUp = function () {
 	this.startCell = null;
+	this.endCell = null;
 	this.surface.$document.off( {
 		'mouseup touchend': this.onTableMouseUpHandler,
 		'mousemove touchmove': this.onTableMouseMoveHandler
@@ -380,7 +422,7 @@ ve.ce.TableNode.prototype.onSurfaceModelSelect = function ( selection ) {
 			if ( this.editingFragment ) {
 				this.setEditing( false, true );
 			}
-			this.updateOverlayDebounced( true );
+			this.updateOverlayDebounced();
 		}
 	} else if ( !active && this.active ) {
 		this.$overlay.addClass( 'oo-ui-element-hidden' );
@@ -410,14 +452,18 @@ ve.ce.TableNode.prototype.getActiveCellNode = function () {
 };
 
 /**
- * Update the overlay positions
- *
- * @param {boolean} selectionChanged The update was triggered by a selection change
+ * Handle activation events from the surface
  */
-ve.ce.TableNode.prototype.updateOverlay = function ( selectionChanged ) {
-	var i, l, anchorNode, anchorOffset, selectionOffset, selection, documentModel,
-		selectionRect, tableOffset, surfaceOffset, cells,
-		editable = true;
+ve.ce.TableNode.prototype.onSurfaceActivation = function () {
+	this.$overlay.toggleClass( 've-ce-tableNodeOverlay-deactivated', !!this.surface.isShownAsDeactivated() );
+};
+
+/**
+ * Update the overlay positions
+ */
+ve.ce.TableNode.prototype.updateOverlay = function () {
+	var anchorOffset, selectionOffset, selection, documentModel,
+		selectionRect, tableOffset, surfaceOffset;
 
 	if (
 		!this.active || !this.root ||
@@ -448,21 +494,21 @@ ve.ce.TableNode.prototype.updateOverlay = function ( selectionChanged ) {
 		return;
 	}
 
-	cells = selection.getMatrixCells( documentModel );
-	anchorNode = this.getCellNodesFromSelection( selection.collapseToFrom() )[ 0 ];
-	anchorOffset = ve.translateRect( anchorNode.$element[ 0 ].getBoundingClientRect(), -tableOffset.left, -tableOffset.top );
-
 	// Compute a bounding box for the given cell elements
-	for ( i = 0, l = cells.length; i < l; i++ ) {
-		if ( editable && !cells[ i ].node.isCellEditable() ) {
-			editable = false;
-		}
-	}
-
 	selectionOffset = ve.translateRect(
 		selectionRect,
 		surfaceOffset.left - tableOffset.left, surfaceOffset.top - tableOffset.top
 	);
+
+	if ( selection.isSingleCell( documentModel ) ) {
+		// Optimization, use same rects as whole selection
+		anchorOffset = selectionOffset;
+	} else {
+		anchorOffset = ve.translateRect(
+			this.surface.getSelection( selection.collapseToFrom() ).getSelectionBoundingRect(),
+			surfaceOffset.left - tableOffset.left, surfaceOffset.top - tableOffset.top
+		);
+	}
 
 	// Resize controls
 	this.$selectionBox.css( {
@@ -484,6 +530,7 @@ ve.ce.TableNode.prototype.updateOverlay = function ( selectionChanged ) {
 		left: tableOffset.left - surfaceOffset.left,
 		width: tableOffset.width
 	} );
+	// this.nodeContext doesn't need to adjust to the line
 	this.colContext.icon.$element.css( {
 		left: selectionOffset.left,
 		width: selectionOffset.width
@@ -493,18 +540,14 @@ ve.ce.TableNode.prototype.updateOverlay = function ( selectionChanged ) {
 		height: selectionOffset.height
 	} );
 
+	if ( this.nodeContext ) {
+		this.nodeContext.$element.toggleClass( 'oo-ui-element-hidden', this.surface.isReadOnly() );
+	}
 	this.colContext.$element.toggleClass( 'oo-ui-element-hidden', this.surface.isReadOnly() );
 	this.rowContext.$element.toggleClass( 'oo-ui-element-hidden', this.surface.isReadOnly() );
 
 	// Classes
-	this.$selectionBox
-		.toggleClass( 've-ce-tableNodeOverlay-selection-box-fullRow', selection.isFullRow( documentModel ) )
-		.toggleClass( 've-ce-tableNodeOverlay-selection-box-fullCol', selection.isFullCol( documentModel ) )
-		.toggleClass( 've-ce-tableNodeOverlay-selection-box-notEditable', !editable );
-
-	if ( selectionChanged ) {
-		ve.scrollIntoView( this.$selectionBox.get( 0 ) );
-	}
+	this.$selectionBox.toggleClass( 've-ce-tableNodeOverlay-selection-box-notEditable', !selection.isEditable( documentModel ) );
 };
 
 /**

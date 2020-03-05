@@ -8,12 +8,14 @@
 			"Sator",
 			"Mikel Ibaiba",
 			"Iñaki LL",
-			"Amaia"
+			"Amaia",
+			"Theklan"
 		]
 	},
 	"visualeditor": "Ikusizko editorea",
 	"visualeditor-aliencontextitem-title": "Elementua",
 	"visualeditor-aliennode-tooltip": "Sentitzen dugu, elementu hau iturburu moduan baino ezin da editatu oraingoz.",
+	"visualeditor-align-desc-center": "erdian",
 	"visualeditor-align-desc-default": "lehenetsia",
 	"visualeditor-align-desc-left": "ezkerra",
 	"visualeditor-align-desc-none": "bat ere ez",
@@ -37,7 +39,7 @@
 	"visualeditor-changedesc-align": "Lerroketzea $1tik $2ra aldatu egin da",
 	"visualeditor-changedesc-changed": "$1 aldatu egin da $2tik $3ra",
 	"visualeditor-changedesc-comment": "Iruzkina aldatu egin da $1tik $2ra",
-	"visualeditor-changedesc-image-size": "Tamainia aldatu egin da $1tik $2ra",
+	"visualeditor-changedesc-image-size": "Tamaina aldatu da: $1 zen, orain $2 da",
 	"visualeditor-changedesc-language": "Hizkuntza aldatu egin da $1tik $2ra",
 	"visualeditor-changedesc-link-href": "Helburu esteka $1-(e)tik $2-(e)ra aldatu da",
 	"visualeditor-changedesc-no-key": "$1 $2-ra aldatua",

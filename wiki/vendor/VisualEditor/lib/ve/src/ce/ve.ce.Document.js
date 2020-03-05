@@ -85,7 +85,6 @@ ve.ce.Document.prototype.getDir = function () {
 /**
  * Get a slug at an offset.
  *
- * @method
  * @param {number} offset Offset to get slug at
  * @return {HTMLElement} Slug at offset
  */
@@ -130,6 +129,9 @@ ve.ce.Document.prototype.getNodeAndOffset = function ( offset ) {
 	// contents. In this case, a maximally deep element gives better bounding rectangle
 	// coordinates than any of its containers.
 
+	if ( !this.model.getDocumentRange().containsRange( new ve.Range( offset ) ) ) {
+		throw new Error( 'Offset is out of bounds' );
+	}
 	branchNode = this.getBranchNodeFromOffset( offset );
 	count = branchNode.getOffset() + ( ( branchNode.isWrapped() ) ? 1 : 0 );
 
@@ -352,7 +354,6 @@ ve.ce.Document.prototype.getNodeAndOffset = function ( offset ) {
  *
  * Uses the computed CSS direction value of the current node
  *
- * @method
  * @param {ve.Range} range Range
  * @return {string} 'rtl', 'ltr'
  */

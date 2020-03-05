@@ -22,22 +22,45 @@ ve.ui.LinkContextItem = function VeUiLinkContextItem( context, model, config ) {
 	this.$element.addClass( 've-ui-linkContextItem' );
 
 	this.labelPreview = new OO.ui.LabelWidget();
-	this.labelButton = new OO.ui.ButtonWidget( {
-		label: OO.ui.deferMsg( 'visualeditor-linkcontext-label-change' ),
-		framed: false,
-		flags: [ 'progressive' ]
-	} ).connect( this, { click: 'onLabelButtonClick' } );
+	if ( this.context.isMobile() ) {
+		this.$labelLayout = $( '<div>' ).addClass( 've-ui-linkContextItem-label' ).append(
+			$( '<div>' ).addClass( 've-ui-linkContextItem-label-body' ).append(
+				new OO.ui.LabelWidget( {
+					classes: [ 've-ui-linkContextItem-label-label' ],
+					label: OO.ui.deferMsg( 'visualeditor-linkcontext-label-label' )
+				} ).$element,
+				$( '<div>' ).addClass( 've-ui-linkContextItem-label-preview' ).append( this.labelPreview.$element )
+			)
+		);
+		this.$innerBody = $( '<div>' ).addClass( 've-ui-linkContextItem-inner-body' );
+		this.$body.append(
+			this.$labelLayout,
+			new OO.ui.LabelWidget( {
+				classes: [ 've-ui-linkContextItem-link-label' ],
+				label: OO.ui.deferMsg( 'visualeditor-linkinspector-title' )
+			} ).$element,
+			this.$innerBody
+		);
+		// Sub-classes should now append content to $innerBody
+		this.$body = this.$innerBody;
+	} else {
+		this.labelButton = new OO.ui.ButtonWidget( {
+			label: OO.ui.deferMsg( 'visualeditor-linkcontext-label-change' ),
+			framed: false,
+			flags: [ 'progressive' ]
+		} );
+		this.$labelLayout = $( '<div>' ).addClass( 've-ui-linkContextItem-label' ).append(
+			$( '<div>' ).addClass( 've-ui-linkContextItem-label-label' ).append(
+				new OO.ui.IconWidget( { icon: 'quotes' } ).$element,
+				new OO.ui.LabelWidget( { label: OO.ui.deferMsg( 'visualeditor-linkcontext-label-label' ) } ).$element
+			),
+			$( '<div>' ).addClass( 've-ui-linkContextItem-label-preview' ).append( this.labelPreview.$element )
+		);
+		this.labelButton.connect( this, { click: 'onLabelButtonClick' } );
 
-	this.$labelLayout = $( '<div>' ).addClass( 've-ui-linkContextItem-label' ).append(
-		$( '<div>' ).addClass( 've-ui-linkContextItem-label-label' ).append(
-			new OO.ui.IconWidget( { icon: 'quotes' } ).$element,
-			new OO.ui.LabelWidget( { label: OO.ui.deferMsg( 'visualeditor-linkcontext-label-label' ) } ).$element
-		),
-		$( '<div>' ).addClass( 've-ui-linkContextItem-label-preview' ).append( this.labelPreview.$element )
-	);
-
-	if ( !this.isReadOnly() ) {
-		this.$labelLayout.append( $( '<div>' ).addClass( 've-ui-linkContextItem-label-action' ).append( this.labelButton.$element ) );
+		if ( !this.isReadOnly() ) {
+			this.$labelLayout.append( $( '<div>' ).addClass( 've-ui-linkContextItem-label-action' ).append( this.labelButton.$element ) );
+		}
 	}
 };
 
@@ -63,6 +86,8 @@ ve.ui.LinkContextItem.static.clearable = true;
 
 ve.ui.LinkContextItem.static.clearMsg = OO.ui.deferMsg( 'visualeditor-linkcontext-remove' );
 
+ve.ui.LinkContextItem.static.clearIcon = 'unLink';
+
 /* Methods */
 
 /**
@@ -79,14 +104,17 @@ ve.ui.LinkContextItem.prototype.renderBody = function () {
 	var htmlDoc = this.context.getSurface().getModel().getDocument().getHtmlDocument();
 	this.$body.empty().append(
 		$( '<a>' )
+			.addClass( 've-ui-linkContextItem-link' )
 			.text( this.getDescription() )
 			.attr( {
 				href: ve.resolveUrl( this.model.getHref(), htmlDoc ),
 				target: '_blank',
 				rel: 'noopener'
-			} ),
-		this.$labelLayout
+			} )
 	);
+	if ( !this.context.isMobile() ) {
+		this.$body.append( this.$labelLayout );
+	}
 	this.updateLabelPreview();
 };
 
@@ -96,8 +124,17 @@ ve.ui.LinkContextItem.prototype.renderBody = function () {
  * @protected
  */
 ve.ui.LinkContextItem.prototype.updateLabelPreview = function () {
-	var annotationView = this.getAnnotationView(),
-		label = annotationView && annotationView.$element[ 0 ].innerText.trim();
+	var label,
+		surfaceModel = this.context.getSurface().getModel(),
+		annotationView = this.getAnnotationView();
+
+	// annotationView is a potentially old view node from when the context was
+	// first focused in the document. If the annotation model has been changed
+	// as well, this may be a problem.
+	if ( annotationView ) {
+		label = surfaceModel.getFragment().expandLinearSelection( 'annotation', annotationView.getModel() ).getText();
+	}
+
 	this.labelPreview.setLabel( label || ve.msg( 'visualeditor-linkcontext-label-fallback' ) );
 };
 
@@ -111,7 +148,13 @@ ve.ui.LinkContextItem.prototype.updateLabelPreview = function () {
 ve.ui.LinkContextItem.prototype.onLabelButtonClick = function () {
 	var surface = this.context.getSurface().getView(),
 		annotationView = this.getAnnotationView();
-	surface.selectNodeContents( annotationView.$element[ 0 ] );
+
+	surface.selectNodeContents(
+		annotationView.$element[ 0 ],
+		this.context.isMobile() ? 'end' : undefined
+	);
+
+	ve.track( 'activity.' + this.constructor.static.name, { action: 'context-label' } );
 };
 
 /* Registration */

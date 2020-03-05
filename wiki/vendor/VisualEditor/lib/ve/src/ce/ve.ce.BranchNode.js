@@ -120,7 +120,6 @@ ve.ce.BranchNode.prototype.initialize = function () {
  * added using $.data() will be lost upon updating the wrapper. To retain information added to the
  * wrapper, subscribe to the 'teardown' and 'setup' events, or override #initialize.
  *
- * @method
  * @fires teardown
  * @fires setup
  */
@@ -168,14 +167,24 @@ ve.ce.BranchNode.prototype.onModelUpdate = function ( transaction ) {
  * ve.ce.Node objects are generated from the inserted ve.dm.Node objects, producing a view that's a
  * mirror of its model.
  *
- * @method
  * @param {number} index Index to remove and or insert nodes at
  * @param {number} howmany Number of nodes to remove
  * @param {...ve.dm.BranchNode} [nodes] Variadic list of nodes to insert
  */
 ve.ce.BranchNode.prototype.onSplice = function ( index ) {
 	var i, length, removals, position, j, fragment,
+		inAttachedRoot, upstreamOfAttachedRoot,
+		// attachedRoot and doc can be undefined in tests
+		dmDoc = this.getModel().getDocument(),
+		attachedRoot = dmDoc && dmDoc.attachedRoot,
+		isAllAttached = !attachedRoot || attachedRoot instanceof ve.dm.DocumentNode,
 		args = [];
+
+	if ( !isAllAttached ) {
+		// Optimization: Skip traversal when whole doc is attached
+		inAttachedRoot = this.getModel().isDownstreamOf( attachedRoot );
+		upstreamOfAttachedRoot = attachedRoot.collectUpstream();
+	}
 
 	for ( i = 0, length = arguments.length; i < length; i++ ) {
 		args.push( arguments[ i ] );
@@ -183,8 +192,17 @@ ve.ce.BranchNode.prototype.onSplice = function ( index ) {
 	// Convert models to views and attach them to this node
 	if ( args.length >= 3 ) {
 		for ( i = 2, length = args.length; i < length; i++ ) {
-			args[ i ] = ve.ce.nodeFactory.createFromModel( args[ i ] );
-			args[ i ].model.connect( this, { update: 'onModelUpdate' } );
+			if (
+				isAllAttached || inAttachedRoot || upstreamOfAttachedRoot.indexOf( args[ i ] ) !== -1 ||
+				// HACK: An internal item node was requested directly, e.g. for preview (T228070)
+				// TODO: Come up with a more explict way to skip the UnrenderedNode optimisation.
+				args[ i ].findParent( ve.dm.InternalItemNode )
+			) {
+				args[ i ] = ve.ce.nodeFactory.createFromModel( args[ i ] );
+				args[ i ].model.connect( this, { update: 'onModelUpdate' } );
+			} else {
+				args[ i ] = new ve.ce.UnrenderedNode( args[ i ] );
+			}
 		}
 	}
 	removals = this.children.splice.apply( this.children, args );
@@ -268,8 +286,14 @@ ve.ce.BranchNode.prototype.removeSlugs = function () {
  * @param {boolean} isBlock Set up block slugs, otherwise setup inline slugs
  */
 ve.ce.BranchNode.prototype.setupSlugs = function ( isBlock ) {
-	var i, slugTemplate, slugNode, child, slugButton,
-		doc = this.getElementDocument();
+	var i, slugTemplate, slugNode, child, slugButton, doc;
+
+	// Source mode optimization
+	if ( this.getModel().getDocument() && this.getModel().getDocument().sourceMode && isBlock ) {
+		return;
+	}
+
+	doc = this.getElementDocument();
 
 	this.removeSlugs();
 
@@ -316,7 +340,6 @@ ve.ce.BranchNode.prototype.onSlugClick = function ( slugNode ) {
 /**
  * Get a slug at an offset.
  *
- * @method
  * @param {number} offset Offset to get slug at
  * @return {HTMLElement|null}
  */
@@ -339,7 +362,6 @@ ve.ce.BranchNode.prototype.getSlugAtOffset = function ( offset ) {
 /**
  * Set live state on child nodes.
  *
- * @method
  * @param {boolean} live New live state
  */
 ve.ce.BranchNode.prototype.setLive = function ( live ) {

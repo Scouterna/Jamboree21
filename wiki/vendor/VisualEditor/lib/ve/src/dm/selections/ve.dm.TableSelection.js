@@ -305,6 +305,18 @@ ve.dm.TableSelection.prototype.getMatrixCells = function ( doc, includePlacehold
 };
 
 /**
+ * Check the selected cells are all editable
+ *
+ * @param {ve.dm.Document} doc The document to which this selection applies
+ * @return {boolean} Cells are all editable
+ */
+ve.dm.TableSelection.prototype.isEditable = function ( doc ) {
+	return this.getMatrixCells( doc ).every( function ( cell ) {
+		return cell.node.isCellEditable();
+	} );
+};
+
+/**
  * @inheritdoc
  */
 ve.dm.TableSelection.prototype.isCollapsed = function () {
@@ -359,6 +371,10 @@ ve.dm.TableSelection.prototype.isSingleCell = function ( doc ) {
  */
 ve.dm.TableSelection.prototype.isMergeable = function ( doc ) {
 	var r, sectionNode, lastSectionNode, matrix;
+
+	if ( !this.isEditable( doc ) ) {
+		return false;
+	}
 
 	if ( this.getMatrixCells( doc, true ).length <= 1 ) {
 		return false;
@@ -492,6 +508,18 @@ ve.dm.TableSelection.prototype.newFromAdjustment = function ( doc, fromColOffset
 	);
 	selection = selection.expand( doc );
 	return selection;
+};
+
+/**
+ * Check if a given cell is within this selection
+ *
+ * @param {ve.dm.TableMatrixCell} cell Table matrix cell
+ * @return {boolean} Cell is within this selection
+ */
+ve.dm.TableSelection.prototype.containsCell = function ( cell ) {
+	return cell.node.findParent( ve.dm.TableNode ).getOuterRange().equals( this.tableRange ) &&
+		cell.col >= this.startCol && cell.col <= this.endCol &&
+		cell.row >= this.startRow && cell.row <= this.endRow;
 };
 
 /**

@@ -48,7 +48,7 @@ class VisualEditorDataModule extends ResourceLoaderModule {
 	 * @return array[] Messages in various states of parsing
 	 */
 	protected function getMessageInfo( ResourceLoaderContext $context ) {
-		$editSubmitButtonLabelPublish = $context->getResourceLoader()->getConfig()
+		$editSubmitButtonLabelPublish = $this->getConfig()
 			->get( 'EditSubmitButtonLabelPublish' );
 		$saveButtonLabelKey = $editSubmitButtonLabelPublish ? 'publishpage' : 'savearticle';
 		$saveButtonLabel = $context->msg( $saveButtonLabelKey )->text();
@@ -81,6 +81,9 @@ class VisualEditorDataModule extends ResourceLoaderModule {
 				->inContentLanguage(),
 			'visualeditor-quick-access-characters.json' =>
 				$context->msg( 'visualeditor-quick-access-characters.json' )
+				->inContentLanguage(),
+			'visualeditor-template-tools-definition.json' =>
+				$context->msg( 'visualeditor-template-tools-definition.json' )
 				->inContentLanguage(),
 		];
 

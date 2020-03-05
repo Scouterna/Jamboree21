@@ -75,25 +75,38 @@ ve.ui.MWGalleryDialog.static.excludeCommands = [
  * @return {Object} Import rules
  */
 ve.ui.MWGalleryDialog.static.getImportRules = function () {
+	var rules = ve.copy( ve.init.target.constructor.static.importRules );
 	return ve.extendObject(
-		ve.copy( ve.init.target.constructor.static.importRules ),
+		rules,
 		{
 			all: {
-				blacklist: OO.simpleArrayUnion(
-					ve.getProp( ve.init.target.constructor.static.importRules, 'all', 'blacklist' ) || [],
-					[
+				blacklist: ve.extendObject(
+					{
 						// No block-level markup is allowed inside gallery caption (or gallery image captions).
 						// No lists, no tables.
-						'list', 'listItem', 'definitionList', 'definitionListItem',
-						'table', 'tableCaption', 'tableSection', 'tableRow', 'tableCell',
+						list: true,
+						listItem: true,
+						definitionList: true,
+						definitionListItem: true,
+						table: true,
+						tableCaption: true,
+						tableSection: true,
+						tableRow: true,
+						tableCell: true,
+						mwTable: true,
+						mwTransclusionTableCell: true,
 						// Nested galleries don't work either
-						'mwGallery'
-					]
+						mwGallery: true
+					},
+					ve.getProp( rules, 'all', 'blacklist' )
 				),
 				// Headings are also possible, but discouraged
-				conversions: {
-					mwHeading: 'paragraph'
-				}
+				conversions: ve.extendObject(
+					{
+						mwHeading: 'paragraph'
+					},
+					ve.getProp( rules, 'all', 'conversions' )
+				)
 			}
 		}
 	);
@@ -847,7 +860,7 @@ ve.ui.MWGalleryDialog.prototype.toggleSearchPanel = function ( visible ) {
 		if ( !this.searchWidget.getQuery().getValue() ) {
 			// Wait until the search panel is visible before setting a default query
 			// as this triggers a request and render.
-			pageTitle = mw.config.get( 'wgTitle' );
+			pageTitle = ve.init.target.getPageName( this.fragment.getDocument() );
 			namespace = mw.config.get( 'wgNamespaceNumber' );
 			namespacesWithSubpages = mw.config.get( 'wgVisualEditorConfig' ).namespacesWithSubpages;
 
@@ -955,9 +968,7 @@ ve.ui.MWGalleryDialog.prototype.isHighlightedItemModified = function () {
 };
 
 /**
- * Get the current images and options data
- *
- * @return {Object} Images and options data
+ * Insert or update the node in the document model from the new values
  */
 ve.ui.MWGalleryDialog.prototype.insertOrUpdateNode = function () {
 	var i, ilen, element, mwData, innerRange, captionInsertionOffset,

@@ -249,22 +249,15 @@ ve.ui.FindAndReplaceDialog.prototype.getTeardownProcess = function ( data ) {
 			surfaceView.disconnect( this );
 			ve.removePassiveEventListener( this.surface.getView().$window[ 0 ], 'scroll', this.onWindowScrollThrottled );
 
-			// If the surface isn't selected, put the selection back in a sensible place
-			if ( surfaceModel.getSelection().isNull() ) {
-				if ( this.fragments.length ) {
-					// Either the active search result…
-					selection = this.fragments[ this.focusedIndex ].getSelection();
-				} else if ( this.initialFragment && !( this.initialFragment.getSelection().isNull() ) ) {
-					// … or the initial selection
-					selection = this.initialFragment.getSelection();
-				}
-			}
-			if ( selection ) {
-				surfaceModel.setSelection( selection );
+			if ( this.fragments.length ) {
+				// Either the active search result…
+				selection = this.fragments[ this.focusedIndex ].getSelection();
 			} else {
-				// If the selection wasn't changed, focus anyway
-				surfaceView.focus();
+				// … or the initial selection
+				selection = this.initialFragment.getSelection();
 			}
+			surfaceModel.setSelection( selection );
+
 			this.$findResults.empty().detach();
 			this.fragments = [];
 			this.surface = null;
@@ -413,7 +406,7 @@ ve.ui.FindAndReplaceDialog.prototype.renderFragments = function () {
 	var i, selection, viewportRange, start, end;
 
 	// Check the surface isn't hidden, such as during deactivation
-	if ( !this.surface || !this.surface.getView().$element.is( ':visible' ) ) {
+	if ( !this.surface ) {
 		return;
 	}
 
@@ -530,8 +523,8 @@ ve.ui.FindAndReplaceDialog.prototype.highlightFocused = function ( scrollIntoVie
 	if ( scrollIntoView ) {
 		surfaceView = this.surface.getView();
 		offset = top + surfaceView.$element.offset().top;
-		windowScrollTop = surfaceView.$window.scrollTop() + this.surface.toolbarHeight;
-		windowScrollHeight = surfaceView.$window.height() - this.surface.toolbarHeight;
+		windowScrollTop = surfaceView.$window.scrollTop() + this.surface.padding.top;
+		windowScrollHeight = surfaceView.$window.height() - this.surface.padding.top;
 
 		if ( offset < windowScrollTop || offset > windowScrollTop + windowScrollHeight ) {
 			// eslint-disable-next-line no-jquery/no-global-selector
@@ -624,11 +617,20 @@ ve.ui.FindAndReplaceDialog.prototype.onReplaceButtonClick = function () {
  * Handle click events on the previous all button
  */
 ve.ui.FindAndReplaceDialog.prototype.onReplaceAllButtonClick = function () {
-	var i, l;
+	var i, l,
+		surfaceView = this.surface.getView(),
+		wasActivated = !surfaceView.isDeactivated();
 
+	if ( wasActivated ) {
+		surfaceView.deactivate();
+	}
 	for ( i = 0, l = this.results; i < l; i++ ) {
 		this.replace( i );
 	}
+	if ( wasActivated ) {
+		surfaceView.activate();
+	}
+
 	this.updateFragments();
 	this.clearRenderedResultsCache();
 	this.renderFragments();

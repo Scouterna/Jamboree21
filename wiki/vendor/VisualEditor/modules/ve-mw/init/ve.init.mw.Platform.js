@@ -91,7 +91,6 @@ ve.init.mw.Platform.prototype.getConfig = mw.config.get.bind( mw.config );
 /**
  * All values are JSON-parsed. To get raw values, use mw.user.options.get directly.
  *
- * @method
  * @inheritdoc
  */
 ve.init.mw.Platform.prototype.getUserConfig = function ( keys ) {
@@ -118,7 +117,6 @@ ve.init.mw.Platform.prototype.getUserConfig = function ( keys ) {
  *
  * All values are JSON encoded. To set raw values, use mw.user.options.set directly.
  *
- * @method
  * @inheritdoc
  */
 ve.init.mw.Platform.prototype.setUserConfig = function ( keyOrValueMap, value ) {
@@ -151,25 +149,12 @@ ve.init.mw.Platform.prototype.setUserConfig = function ( keyOrValueMap, value ) 
 	}
 };
 
-/**
- * @inheritdoc
- */
-ve.init.mw.Platform.prototype.getSession = function ( key ) {
-	return mw.storage.session.get( key );
+ve.init.mw.Platform.prototype.createLocalStorage = function () {
+	return this.createListStorage( mw.storage );
 };
 
-/**
- * @inheritdoc
- */
-ve.init.mw.Platform.prototype.setSession = function ( key, value ) {
-	return mw.storage.session.set( key, value );
-};
-
-/**
- * @inheritdoc
- */
-ve.init.mw.Platform.prototype.removeSession = function ( key ) {
-	return mw.storage.session.remove( key );
+ve.init.mw.Platform.prototype.createSessionStorage = function () {
+	return this.createListStorage( mw.storage.session );
 };
 
 /**
@@ -269,6 +254,28 @@ ve.init.mw.Platform.prototype.fetchSpecialCharList = function () {
 					groupObject[ charVal.label ] = charVal;
 				}
 			} );
+			// The following messages are used here:
+			// * special-characters-group-arabic
+			// * special-characters-group-arabicextended
+			// * special-characters-group-bangla
+			// * special-characters-group-canadianaboriginal
+			// * special-characters-group-cyrillic
+			// * special-characters-group-devanagari
+			// * special-characters-group-greek
+			// * special-characters-group-greekextended
+			// * special-characters-group-gujarati
+			// * special-characters-group-hebrew
+			// * special-characters-group-ipa
+			// * special-characters-group-khmer
+			// * special-characters-group-lao
+			// * special-characters-group-latin
+			// * special-characters-group-latinextended
+			// * special-characters-group-persian
+			// * special-characters-group-sinhala
+			// * special-characters-group-symbols
+			// * special-characters-group-tamil
+			// * special-characters-group-telugu
+			// * special-characters-group-thai
 			characters[ mw.msg( 'special-characters-group-' + groupName ) ] = groupObject;
 			groupObject.attributes = { dir: rtlGroups.indexOf( groupName ) !== -1 ? 'rtl' : 'ltr' };
 		} );

@@ -40,8 +40,6 @@ ve.ui.DesktopContext = function VeUiDesktopContext( surface, config ) {
 	this.surface.getView().connect( this, {
 		relocationStart: 'onSuppress',
 		relocationEnd: 'onUnsuppress',
-		blur: 'onSuppress',
-		focus: 'onUnsuppress',
 		position: 'onPosition'
 	} );
 	this.surface.getModel().connect( this, {
@@ -58,7 +56,7 @@ ve.ui.DesktopContext = function VeUiDesktopContext( surface, config ) {
 	// Initialization
 	this.$element
 		.addClass( 've-ui-desktopContext' )
-		.append( this.popup.$element );
+		.append( this.$focusTrapBefore, this.popup.$element, this.$focusTrapAfter );
 	this.$group.addClass( 've-ui-desktopContext-menu' );
 	this.popup.$body.append( this.$group, this.inspectors.$element );
 };
@@ -360,6 +358,13 @@ ve.ui.DesktopContext.prototype.setPopupSizeAndPosition = function ( repositionOn
 		return;
 	}
 
+	if ( this.popup.hasAnchor() ) {
+		// Reserve space for the anchor and one line of text
+		// ('40' is arbitrary and has been picked by experimentation)
+		viewport.top += 40;
+		viewport.height -= 40;
+	}
+
 	if ( this.position ) {
 		// Float the content if it's bigger than the viewport. Exactly how /
 		// whether it should be floated is situational, so this is a
@@ -380,7 +385,7 @@ ve.ui.DesktopContext.prototype.setPopupSizeAndPosition = function ( repositionOn
 				} else {
 					this.$element.css( {
 						left: this.position.x + viewport.left,
-						top: this.surface.toolbarHeight + margin,
+						top: this.surface.padding.top + margin,
 						bottom: ''
 					} );
 				}

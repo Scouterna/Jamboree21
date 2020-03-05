@@ -13,11 +13,16 @@
 	}
 	OO.inheritClass( MWDummyTarget, ve.test.utils.DummyTarget );
 	MWDummyTarget.prototype.setDefaultMode = function () {};
+	MWDummyTarget.prototype.isSaveable = function () {
+		return true;
+	};
 	MWDummyTarget.prototype.parseWikitextFragment = function () {
 		// Ensure a mock server is used (e.g. as in ve.ui.MWWikitextStringTransferHandler)
 		return new mw.Api().post();
 	};
 	ve.test.utils.MWDummyTarget = MWDummyTarget;
+	// Copy import rules from mw target, for paste tests.
+	ve.test.utils.MWDummyTarget.static.importRules = ve.init.mw.Target.static.importRules;
 
 	function MWDummyPlatform() {
 		MWDummyPlatform.super.apply( this, arguments );
@@ -122,7 +127,6 @@
 	 * Override getDomElementSummary to extract HTML from data-mw/body.html
 	 * and make it comparable.
 	 *
-	 * @method
 	 * @inheritdoc ve#getDomElementSummary
 	 */
 	ve.getDomElementSummary = function ( element, includeHtml ) {

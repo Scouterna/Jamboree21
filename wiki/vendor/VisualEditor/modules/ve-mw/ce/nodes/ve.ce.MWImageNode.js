@@ -73,7 +73,6 @@ ve.ce.MWImageNode.static.getDescription = function ( model ) {
  * Update the rendering of the 'align', src', 'width' and 'height' attributes
  * when they change in the model.
  *
- * @method
  * @param {string} key Attribute key
  * @param {string} from Old value
  * @param {string} to New value
@@ -136,14 +135,9 @@ ve.ce.MWImageNode.prototype.generateContents = function () {
  * @param {Object} response Response data
  */
 ve.ce.MWImageNode.prototype.onParseSuccess = function ( deferred, response ) {
-	var id, src, pages = ve.getProp( response, 'query', 'pages' );
-	for ( id in pages ) {
-		if ( pages[ id ].imageinfo ) {
-			src = pages[ id ].imageinfo[ 0 ].thumburl;
-		}
-	}
-	if ( src ) {
-		deferred.resolve( src );
+	var thumburl = ve.getProp( response.query.pages[ 0 ], 'imageinfo', 0, 'thumburl' );
+	if ( thumburl ) {
+		deferred.resolve( thumburl );
 	} else {
 		deferred.reject();
 	}

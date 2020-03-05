@@ -248,10 +248,30 @@ ve.dm.mwExample.MWInternalSectionLink.absoluteData = {
 	}
 };
 
+ve.dm.mwExample.MWMediaLinkExistsData = {
+	type: 'link/mwInternal',
+	attributes: {
+		lookupTitle: 'Media:Exists.png',
+		normalizedTitle: 'Media:Exists.png',
+		origTitle: 'Media:Exists.png',
+		title: 'Media:Exists.png'
+	}
+};
+
+ve.dm.mwExample.MWMediaLinkMissingData = {
+	type: 'link/mwInternal',
+	attributes: {
+		lookupTitle: 'Media:Missing.png',
+		normalizedTitle: 'Media:Missing.png',
+		origTitle: 'Media:Missing.png',
+		title: 'Media:Missing.png'
+	}
+};
+
 ve.dm.mwExample.MWBlockImage = {
 	html:
 		'<figure typeof="mw:Image/Thumb" class="mw-halign-right foobar">' +
-			'<a href="Foo"><img src="' + ve.ce.minImgDataUri + '" width="1" height="2" resource="FooBar"></a>' +
+			'<a href="Foo"><img src="' + ve.ce.minImgDataUri + '" width="1" height="2" resource="FooBar" alt="alt text"></a>' +
 			'<figcaption>abc</figcaption>' +
 		'</figure>',
 	data: [
@@ -265,7 +285,7 @@ ve.dm.mwExample.MWBlockImage = {
 				src: ve.ce.minImgDataUri,
 				width: 1,
 				height: 2,
-				alt: null,
+				alt: 'alt text',
 				isError: false,
 				resource: 'FooBar',
 				mw: {},
@@ -289,7 +309,7 @@ ve.dm.mwExample.MWInlineImage = {
 	html:
 		'<figure-inline typeof="mw:Image" class="foo mw-valign-text-top">' +
 			'<a href="./File:Wiki.png">' +
-				'<img resource="./File:Wiki.png" src="http://upload.wikimedia.org/wikipedia/en/b/bc/Wiki.png" height="155" width="135">' +
+				'<img resource="./File:Wiki.png" src="http://upload.wikimedia.org/wikipedia/en/b/bc/Wiki.png" height="155" width="135" alt="alt text">' +
 			'</a>' +
 		'</figure-inline>',
 	data: {
@@ -300,7 +320,7 @@ ve.dm.mwExample.MWInlineImage = {
 			mediaClass: 'Image',
 			width: 135,
 			height: 155,
-			alt: null,
+			alt: 'alt text',
 			isError: false,
 			valign: 'text-top',
 			resource: './File:Wiki.png',
@@ -1494,6 +1514,61 @@ ve.dm.mwExample.domToDataCases = {
 			{ type: 'internalList' },
 			{ type: '/internalList' }
 		]
+	},
+	'mw:MediaLink (exists)': {
+		body: '<p><a rel="mw:MediaLink" href="//localhost/w/images/x/xx/Exists.png" resource="./Media:Exists.png" title="Exists.png">Media:Exists.png</a></p>',
+		data: [
+			{ type: 'paragraph' },
+			[ 'M', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'e', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'd', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'i', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'a', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ ':', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'E', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'x', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'i', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 's', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 't', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 's', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ '.', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'p', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'n', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			[ 'g', [ ve.dm.mwExample.MWMediaLinkExistsData ] ],
+			{ type: '/paragraph' },
+			{ type: 'internalList' },
+			{ type: '/internalList' }
+		],
+		normalizedBody: '<p><a href="./Media:Exists.png" rel="mw:WikiLink" resource="./Media:Exists.png" title="Exists.png">Media:Exists.png</a></p>',
+		fromDataBody: '<p><a href="./Media:Exists.png" rel="mw:WikiLink">Media:Exists.png</a></p>'
+	},
+	'mw:MediaLink (missing)': {
+		body: '<p><a rel="mw:MediaLink" href="./Special:FilePath/Missing.png" resource="./Media:Missing.png" title="Missing.png" typeof="mw:Error" data-mw=\'{"errors":[{"key":"apierror-filedoesnotexist","message":"This image does not exist."}]}\'>Media:Missing.png</a></p>',
+		data: [
+			{ type: 'paragraph' },
+			[ 'M', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'e', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'd', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'i', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'a', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ ':', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'M', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'i', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 's', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 's', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'i', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'n', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'g', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ '.', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'p', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'n', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			[ 'g', [ ve.dm.mwExample.MWMediaLinkMissingData ] ],
+			{ type: '/paragraph' },
+			{ type: 'internalList' },
+			{ type: '/internalList' }
+		],
+		normalizedBody: '<p><a href="./Media:Missing.png" rel="mw:WikiLink" resource="./Media:Missing.png" title="Missing.png" typeof="mw:Error" data-mw=\'{"errors":[{"key":"apierror-filedoesnotexist","message":"This image does not exist."}]}\'>Media:Missing.png</a></p>',
+		fromDataBody: '<p><a href="./Media:Missing.png" rel="mw:WikiLink">Media:Missing.png</a></p>'
 	},
 	'numbered external link (empty mw:Extlink)': {
 		body: '<p>Foo<a rel="mw:ExtLink" href="http://www.example.com"></a>Bar</p>',

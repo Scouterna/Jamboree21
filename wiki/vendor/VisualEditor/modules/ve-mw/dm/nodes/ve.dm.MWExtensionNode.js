@@ -84,7 +84,9 @@ ve.dm.MWExtensionNode.static.toDataElement = function ( domElements, converter, 
 	return dataElement;
 };
 
-/** */
+/**
+ * @inheritdoc ve.dm.Node
+ */
 ve.dm.MWExtensionNode.static.cloneElement = function () {
 	// Parent method
 	var clone = ve.dm.MWExtensionNode.super.static.cloneElement.apply( this, arguments );
@@ -195,7 +197,6 @@ ve.dm.MWExtensionNode.static.describeChange = function ( key ) {
 /**
  * Get the extension's name
  *
- * @method
  * @return {string} Extension name
  */
 ve.dm.MWExtensionNode.prototype.getExtensionName = function () {

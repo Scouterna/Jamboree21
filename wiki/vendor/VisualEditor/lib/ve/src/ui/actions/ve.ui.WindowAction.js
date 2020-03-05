@@ -38,11 +38,10 @@ ve.ui.WindowAction.static.methods = [ 'open', 'close', 'toggle' ];
 /**
  * Open a window.
  *
- * @method
  * @param {string} name Symbolic name of window to open
  * @param {Object} [data] Window opening data
  * @param {string} [action] Action to execute after opening, or immediately if the window is already open
- * @return {boolean} Action was executed
+ * @return {boolean|jQuery.Promise} Action was executed; if a Promise, it'll resolve once the action is finished executing
  */
 ve.ui.WindowAction.prototype.open = function ( name, data, action ) {
 	var currentInspector, inspectorWindowManager, fragmentPromise,
@@ -61,13 +60,13 @@ ve.ui.WindowAction.prototype.open = function ( name, data, action ) {
 			// HACK: Pass fragment to toolbar dialogs as well
 			windowType === 'toolbar',
 		// TODO: Add 'doesHandleSource' method to factory
-		sourceMode = surface.getMode() === 'source' && !windowClass.static.handlesSource;
+		sourceMode = surface.getMode() === 'source' && !windowClass.static.handlesSource,
+		openDeferred = ve.createDeferred(),
+		openPromise = openDeferred.promise();
 
 	if ( !windowManager ) {
 		return false;
 	}
-
-	ve.track( 'activity.' + name, { action: 'window-open' } );
 
 	if ( !mayRequireFragment ) {
 		fragmentPromise = ve.createDeferred().resolve().promise();
@@ -140,13 +139,26 @@ ve.ui.WindowAction.prototype.open = function ( name, data, action ) {
 					if ( action ) {
 						win.executeAction( action );
 					}
+					openDeferred.resolve( instance );
 				} );
 
 				if ( !win.constructor.static.activeSurface ) {
-					// Use windowManager events, instead of instance.closing, as the re-activation needs
-					// to happen in the same event cycle as the user click event that closed the window (T203517).
 					windowManager.once( 'closing', function () {
-						surface.getView().activate();
+						// Collapsed mobile selection: We need to re-activate the surface in case an insertion
+						// annotation was generated. We also need to do it during the same event cycle otherwise
+						// the device may not open the virtual keyboard, so use the 'closing' event. (T203517)
+						if ( OO.ui.isMobile() && surface.getModel().getSelection().isCollapsed() ) {
+							surface.getView().activate();
+						} else {
+							// Otherwise use the closing promise to wait until the dialog has performed its actions,
+							// such as creating new annotations, before re-activating.
+							instance.closing.then( function () {
+								// Don't activate if mobile and expanded
+								if ( !( OO.ui.isMobile() && !surface.getModel().getSelection().isCollapsed() ) ) {
+									surface.getView().activate();
+								}
+							} );
+						}
 					} );
 				}
 
@@ -169,13 +181,12 @@ ve.ui.WindowAction.prototype.open = function ( name, data, action ) {
 		} );
 	} );
 
-	return true;
+	return openPromise;
 };
 
 /**
  * Close a window
  *
- * @method
  * @param {string} name Symbolic name of window to open
  * @param {Object} [data] Window closing data
  * @return {boolean} Action was executed
@@ -195,7 +206,6 @@ ve.ui.WindowAction.prototype.close = function ( name, data ) {
 /**
  * Toggle a window between open and close
  *
- * @method
  * @param {string} name Symbolic name of window to open or close
  * @param {Object} [data] Window opening or closing data
  * @return {boolean} Action was executed

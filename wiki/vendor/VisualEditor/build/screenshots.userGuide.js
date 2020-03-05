@@ -49,7 +49,7 @@
 					function () {
 						var done = arguments[ arguments.length - 1 ],
 							surface = ve.init.target.surface;
-						ve.init.target.toolbar.tools.citefromid.onSelect();
+						ve.init.target.toolbar.tools.citoid.onSelect();
 						setTimeout( function () {
 							done(
 								seleniumUtils.getBoundingRect( [
@@ -174,7 +174,7 @@
 					// This function is converted to a string and executed in the browser
 					function () {
 						var done = arguments[ arguments.length - 1 ];
-						ve.init.target.toolbarSaveButton.emit( 'click' );
+						ve.init.target.toolbarSaveButton.onSelect();
 						setTimeout( function () {
 							done(
 								seleniumUtils.getBoundingRect( [
@@ -261,7 +261,7 @@
 						setTimeout( function () {
 							done(
 								seleniumUtils.getBoundingRect( [
-									ve.init.target.toolbar.tools.citefromid.$element[ 0 ]
+									ve.init.target.toolbar.tools.citoid.$element[ 0 ]
 								] )
 							);
 						} );
