@@ -55,15 +55,6 @@
 		}
 	}
 
-	// T218851: Section editing A/B test
-	if ( conf.enableVisualSectionEditing === 'mobile-ab' ) {
-		if ( !mw.user.isAnon() && mw.user.getId() % 2 ) {
-			conf.enableVisualSectionEditing = 'mobile';
-		} else {
-			conf.enableVisualSectionEditing = false;
-		}
-	}
-
 	mw.libs.ve = mw.libs.ve || {};
 
 	mw.libs.ve.targetLoader = {
@@ -206,18 +197,21 @@
 		 */
 		requestParsoidData: function ( pageName, options ) {
 			var start, apiXhr, restbaseXhr, apiPromise, restbasePromise, dataPromise, pageHtmlUrl, headers, data,
+				section = options.section !== undefined ? options.section : null,
+				useRestbase = ( conf.fullRestbaseUrl || conf.restbaseUrl ) && section === null,
 				switched = false,
 				fromEditedState = false;
 
 			options = options || {};
 			data = {
 				action: 'visualeditor',
-				paction: ( conf.fullRestbaseUrl || conf.restbaseUrl ) ? 'metadata' : 'parse',
+				paction: useRestbase ? 'metadata' : 'parse',
 				page: pageName,
 				uselang: mw.config.get( 'wgUserLanguage' ),
 				editintro: uri.query.editintro,
 				preload: options.preload,
-				preloadparams: options.preloadparams
+				preloadparams: options.preloadparams,
+				formatversion: 2
 			};
 
 			// Only request the API to explicitly load the currently visible revision if we're restoring
@@ -231,10 +225,15 @@
 			start = ve.now();
 			ve.track( 'trace.apiLoad.enter', { mode: 'visual' } );
 
-			if ( data.paction === 'parse' && options.wikitext !== undefined ) {
+			if ( !useRestbase && options.wikitext !== undefined ) {
 				// Non-RESTBase custom wikitext parse
-				data.paction = 'parsefragment';
+				data.paction = 'parse';
+				data.stash = true;
+				switched = true;
+				fromEditedState = options.modified;
 				data.wikitext = options.wikitext;
+				data.section = options.section;
+				data.oldid = options.oldId;
 				apiXhr = new mw.Api().post( data );
 			} else {
 				apiXhr = new mw.Api().get( data );
@@ -248,10 +247,14 @@
 					targetName: options.targetName,
 					mode: 'visual'
 				} );
+				if ( data.visualeditor ) {
+					data.visualeditor.switched = switched;
+					data.visualeditor.fromEditedState = fromEditedState;
+				}
 				return data;
 			} );
 
-			if ( conf.fullRestbaseUrl || conf.restbaseUrl ) {
+			if ( useRestbase ) {
 				ve.track( 'trace.restbaseLoad.enter', { mode: 'visual' } );
 
 				headers = {
@@ -283,7 +286,6 @@
 						type: 'POST',
 						data: {
 							title: pageName,
-							oldid: data.oldid,
 							wikitext: options.wikitext,
 							stash: 'true'
 						},
@@ -299,7 +301,8 @@
 					}
 					restbaseXhr = $.ajax( {
 						url: pageHtmlUrl + encodeURIComponent( pageName ) +
-							( data.oldid === undefined ? '' : '/' + data.oldid ) + '?redirect=false',
+							( data.oldid === undefined ? '' : '/' + data.oldid ) +
+							'?redirect=false&stash=true',
 						type: 'GET',
 						headers: headers,
 						dataType: 'text'
@@ -351,7 +354,10 @@
 				dataPromise = apiPromise.promise( { abort: apiXhr.abort } );
 			}
 
-			return dataPromise;
+			return dataPromise.then( function ( resp ) {
+				resp.veMode = 'visual';
+				return resp;
+			} );
 		},
 
 		/**
@@ -362,7 +368,7 @@
 		 * @return {jQuery.Promise} Abortable promise resolved with a JSON object
 		 */
 		requestWikitext: function ( pageName, options ) {
-			var data;
+			var data, dataPromise;
 
 			options = options || {};
 			data = {
@@ -372,7 +378,8 @@
 				uselang: mw.config.get( 'wgUserLanguage' ),
 				editintro: uri.query.editintro,
 				preload: options.preload,
-				preloadparams: options.preloadparams
+				preloadparams: options.preloadparams,
+				formatversion: 2
 			};
 
 			// section should never really be undefined, but check just in case
@@ -384,7 +391,11 @@
 				data.oldid = options.oldId;
 			}
 
-			return new mw.Api().get( data );
+			dataPromise = new mw.Api().get( data );
+			return dataPromise.then( function ( resp ) {
+				resp.veMode = 'source';
+				return resp;
+			} );
 		}
 	};
 }() );

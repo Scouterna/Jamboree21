@@ -60,7 +60,8 @@ ve.ce.Surface = function VeCeSurface( model, ui, config ) {
 	this.resizing = false;
 	this.focused = false;
 	this.deactivated = false;
-	this.deactivatedForCopy = false;
+	this.showAsActivated = false;
+	this.hideSelection = false;
 	this.$deactivatedSelection = $( '<div>' );
 	this.activeNode = null;
 	this.contentBranchNodeChanged = false;
@@ -87,6 +88,8 @@ ve.ce.Surface = function VeCeSurface( model, ui, config ) {
 	this.focusedBlockSlug = null;
 	this.focusedNode = null;
 	this.activeAnnotations = [];
+	this.contexedAnnotations = [];
+	this.previousActiveAnnotations = [];
 	// This is set on entering changeModel, then unset when leaving.
 	// It is used to test whether a reflected change event is emitted.
 	this.newModelSelection = null;
@@ -268,6 +271,12 @@ OO.mixinClass( ve.ce.Surface, OO.EventEmitter );
  * a pair of blur-focus events is emitted anyway.
  */
 
+/**
+ * Surface activation state has changed (i.e. on activate or deactivate)
+ *
+ * @event activation
+ */
+
 /* Static properties */
 
 /**
@@ -374,8 +383,6 @@ ve.ce.Surface.static.getClipboardHash = function ( $elements, beforePasteData ) 
 
 /**
  * Destroy the surface, removing all DOM elements.
- *
- * @method
  */
 ve.ce.Surface.prototype.destroy = function () {
 	var attachedRoot = this.attachedRoot;
@@ -503,8 +510,6 @@ ve.ce.Surface.prototype.getSelectionDirectionality = function () {
  * Initialize surface.
  *
  * This should be called after the surface has been attached to the DOM.
- *
- * @method
  */
 ve.ce.Surface.prototype.initialize = function () {
 	this.attachedRoot.setLive( true );
@@ -596,6 +601,10 @@ ve.ce.Surface.prototype.blur = function () {
 	this.removeRangesAndBlur();
 	// This won't trigger focusin/focusout events, so trigger focus change manually
 	this.onFocusChange();
+	if ( OO.ui.isMobile() ) {
+		this.updateActiveAnnotations();
+		this.contexedAnnotations = [];
+	}
 };
 
 /**
@@ -661,38 +670,80 @@ ve.ce.Surface.prototype.onFocusChange = function () {
 };
 
 /**
+ * Check if the surface is deactivated.
+ *
+ * @return {boolean} Surface is deactivated
+ */
+ve.ce.Surface.prototype.isDeactivated = function () {
+	return this.deactivated;
+};
+
+/**
+ * Check if the surface is visible deactivated.
+ *
+ * Only true if the surface was decativated by the user
+ * in a way that is expected to change the rendering.
+ *
+ * @return {boolean} Surface is deactivated
+ */
+ve.ce.Surface.prototype.isShownAsDeactivated = function () {
+	return this.deactivated && !this.showAsActivated;
+};
+
+/**
  * Deactivate the surface, stopping the surface observer and replacing the native
  * range with a fake rendered one.
  *
  * Used by dialogs so they can take focus without losing the original document selection.
  *
- * @param {boolean} [deactivatedForCopy] Surface was deactivated by preparePasteTargetForCopy
+ * @param {boolean} [showAsActivated=true] Surface should still show as activated
+ * @param {boolean} [noSelectionChange] Don't change the native selection.
+ * @param {boolean} [hideSelection] Completely hide the selection
+ * @fires activation
  */
-ve.ce.Surface.prototype.deactivate = function ( deactivatedForCopy ) {
-	this.deactivatedForCopy = !!deactivatedForCopy;
+ve.ce.Surface.prototype.deactivate = function ( showAsActivated, noSelectionChange, hideSelection ) {
+	this.showAsActivated = showAsActivated === undefined || !!showAsActivated;
+	this.hideSelection = hideSelection;
 	if ( !this.deactivated ) {
 		// Disable the surface observer, there can be no observable changes
 		// until the surface is activated
 		this.surfaceObserver.disable();
 		this.deactivated = true;
+		this.previousActiveAnnotations = this.activeAnnotations;
 		this.checkDelayedSequences();
+		this.$element.addClass( 've-ce-surface-deactivated' );
 		// Remove ranges so the user can't accidentally type into the document,
 		// and so virtual keyboards are hidden.
-		this.removeRangesAndBlur();
+		if ( !noSelectionChange ) {
+			this.removeRangesAndBlur();
+		}
 		this.updateDeactivatedSelection();
 		this.clearKeyDownState();
+		this.emit( 'activation' );
 	}
 };
 
 /**
  * Reactivate the surface and restore the native selection
+ *
+ * @fires activation
  */
 ve.ce.Surface.prototype.activate = function () {
+	var previousSelection, newSelection, annotationClasses;
 	if ( this.deactivated ) {
 		this.deactivated = false;
-		this.deactivatedForCopy = false;
+		this.showAsActivated = false;
+		this.hideSelection = false;
 		this.updateDeactivatedSelection();
 		this.surfaceObserver.enable();
+		this.$element.removeClass( 've-ce-surface-deactivated' );
+		if ( OO.ui.isMobile() ) {
+			// Activating triggers a context hide on mobile
+			this.model.emit( 'contextChange' );
+		}
+
+		previousSelection = this.getModel().getSelection();
+
 		if ( OO.ui.contains( this.$attachedRootNode[ 0 ], this.nativeSelection.anchorNode, true ) ) {
 			// The selection has been placed back in the document, either by the user clicking
 			// or by the closing window updating the model. Poll in case it was the user clicking.
@@ -703,6 +754,30 @@ ve.ce.Surface.prototype.activate = function () {
 			this.focusedNode = null;
 			this.onModelSelect();
 		}
+
+		newSelection = this.getModel().getSelection();
+
+		if (
+			previousSelection.getCoveringRange() &&
+			newSelection.getCoveringRange() &&
+			previousSelection.getCoveringRange().containsRange(
+				newSelection.getCoveringRange()
+			)
+		) {
+			// If the user reactivates by clicking on their previous selection, use that selection.
+			this.getModel().setSelection( previousSelection );
+			// Restore active annotations
+			if ( this.previousActiveAnnotations.length ) {
+				annotationClasses = this.previousActiveAnnotations.map( function ( ann ) {
+					return ann.constructor;
+				} );
+				this.selectAnnotation( function ( view ) {
+					return ve.isInstanceOfAny( view, annotationClasses );
+				} );
+			}
+		}
+
+		this.emit( 'activation' );
 	}
 };
 
@@ -712,26 +787,42 @@ ve.ce.Surface.prototype.activate = function () {
  * While the surface is deactivated, all calls to showModelSelection will get redirected here.
  */
 ve.ce.Surface.prototype.updateDeactivatedSelection = function () {
-	var i, l, rects,
-		selection = this.getSelection();
+	var rects, textColor, currentNode,
+		surface = this,
+		selection = this.getSelection(),
+		isCollapsed = selection.getModel().isCollapsed();
 
 	this.$deactivatedSelection.empty();
 
 	// Check we have a deactivated surface and a native selection
-	if ( this.deactivated && selection.isNativeCursor() ) {
+	if ( this.deactivated && selection.isNativeCursor() && !this.hideSelection ) {
+		if ( isCollapsed ) {
+			currentNode = this.getDocument().getBranchNodeFromOffset(
+				selection.getModel().getCoveringRange().start
+			);
+			if ( currentNode ) {
+				// This isn't perfect as it doesn't take into account annotations.
+				textColor = currentNode.$element.css( 'color' );
+			}
+		}
 		rects = selection.getSelectionRects();
 		if ( rects ) {
-			for ( i = 0, l = rects.length; i < l; i++ ) {
-				this.$deactivatedSelection.append(
-					$( '<div>' ).css( {
-						top: rects[ i ].top,
-						left: rects[ i ].left,
-						// Collapsed selections can have a width of 0, so expand
-						width: Math.max( rects[ i ].width, 1 ),
-						height: rects[ i ].height
-					} )
-				).toggleClass( 've-ce-surface-deactivatedSelection-collapsed', selection.getModel().isCollapsed() );
-			}
+			rects.forEach( function ( rect ) {
+				var $rect = $( '<div>' ).css( {
+					top: rect.top,
+					left: rect.left,
+					// Collapsed selections can have a width of 0, so expand
+					width: Math.max( rect.width, 1 ),
+					height: rect.height
+				} );
+				if ( textColor ) {
+					$rect.css( 'background-color', textColor );
+				}
+				surface.$deactivatedSelection.append( $rect );
+			} );
+			this.$deactivatedSelection
+				.toggleClass( 've-ce-surface-deactivatedSelection-showAsDeactivated', this.isShownAsDeactivated() )
+				.toggleClass( 've-ce-surface-deactivatedSelection-collapsed', isCollapsed );
 		}
 	}
 };
@@ -741,7 +832,6 @@ ve.ce.Surface.prototype.updateDeactivatedSelection = function () {
  *
  * This is triggered by a global focusin/focusout event noticing a selection on the document.
  *
- * @method
  * @fires focus
  */
 ve.ce.Surface.prototype.onDocumentFocus = function () {
@@ -763,10 +853,15 @@ ve.ce.Surface.prototype.onDocumentFocus = function () {
  *
  * This is triggered by a global focusin/focusout event noticing no selection on the document.
  *
- * @method
  * @fires blur
  */
 ve.ce.Surface.prototype.onDocumentBlur = function () {
+	var nullSelectionOnBlur = this.surface.nullSelectionOnBlur;
+	if ( !nullSelectionOnBlur ) {
+		// Set noSelectionChange as we already know the selection has left
+		// the document and we don't want #deactivate to move it again.
+		this.deactivate( false, true );
+	}
 	this.eventSequencer.detach();
 	this.surfaceObserver.stopTimerLoop();
 	this.surfaceObserver.pollOnce();
@@ -775,11 +870,13 @@ ve.ce.Surface.prototype.onDocumentBlur = function () {
 	this.onDocumentSelectionChange();
 	this.setDragging( false );
 	this.focused = false;
-	if ( this.focusedNode ) {
-		this.focusedNode.setFocused( false );
-		this.focusedNode = null;
+	if ( nullSelectionOnBlur ) {
+		if ( this.focusedNode ) {
+			this.focusedNode.setFocused( false );
+			this.focusedNode = null;
+		}
+		this.getModel().setNullSelection();
 	}
-	this.getModel().setNullSelection();
 	this.$element.removeClass( 've-ce-surface-focused' );
 	this.emit( 'blur' );
 };
@@ -796,13 +893,61 @@ ve.ce.Surface.prototype.isFocused = function () {
 /**
  * Handle document mouse down events.
  *
- * @method
  * @param {jQuery.Event} e Mouse down event
  */
 ve.ce.Surface.prototype.onDocumentMouseDown = function ( e ) {
-	var newFragment;
+	var newFragment, contexedAnnotations, offset, node,
+		surface = this;
+
 	if ( e.which !== OO.ui.MouseButtons.LEFT ) {
 		return;
+	}
+
+	function isContexedNode( view ) {
+		return surface.surface.context.getRelatedSourcesFromModels( [ view.model ] ).length;
+	}
+
+	offset = this.getOffsetFromEventCoords( e );
+	if ( offset !== -1 ) {
+		contexedAnnotations = this.annotationsAtNode( e.target, isContexedNode );
+		if ( contexedAnnotations.length ) {
+			// Store target node for use in updateActiveAnnotations
+			node = e.target;
+		} else {
+			// Occasionally on iOS, e.target is outside the to-be focused annotation, so check
+			// using the model offset as well.
+			contexedAnnotations = this.annotationsAtModelSelection( isContexedNode, offset );
+		}
+		if ( OO.ui.isMobile() ) {
+			if (
+				// The user has clicked on contexed annotations and ...
+				contexedAnnotations.length && (
+					// ... was previously on a focusable node or ...
+					this.focusedNode ||
+					// ... previously had different annotations selected ...
+					!(
+						// Shallow strict equality check
+						this.contexedAnnotations.length === contexedAnnotations.length &&
+						this.contexedAnnotations.every( function ( ann, i ) {
+							return ann === contexedAnnotations[ i ];
+						} )
+					)
+				)
+			) {
+				setTimeout( function () {
+					surface.getModel().setLinearSelection( new ve.Range( offset ) );
+					// HACK: Re-activate flag so selection is repositioned
+					surface.activate();
+					surface.deactivate( false, false, true );
+					// Use the clicked node if it produced results, otherwise use 'fromModel' mode.
+					surface.updateActiveAnnotations( node || true );
+				} );
+				this.contexedAnnotations = contexedAnnotations;
+				e.preventDefault();
+				return;
+			}
+		}
+		this.contexedAnnotations = contexedAnnotations;
 	}
 
 	// Remember the mouse is down
@@ -851,17 +996,39 @@ ve.ce.Surface.prototype.onDocumentMouseDown = function ( e ) {
  * @param {ve.ce.Selection} selectionBefore Selection before the mouse event
  */
 ve.ce.Surface.prototype.afterDocumentMouseDown = function ( e, selectionBefore ) {
+	var scrollTop,
+		view = this;
+
 	// TODO: guard with incRenderLock?
 	this.surfaceObserver.pollOnce();
 	if ( e.shiftKey ) {
 		this.fixShiftClickSelect( selectionBefore );
+	}
+
+	function blockScroll() {
+		view.$window.scrollTop( scrollTop );
+	}
+
+	if ( OO.ui.isMobile() && $.client.profile().layout === 'gecko' ) {
+		// Support: Firefox Mobile
+		// Firefox scrolls back to the top of the page *every time*
+		// you tap on the CE document. This makes things slightly
+		// more usable by restoring your scroll offset every time
+		// the page scrolls for the next 1000ms.
+		// The page will still flicker every time the user touches
+		// to place the cursor, but this is better than completely
+		// losing your scroll offset.
+		scrollTop = this.$window.scrollTop();
+		view.$window.on( 'scroll', blockScroll );
+		setTimeout( function () {
+			view.$window.off( 'scroll', blockScroll );
+		}, 1000 );
 	}
 };
 
 /**
  * Handle document mouse up events.
  *
- * @method
  * @param {jQuery.Event} e Mouse up event
  */
 ve.ce.Surface.prototype.onDocumentMouseUp = function ( e ) {
@@ -932,7 +1099,6 @@ ve.ce.Surface.prototype.setDragging = function ( dragging ) {
 /**
  * Handle document selection change events.
  *
- * @method
  * @param {jQuery.Event} e Selection change event
  */
 ve.ce.Surface.prototype.onDocumentSelectionChange = function () {
@@ -949,7 +1115,6 @@ ve.ce.Surface.prototype.onDocumentSelectionChange = function () {
 /**
  * Handle document drag start events.
  *
- * @method
  * @param {jQuery.Event} e Drag start event
  * @fires relocationStart
  */
@@ -961,7 +1126,6 @@ ve.ce.Surface.prototype.onDocumentDragStart = function ( e ) {
 /**
  * Handle document drag over events.
  *
- * @method
  * @param {jQuery.Event} e Drag over event
  */
 ve.ce.Surface.prototype.onDocumentDragOver = function ( e ) {
@@ -970,6 +1134,10 @@ ve.ce.Surface.prototype.onDocumentDragOver = function ( e ) {
 		dataTransferHandlerFactory = this.getSurface().dataTransferHandlerFactory,
 		isContent = true,
 		dataTransfer = e.originalEvent.dataTransfer;
+
+	if ( this.readOnly ) {
+		return;
+	}
 
 	if ( this.relocatingNode ) {
 		isContent = this.relocatingNode.isContent();
@@ -1085,7 +1253,6 @@ ve.ce.Surface.prototype.onDocumentDragOver = function ( e ) {
 /**
  * Handle document drag leave events.
  *
- * @method
  * @param {jQuery.Event} e Drag leave event
  */
 ve.ce.Surface.prototype.onDocumentDragLeave = function () {
@@ -1102,7 +1269,6 @@ ve.ce.Surface.prototype.onDocumentDragLeave = function () {
  *
  * Limits native drag and drop behaviour.
  *
- * @method
  * @param {jQuery.Event} e Drop event
  * @fires relocationEnd
  */
@@ -1204,7 +1370,6 @@ ve.ce.Surface.prototype.onDocumentDrop = function ( e ) {
 /**
  * Handle document key down events.
  *
- * @method
  * @param {jQuery.Event} e Key down event
  */
 ve.ce.Surface.prototype.onDocumentKeyDown = function ( e ) {
@@ -1285,7 +1450,6 @@ ve.ce.Surface.prototype.onDocumentKeyDown = function ( e ) {
  * command has been blacklisted), we should still preventDefault so ContentEditable
  * native commands don't occur, leaving the view out of sync with the model.
  *
- * @method
  * @param {ve.ui.Trigger} trigger Trigger to check
  * @return {boolean} Trigger should preventDefault
  */
@@ -1302,7 +1466,6 @@ ve.ce.Surface.prototype.isBlockedTrigger = function ( trigger ) {
 /**
  * Handle document key press events.
  *
- * @method
  * @param {jQuery.Event} e Key press event
  */
 ve.ce.Surface.prototype.onDocumentKeyPress = function ( e ) {
@@ -1491,7 +1654,9 @@ ve.ce.Surface.prototype.afterDocumentKeyDown = function ( e ) {
 	// (which, for a table, will select the first cell). Else if we arrowed a collapsed
 	// cursor across a focusable node, select the node instead.
 	$focusNode = $( this.nativeSelection.focusNode );
+	// eslint-disable-next-line no-jquery/no-class-state
 	if ( $focusNode.hasClass( 've-ce-cursorHolder' ) ) {
+		// eslint-disable-next-line no-jquery/no-class-state
 		if ( $focusNode.hasClass( 've-ce-cursorHolder-after' ) ) {
 			direction = -1;
 			focusableNode = $focusNode.prev().data( 'view' );
@@ -1713,7 +1878,6 @@ ve.ce.Surface.prototype.cleanupUnicorns = function ( fixupCursor ) {
 /**
  * Handle document key up events.
  *
- * @method
  * @param {jQuery.Event} e Key up event
  * @fires keyup
  */
@@ -1724,7 +1888,6 @@ ve.ce.Surface.prototype.onDocumentKeyUp = function () {
 /**
  * Handle cut events.
  *
- * @method
  * @param {jQuery.Event} e Cut event
  */
 ve.ce.Surface.prototype.onCut = function ( e ) {
@@ -1747,7 +1910,6 @@ ve.ce.Surface.prototype.onCut = function ( e ) {
 /**
  * Handle copy events.
  *
- * @method
  * @param {jQuery.Event} e Copy event
  */
 ve.ce.Surface.prototype.onCopy = function ( e ) {
@@ -1779,6 +1941,7 @@ ve.ce.Surface.prototype.onCopy = function ( e ) {
 	// When paste has no text content browsers do extreme normalization…
 	if ( this.$pasteTarget.text() === '' ) {
 		// …so put nbsp's in empty leaves
+		// eslint-disable-next-line no-jquery/no-sizzle
 		this.$pasteTarget.find( '*:not( :has( * ) )' ).html( '&nbsp;' );
 	}
 
@@ -2123,7 +2286,7 @@ ve.ce.Surface.prototype.afterPasteExtractClipboardData = function () {
 	} else {
 		if ( beforePasteData.html ) {
 			// text/html was present, so we can check if a key was hidden in it
-			$clipboardHtml = $( $.parseHTML( beforePasteData.html ) ).filter( function () {
+			$clipboardHtml = $( ve.sanitizeHtml( beforePasteData.html ) ).filter( function () {
 				var val = this.getAttribute && this.getAttribute( 'data-ve-clipboard-key' );
 				if ( val ) {
 					clipboardKey = val;
@@ -2157,7 +2320,7 @@ ve.ce.Surface.prototype.afterPasteExtractClipboardData = function () {
 	}
 
 	if ( !slice && !$clipboardHtml && beforePasteData.html ) {
-		$clipboardHtml = $( $.parseHTML( beforePasteData.html ) );
+		$clipboardHtml = $( ve.sanitizeHtml( beforePasteData.html ) );
 	}
 
 	return {
@@ -2303,7 +2466,7 @@ ve.ce.Surface.prototype.afterPasteAddToFragmentFromExternal = function ( clipboa
 			$clipboardHtml.find( importantElement ).addBack( importantElement ).length > this.$pasteTarget.find( importantElement ).length
 		) {
 			// CE destroyed an important element, so revert to using clipboard data
-			htmlDoc = ve.createDocumentFromHtml( beforePasteData.html );
+			htmlDoc = ve.sanitizeHtmlToDocument( beforePasteData.html );
 			$( htmlDoc )
 				// Remove the pasteProtect class. See #onCopy.
 				.find( 'span' ).removeClass( 've-pasteProtect' ).end()
@@ -2319,7 +2482,7 @@ ve.ce.Surface.prototype.afterPasteAddToFragmentFromExternal = function ( clipboa
 		// contain all sorts of horrible metadata (head tags etc.)
 		// TODO: IE will always take this path, and so may have bugs with span unwrapping
 		// in edge cases (e.g. pasting a single MWReference)
-		htmlDoc = ve.createDocumentFromHtml( this.$pasteTarget.html() );
+		htmlDoc = ve.sanitizeHtmlToDocument( this.$pasteTarget.html() );
 	}
 	// Some browsers don't provide pasted image data through the clipboardData API and
 	// instead create img tags with data URLs, so detect those here
@@ -2360,13 +2523,17 @@ ve.ce.Surface.prototype.afterPasteAddToFragmentFromExternal = function ( clipboa
 	htmlBlacklist = ve.getProp( this.afterPasteImportRules( isMultiline ), 'external', 'htmlBlacklist' );
 	if ( htmlBlacklist && !clipboardKey ) {
 		if ( htmlBlacklist.remove ) {
-			htmlBlacklist.remove.forEach( function ( selector ) {
-				$( htmlDoc.body ).find( selector ).remove();
+			Object.keys( htmlBlacklist.remove ).forEach( function ( selector ) {
+				if ( htmlBlacklist.remove[ selector ] ) {
+					$( htmlDoc.body ).find( selector ).remove();
+				}
 			} );
 		}
 		if ( htmlBlacklist.unwrap ) {
-			htmlBlacklist.unwrap.forEach( function ( selector ) {
-				$( htmlDoc.body ).find( selector ).contents().unwrap();
+			Object.keys( htmlBlacklist.unwrap ).forEach( function ( selector ) {
+				if ( htmlBlacklist.unwrap[ selector ] ) {
+					$( htmlDoc.body ).find( selector ).contents().unwrap();
+				}
 			} );
 		}
 	}
@@ -2742,10 +2909,23 @@ ve.ce.Surface.prototype.handleDataTransferItems = function ( items, isPaste, tar
 	targetFragment = targetFragment || this.getModel().getFragment();
 
 	function insert( docOrData ) {
+		var resultFragment, rootChildren;
 		// For non-paste transfers, don't overwrite the selection
-		var resultFragment = !isPaste ? targetFragment.collapseToEnd() : targetFragment;
+		resultFragment = !isPaste ? targetFragment.collapseToEnd() : targetFragment;
 		if ( docOrData instanceof ve.dm.Document ) {
-			resultFragment.insertDocument( docOrData );
+			rootChildren = docOrData.getDocumentNode().children;
+			if (
+				rootChildren[ 0 ] &&
+				rootChildren[ 0 ].type === 'paragraph' &&
+				( !rootChildren[ 1 ] || rootChildren[ 1 ].type === 'internalList' )
+			) {
+				resultFragment.insertDocument(
+					docOrData,
+					rootChildren[ 0 ].getRange()
+				);
+			} else {
+				resultFragment.insertDocument( docOrData );
+			}
 		} else {
 			resultFragment.insertContent( docOrData );
 		}
@@ -2805,7 +2985,6 @@ ve.ce.Surface.prototype.selectAll = function () {
 /**
  * Handle input events.
  *
- * @method
  * @param {jQuery.Event} e The input event
  */
 ve.ce.Surface.prototype.onDocumentInput = function ( e ) {
@@ -2836,7 +3015,6 @@ ve.ce.Surface.prototype.onDocumentInput = function ( e ) {
  * Handle compositionstart events.
  * Note that their meaning varies between browser/OS/IME combinations
  *
- * @method
  * @param {jQuery.Event} e The compositionstart event
  */
 ve.ce.Surface.prototype.onDocumentCompositionStart = function () {
@@ -2897,9 +3075,9 @@ ve.ce.Surface.prototype.onModelSelect = function () {
 
 		focusedNode = this.findFocusedNode( selection.getRange() );
 
-		if ( this.deactivatedForCopy && !blockSlug && !focusedNode ) {
-			// If preparePasteTargetForCopy deactivated the surface then
-			// reactivate it here (no-op if already active). See T147304
+		if ( this.isDeactivated() && !this.isShownAsDeactivated() && !blockSlug && !focusedNode ) {
+			// If deactivated without showing (e.g. by preparePasteTargetForCopy),
+			// reactivate when changing selection (T221291)
 			this.activate();
 		}
 
@@ -2921,8 +3099,6 @@ ve.ce.Surface.prototype.onModelSelect = function () {
 					// in exactly the same place where it was before, the observer won't consider that a change.
 					this.surfaceObserver.clear();
 				}
-				// If the node is outside the view, scroll to it
-				ve.scrollIntoView( this.focusedNode.$element.get( 0 ) );
 			}
 		}
 	} else {
@@ -3495,7 +3671,7 @@ ve.ce.Surface.prototype.onWindowResize = function () {
 		// Either way, ensure the cursor is still visible (T204388).
 		// On iOS, window is resized whenever you start scrolling down and the "address bar" is
 		// minimized. So don't scroll back up…
-		this.getSurface().scrollCursorIntoView();
+		this.getSurface().scrollSelectionIntoView();
 	}
 };
 
@@ -3877,7 +4053,6 @@ ve.ce.Surface.prototype.getViewportRange = function () {
 /**
  * Apply a DM selection to the DOM, even if the old DOM selection is different but DM-equivalent
  *
- * @method
  * @return {boolean} Whether the selection actually changed
  */
 ve.ce.Surface.prototype.forceShowModelSelection = function () {
@@ -3887,7 +4062,6 @@ ve.ce.Surface.prototype.forceShowModelSelection = function () {
 /**
  * Apply a DM selection to the DOM
  *
- * @method
  * @param {boolean} [force] Replace the DOM selection if it is different but DM-equivalent
  * @return {boolean} Whether the selection actually changed
  */
@@ -3901,33 +4075,41 @@ ve.ce.Surface.prototype.showModelSelection = function ( force ) {
 	}
 
 	selection = this.getSelection();
-	if ( !selection.isNativeCursor() || this.focusedBlockSlug ) {
-		// Model selection is an emulated selection (e.g. table). The view is certain to
-		// match it already, because there is no way to change the view selection when
-		// an emulated selection is showing.
-		return false;
-	}
-	modelRange = selection.getModel().getRange();
-	if ( !force && this.$attachedRootNode.get( 0 ).contains(
-		this.nativeSelection.focusNode
-	) ) {
-		// See whether the model range implied by the DOM selection is already equal to
-		// the actual model range. This is necessary because one model selection can
-		// correspond to many DOM selections, and we don't want to change a DOM
-		// selection that is already valid to an arbitrary different DOM selection.
-		impliedModelRange = new ve.Range(
-			ve.ce.getOffset(
-				this.nativeSelection.anchorNode,
-				this.nativeSelection.anchorOffset
-			),
-			ve.ce.getOffset(
-				this.nativeSelection.focusNode,
-				this.nativeSelection.focusOffset
-			)
-		);
-		if ( modelRange.equals( impliedModelRange ) ) {
-			// Current native selection fits model range; don't change
+	if ( selection.getModel().isNull() ) {
+		if ( !this.nativeSelection.rangeCount ) {
+			// Native selection is already null
 			return false;
+		}
+		modelRange = null;
+	} else {
+		if ( !selection.isNativeCursor() || this.focusedBlockSlug ) {
+			// Model selection is an emulated selection (e.g. table). The view is certain to
+			// match it already, because there is no way to change the view selection when
+			// an emulated selection is showing.
+			return false;
+		}
+		modelRange = selection.getModel().getRange();
+		if ( !force && this.$attachedRootNode.get( 0 ).contains(
+			this.nativeSelection.focusNode
+		) ) {
+			// See whether the model range implied by the DOM selection is already equal to
+			// the actual model range. This is necessary because one model selection can
+			// correspond to many DOM selections, and we don't want to change a DOM
+			// selection that is already valid to an arbitrary different DOM selection.
+			impliedModelRange = new ve.Range(
+				ve.ce.getOffset(
+					this.nativeSelection.anchorNode,
+					this.nativeSelection.anchorOffset
+				),
+				ve.ce.getOffset(
+					this.nativeSelection.focusNode,
+					this.nativeSelection.focusOffset
+				)
+			);
+			if ( modelRange.equals( impliedModelRange ) ) {
+				// Current native selection fits model range; don't change
+				return false;
+			}
 		}
 	}
 	changed = this.showSelectionState( this.getSelectionState( modelRange ) );
@@ -4033,11 +4215,25 @@ ve.ce.Surface.prototype.showSelectionState = function ( selection ) {
  * defined at annotation boundaries, except for links which use nails.
  *
  * Also the order of .activeAnnotations may not be well defined.
+ *
+ * @param {boolean|Node} [fromModelOrNode] If `true`, gather annotations from the model,
+ *  instead of the cusor focus point. If a Node is passed, gather annotations from that node.
  */
-ve.ce.Surface.prototype.updateActiveAnnotations = function () {
-	var changed = false,
+ve.ce.Surface.prototype.updateActiveAnnotations = function ( fromModelOrNode ) {
+	var activeAnnotations,
+		changed = false,
 		surface = this,
-		activeAnnotations = this.annotationsAtFocus();
+		canBeActive = function ( view ) {
+			return view.canBeActive();
+		};
+
+	if ( fromModelOrNode === true ) {
+		activeAnnotations = this.annotationsAtModelSelection( canBeActive );
+	} else if ( fromModelOrNode instanceof Node ) {
+		activeAnnotations = this.annotationsAtNode( fromModelOrNode, canBeActive );
+	} else {
+		activeAnnotations = this.annotationsAtFocus( canBeActive );
+	}
 
 	// Iterate over previously active annotations
 	this.activeAnnotations.forEach( function ( annotation ) {
@@ -4067,15 +4263,21 @@ ve.ce.Surface.prototype.updateActiveAnnotations = function () {
  * Update the selection to contain the contents of a node
  *
  * @param {HTMLElement} node
+ * @param {string} [collapse] Collaspse to 'start' or 'end'
  * @return {boolean} Whether the selection changed
  */
-ve.ce.Surface.prototype.selectNodeContents = function ( node ) {
+ve.ce.Surface.prototype.selectNodeContents = function ( node, collapse ) {
 	var anchor, focus;
 	if ( !node ) {
 		return false;
 	}
 	anchor = ve.ce.nextCursorOffset( node.childNodes[ 0 ] );
 	focus = ve.ce.previousCursorOffset( node.childNodes[ node.childNodes.length - 1 ] );
+	if ( collapse === 'start' ) {
+		focus = anchor;
+	} else if ( collapse === 'end' ) {
+		anchor = focus;
+	}
 	return this.showSelectionState( new ve.SelectionState( {
 		anchorNode: anchor.node,
 		anchorOffset: anchor.offset, // Past the nail
@@ -4086,15 +4288,79 @@ ve.ce.Surface.prototype.selectNodeContents = function ( node ) {
 };
 
 /**
+ * Select the inner contents of the closest annotation
+ *
+ * @param {Function} [filter] Function to filter view nodes by.
+ */
+ve.ce.Surface.prototype.selectAnnotation = function ( filter ) {
+	var annotations = this.annotationsAtModelSelection( filter );
+
+	if ( annotations.length ) {
+		this.selectNodeContents( annotations[ 0 ].$element[ 0 ] );
+	}
+};
+
+/**
+ * Get the annotation views at the current model selection
+ *
+ * TODO: This doesn't work for annotations that span fewer
+ * than one character, as getNodeAndOffset will never return
+ * an offset inside that annotation.
+ *
+ * @param {Function} [filter] Function to filter view nodes by.
+ * @param {number} [offset] Model offset. Defaults to start of current selection.
+ * @return {ve.ce.Annotation[]} Annotation views
+ */
+ve.ce.Surface.prototype.annotationsAtModelSelection = function ( filter, offset ) {
+	var nodeAndOffset,
+		annotations = [],
+		documentRange = this.getModel().getDocument().getDocumentRange();
+
+	if ( offset === undefined ) {
+		offset = this.getModel().getSelection().getCoveringRange().start;
+	}
+
+	// TODO: For annotation boundaries we have to search one place left and right
+	// to find the text inside the annotation. This will give too many results for
+	// adjancent annotations, and will fail for one character annotations. (T221967)
+	if ( offset > documentRange.start ) {
+		nodeAndOffset = this.getDocument().getNodeAndOffset( offset - 1 );
+		annotations = nodeAndOffset ? this.annotationsAtNode( nodeAndOffset.node, filter ) : [];
+	}
+
+	if ( offset < documentRange.end ) {
+		nodeAndOffset = this.getDocument().getNodeAndOffset( offset + 1 );
+		annotations = OO.unique( annotations.concat( nodeAndOffset ? this.annotationsAtNode( nodeAndOffset.node, filter ) : [] ) );
+	}
+
+	return annotations;
+};
+
+/**
  * Get the annotation views containing the cursor focus
  *
- * @return {ve.ce.Annotation[]} The annotations containing the focus
+ * @param {Function} [filter] Function to filter view nodes by.
+ * @return {ve.ce.Annotation[]} Annotation views
  */
-ve.ce.Surface.prototype.annotationsAtFocus = function () {
+ve.ce.Surface.prototype.annotationsAtFocus = function ( filter ) {
+	return this.annotationsAtNode( this.nativeSelection.focusNode, filter );
+};
+
+/**
+ * Get the annotation views containing the cursor focus
+ *
+ * Only returns annotations which can be active.
+ *
+ * @param {Node} node Node at which to search for annotations
+ * @param {Function} [filter] Function to filter view nodes by. Takes one argument which
+ *  is the view node and returns a boolean.
+ * @return {ve.ce.Annotation[]} Annotation views
+ */
+ve.ce.Surface.prototype.annotationsAtNode = function ( node, filter ) {
 	var annotations = [];
-	$( this.nativeSelection.focusNode ).parents( '.ve-ce-annotation' ).addBack( '.ve-ce-annotation' ).each( function () {
+	$( node ).parents( '.ve-ce-annotation' ).addBack( '.ve-ce-annotation' ).each( function () {
 		var view = $( this ).data( 'view' );
-		if ( view && view.canBeActive() ) {
+		if ( view && ( !filter || filter( view ) ) ) {
 			annotations.push( view );
 		}
 	} );
@@ -4109,8 +4375,7 @@ ve.ce.Surface.prototype.annotationsAtFocus = function () {
  * collapsedness; for a non-collapsed selection, the adjustment is in the direction that
  * grows the selection (thereby avoiding collapsing or reversing the selection).
  *
- * @method
- * @param {ve.Range} range Range to get selection for
+ * @param {ve.Range|null} range Range to get selection for
  * @return {ve.SelectionState} The selection
  * @return {Node|null} return.anchorNode The anchor node
  * @return {number} return.anchorOffset The anchor offset
@@ -4123,13 +4388,21 @@ ve.ce.Surface.prototype.getSelectionState = function ( range ) {
 	var anchor, focus, from, to,
 		dmDoc = this.getModel().getDocument();
 
+	if ( !range ) {
+		return ve.SelectionState.static.newNullSelection();
+	}
+
 	// Anchor/focus at the nearest correct position in the direction that
 	// grows the selection.
 	from = dmDoc.getNearestCursorOffset( range.from, range.isBackwards() ? 1 : -1 );
 	if ( from === -1 ) {
 		return ve.SelectionState.static.newNullSelection();
 	}
-	anchor = this.documentView.getNodeAndOffset( from );
+	try {
+		anchor = this.documentView.getNodeAndOffset( from );
+	} catch ( e ) {
+		return ve.SelectionState.static.newNullSelection();
+	}
 	if ( range.isCollapsed() ) {
 		focus = anchor;
 	} else {
@@ -4137,7 +4410,11 @@ ve.ce.Surface.prototype.getSelectionState = function ( range ) {
 		if ( to === -1 ) {
 			return ve.SelectionState.static.newNullSelection();
 		}
-		focus = this.documentView.getNodeAndOffset( to );
+		try {
+			focus = this.documentView.getNodeAndOffset( to );
+		} catch ( e ) {
+			return ve.SelectionState.static.newNullSelection();
+		}
 	}
 	return new ve.SelectionState( {
 		anchorNode: anchor.node,
@@ -4173,7 +4450,6 @@ ve.ce.Surface.prototype.getNativeRange = function ( range ) {
 /**
  * Append passed highlights to highlight container.
  *
- * @method
  * @param {jQuery} $highlights Highlights to append
  * @param {boolean} focused Highlights are currently focused
  */
@@ -4194,7 +4470,6 @@ ve.ce.Surface.prototype.appendHighlights = function ( $highlights, focused ) {
 /**
  * Get the top-level surface.
  *
- * @method
  * @return {ve.ui.Surface} Surface
  */
 ve.ce.Surface.prototype.getSurface = function () {
@@ -4204,7 +4479,6 @@ ve.ce.Surface.prototype.getSurface = function () {
 /**
  * Get the surface model.
  *
- * @method
  * @return {ve.dm.Surface} Surface model
  */
 ve.ce.Surface.prototype.getModel = function () {
@@ -4214,7 +4488,6 @@ ve.ce.Surface.prototype.getModel = function () {
 /**
  * Get the document view.
  *
- * @method
  * @return {ve.ce.Document} Document view
  */
 ve.ce.Surface.prototype.getDocument = function () {
@@ -4224,7 +4497,6 @@ ve.ce.Surface.prototype.getDocument = function () {
 /**
  * Check whether there are any render locks
  *
- * @method
  * @return {boolean} Render is locked
  */
 ve.ce.Surface.prototype.isRenderingLocked = function () {
@@ -4233,8 +4505,6 @@ ve.ce.Surface.prototype.isRenderingLocked = function () {
 
 /**
  * Add a single render lock (to disable rendering)
- *
- * @method
  */
 ve.ce.Surface.prototype.incRenderLock = function () {
 	this.renderLocks++;
@@ -4242,8 +4512,6 @@ ve.ce.Surface.prototype.incRenderLock = function () {
 
 /**
  * Remove a single render lock
- *
- * @method
  */
 ve.ce.Surface.prototype.decRenderLock = function () {
 	this.renderLocks--;
@@ -4266,7 +4534,6 @@ ve.ce.Surface.prototype.afterRenderLock = function ( callback ) {
  *
  * This avoids event storms when the CE surface is already correct
  *
- * @method
  * @param {ve.dm.Transaction|ve.dm.Transaction[]|null} transactions One or more transactions to
  * process, or null to process none
  * @param {ve.dm.Selection} selection New selection
@@ -4380,13 +4647,17 @@ ve.ce.Surface.prototype.getSelectedModels = function () {
 		return view.getModel();
 	} );
 
-	return models.filter( function ( annModel ) {
-		// If the model is an annotation that can be active, only show it if it *is* active
-		if ( annModel instanceof ve.dm.Annotation && ve.ce.annotationFactory.canAnnotationBeActive( annModel.getType() ) ) {
-			return activeModels.indexOf( annModel ) !== -1;
-		}
-		return true;
-	} );
+	if ( this.model.sourceMode ) {
+		return models;
+	} else {
+		return models.filter( function ( annModel ) {
+			// If the model is an annotation that can be active, only show it if it *is* active
+			if ( annModel instanceof ve.dm.Annotation && ve.ce.annotationFactory.canAnnotationBeActive( annModel.getType() ) ) {
+				return activeModels.indexOf( annModel ) !== -1;
+			}
+			return true;
+		} );
+	}
 };
 
 /**
@@ -4515,15 +4786,17 @@ ve.ce.Surface.prototype.paintAuthor = function ( authorId ) {
  */
 ve.ce.Surface.prototype.onPosition = function () {
 	var surface = this;
-	if ( !this.model.synchronizer ) {
-		return;
+
+	this.updateDeactivatedSelection();
+
+	if ( this.model.synchronizer ) {
+		// Defer to allow surface synchronizer to adjust for transactions
+		setTimeout( function () {
+			var authorId,
+				authorSelections = surface.model.synchronizer.authorSelections;
+			for ( authorId in authorSelections ) {
+				surface.onSynchronizerAuthorUpdate( +authorId );
+			}
+		} );
 	}
-	// Defer to allow surface synchronizer to adjust for transactions
-	setTimeout( function () {
-		var authorId,
-			authorSelections = surface.model.synchronizer.authorSelections;
-		for ( authorId in authorSelections ) {
-			surface.onSynchronizerAuthorUpdate( +authorId );
-		}
-	} );
 };

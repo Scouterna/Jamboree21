@@ -73,6 +73,18 @@ ve.init.mw.ArticleTargetEvents.prototype.trackTiming = function ( topic, data ) 
 };
 
 /**
+ * Track when the user makes their first transaction
+ */
+ve.init.mw.ArticleTargetEvents.prototype.onFirstTransaction = function () {
+	this.track( 'mwedit.firstChange' );
+
+	this.trackTiming( 'behavior.firstTransaction', {
+		duration: ve.now() - this.timings.surfaceReady,
+		mode: this.target.surface.getMode()
+	} );
+};
+
+/**
  * Track when user begins the save workflow
  */
 ve.init.mw.ArticleTargetEvents.prototype.onSaveWorkflowBegin = function () {
@@ -106,9 +118,16 @@ ve.init.mw.ArticleTargetEvents.prototype.onSaveInitiated = function () {
 /**
  * Track when the save is complete
  *
- * @param {string} content
- * @param {string} categoriesHtml
- * @param {number} newRevId
+ * @param {string} content Rendered page HTML from server
+ * @param {string} categoriesHtml Rendered categories HTML from server
+ * @param {number} newRevId New revision id, undefined if unchanged
+ * @param {boolean} isRedirect Whether this page is a redirect or not
+ * @param {string} displayTitle What HTML to show as the page title
+ * @param {Object} lastModified Object containing user-formatted date
+ *  and time strings, or undefined if we made no change.
+ * @param {string} contentSub HTML to show as the content subtitle
+ * @param {Array} modules The modules to be loaded on the page
+ * @param {Object} jsconfigvars The mw.config values needed on the page
  */
 ve.init.mw.ArticleTargetEvents.prototype.onSaveComplete = function ( content, categoriesHtml, newRevId ) {
 	this.trackTiming( 'performance.user.saveComplete', { duration: ve.now() - this.timings.saveInitiated } );
@@ -123,7 +142,6 @@ ve.init.mw.ArticleTargetEvents.prototype.onSaveComplete = function ( content, ca
 /**
  * Track a save error by type
  *
- * @method
  * @param {string} type Text for error type
  */
 ve.init.mw.ArticleTargetEvents.prototype.trackSaveError = function ( type ) {
@@ -204,9 +222,10 @@ ve.init.mw.ArticleTargetEvents.prototype.onSaveReview = function () {
 };
 
 ve.init.mw.ArticleTargetEvents.prototype.onSurfaceReady = function () {
+	this.timings.surfaceReady = ve.now();
 	this.target.surface.getModel().getDocument().connect( this, {
 		transact: 'recordLastTransactionTime'
-	} );
+	} ).once( 'transact', this.onFirstTransaction.bind( this ) );
 };
 
 /**

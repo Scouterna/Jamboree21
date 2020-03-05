@@ -20,7 +20,10 @@ ve.init.mw.Target = function VeInitMwTarget( config ) {
 
 	this.active = false;
 	this.pageName = mw.config.get( 'wgRelevantPageName' );
-	this.editToken = mw.user.tokens.get( 'editToken' );
+	this.editToken = mw.user.tokens.get( 'csrfToken' );
+	this.recovered = false;
+	this.fromEditedState = false;
+	this.originalHtml = null;
 
 	// Initialization
 	this.$element.addClass( 've-init-mw-target' );
@@ -100,24 +103,32 @@ ve.init.mw.Target.static.toolbarGroups = [
 	}
 ];
 
-ve.init.mw.Target.static.importRules = {
-	external: {
-		blacklist: [
-			// Annotations
-			'link/mwExternal', 'textStyle/span', 'textStyle/font', 'textStyle/underline', 'meta/language', 'textStyle/datetime',
-			// Nodes
-			'article', 'section', 'div', 'alienInline', 'alienBlock', 'comment'
-		],
-		htmlBlacklist: {
-			// Remove reference numbers copied from MW read mode (T150418)
-			remove: [ 'sup.reference:not( [typeof] )' ],
-			unwrap: [ 'fieldset', 'legend' ]
-		},
-		removeOriginalDomElements: true,
-		nodeSanitization: true
-	},
-	all: null
-};
+ve.init.mw.Target.static.importRules = ve.copy( ve.init.mw.Target.static.importRules );
+
+ve.init.mw.Target.static.importRules.external.removeOriginalDomElements = true;
+
+ve.init.mw.Target.static.importRules.external.blacklist = ve.extendObject( {
+	// Annotations
+	'textStyle/underline': true,
+	'meta/language': true,
+	'textStyle/datetime': true,
+	'link/mwExternal': !mw.config.get( 'wgVisualEditorConfig' ).allowExternalLinkPaste,
+	// Node
+	article: true,
+	section: true
+}, ve.init.mw.Target.static.importRules.external.blacklist );
+
+ve.init.mw.Target.static.importRules.external.htmlBlacklist.remove = ve.extendObject( {
+	// TODO: Create a plugin system for extending the blacklist, so this code
+	// can be moved to the Cite extension.
+	// Remove reference numbers copied from MW read mode (T150418)
+	'sup.reference:not( [typeof] )': true,
+	// ...sometimes we need a looser match if the HTML has been mangled
+	// in a third-party editor e.g. LibreOffice (T232461)
+	// This selector would fail if the "cite_reference_link_prefix" message
+	// were ever modified, but currently it isn't.
+	'a[ href *= "#cite_note" ]': true
+}, ve.init.mw.Target.static.importRules.external.htmlBlacklist.remove );
 
 /**
  * Type of integration. Used by ve.init.mw.trackSubscriber.js for event tracking.
@@ -178,6 +189,8 @@ ve.init.mw.Target.prototype.createModelFromDom = function () {
 
 /**
  * @inheritdoc
+ * @param {string} documentString
+ * @param {string} mode
  * @param {number|string|null} section Section. Use null to unwrap all sections.
  * @param {boolean} [onlySection] Only return the requested section, otherwise returns the
  *  whole document with just the requested section still wrapped (visual mode only).
@@ -225,7 +238,6 @@ ve.init.mw.Target.prototype.documentReady = function ( doc ) {
 /**
  * Once surface is ready, initialize the UI
  *
- * @method
  * @fires surfaceReady
  */
 ve.init.mw.Target.prototype.surfaceReady = function () {
@@ -349,7 +361,6 @@ ve.init.mw.Target.prototype.getSurfaceConfig = function ( config ) {
 /**
  * Switch to editing mode.
  *
- * @method
  * @param {HTMLDocument|string} doc HTML document or source text
  */
 ve.init.mw.Target.prototype.setupSurface = function ( doc ) {
@@ -421,6 +432,79 @@ ve.init.mw.Target.prototype.setSurface = function ( surface ) {
 
 	// Parent method
 	ve.init.mw.Target.super.prototype.setSurface.apply( this, arguments );
+};
+
+/**
+ * Intiailise autosave, recovering changes if applicable
+ */
+ve.init.mw.Target.prototype.initAutosave = function () {
+	var target = this,
+		surfaceModel = this.getSurface().getModel();
+	if ( this.recovered ) {
+		// Restore auto-saved transactions if document state was recovered
+		try {
+			surfaceModel.restoreChanges();
+			ve.init.platform.notify(
+				ve.msg( 'visualeditor-autosave-recovered-text' ),
+				ve.msg( 'visualeditor-autosave-recovered-title' )
+			);
+		} catch ( e ) {
+			mw.log.warn( e );
+			ve.init.platform.notify(
+				ve.msg( 'visualeditor-autosave-not-recovered-text' ),
+				ve.msg( 'visualeditor-autosave-not-recovered-title' ),
+				{ type: 'error' }
+			);
+		}
+	} else {
+		// ...otherwise store this document state for later recovery
+		if ( this.fromEditedState ) {
+			// Store immediately if the document was previously edited
+			// (e.g. in a different mode)
+			this.storeDocState( this.originalHtml );
+		} else {
+			// Only store after the first change if this is an unmodified document
+			surfaceModel.once( 'undoStackChange', function () {
+				// Check the surface hasn't been destroyed
+				if ( target.getSurface() ) {
+					target.storeDocState( target.originalHtml );
+				}
+			} );
+		}
+	}
+	// Start auto-saving transactions
+	surfaceModel.startStoringChanges();
+	// TODO: Listen to autosaveFailed event to notify user
+};
+
+/**
+ * Store a snapshot of the current document state.
+ *
+ * @param {string} [html] Document HTML, will generate from current state if not provided
+ */
+ve.init.mw.Target.prototype.storeDocState = function ( html ) {
+	var mode = this.getSurface().getMode();
+	this.getSurface().getModel().storeDocState( { mode: mode }, html );
+};
+
+/**
+ * Clear any stored document state
+ */
+ve.init.mw.Target.prototype.clearDocState = function () {
+	if ( this.getSurface() ) {
+		this.getSurface().getModel().removeDocStateAndChanges();
+	}
+};
+
+/**
+ * @inheritdoc
+ */
+ve.init.mw.Target.prototype.teardown = function () {
+	// If target is closed cleanly (after save or deliberate close) then remove autosave state
+	this.clearDocState();
+
+	// Parent method
+	return ve.init.mw.Target.super.prototype.teardown.call( this );
 };
 
 /**
@@ -579,6 +663,8 @@ ve.init.mw.Target.prototype.getPageName = function () {
  * @return {mw.Api} API object
  */
 ve.init.mw.Target.prototype.getContentApi = function ( doc, options ) {
+	options = options || {};
+	options.parameters = ve.extendObject( { formatversion: 2 }, options.parameters );
 	return new mw.Api( options );
 };
 
@@ -592,5 +678,7 @@ ve.init.mw.Target.prototype.getContentApi = function ( doc, options ) {
  * @return {mw.Api} API object
  */
 ve.init.mw.Target.prototype.getLocalApi = function ( options ) {
+	options = options || {};
+	options.parameters = ve.extendObject( { formatversion: 2 }, options.parameters );
 	return new mw.Api( options );
 };

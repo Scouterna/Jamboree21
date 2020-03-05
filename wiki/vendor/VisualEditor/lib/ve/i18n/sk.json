@@ -7,7 +7,9 @@
 			"Kusavica",
 			"Lexected",
 			"TomášPolonec",
-			"Patriccck"
+			"Patriccck",
+			"Robert Važan",
+			"Luky001"
 		]
 	},
 	"visualeditor": "Vizuálny editor",
@@ -140,7 +142,10 @@
 	"visualeditor-languageinspector-widget-label-direction": "Smer",
 	"visualeditor-languageinspector-widget-label-langcode": "Kód jazyka",
 	"visualeditor-languageinspector-widget-label-language": "Jazyk",
+	"visualeditor-linkcontext-label-change": "Zmeniť popis",
+	"visualeditor-linkcontext-remove": "Odstrániť odkaz",
 	"visualeditor-linkinspector-title": "Odkaz",
+	"visualeditor-linkinspector-title-add": "Pridať odkaz",
 	"visualeditor-listbutton-bullet-tooltip": "Odrážkový zoznam",
 	"visualeditor-listbutton-number-tooltip": "Číslovaný zoznam",
 	"visualeditor-mediasizewidget-label-defaulterror": "Hodnoty rozmerov sú neplatné.",

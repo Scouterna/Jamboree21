@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"McDutchie"
+			"McDutchie",
+			"Ed g2s"
 		]
 	},
 	"visualeditor": "Editor visual",
@@ -127,7 +128,7 @@
 	"visualeditor-key-page-down": "Pagina a basso",
 	"visualeditor-key-page-up": "Pagina in alto",
 	"visualeditor-key-right": "Dextra",
-	"visualeditor-key-shift": "Shift/Majus.",
+	"visualeditor-key-shift": "Shift",
 	"visualeditor-key-space": "Spatio",
 	"visualeditor-key-tab": "Tab",
 	"visualeditor-key-up": "In alto",
@@ -138,9 +139,9 @@
 	"visualeditor-languageinspector-widget-label-direction": "Director",
 	"visualeditor-languageinspector-widget-label-langcode": "Codice de lingua",
 	"visualeditor-languageinspector-widget-label-language": "Lingua",
-	"visualeditor-linkcontext-label-change": "Cambiar etiquetta",
+	"visualeditor-linkcontext-label-change": "Alterar texto",
 	"visualeditor-linkcontext-label-fallback": "Sin previsualisation",
-	"visualeditor-linkcontext-label-label": "Etiquetta",
+	"visualeditor-linkcontext-label-label": "Texto",
 	"visualeditor-linkcontext-remove": "Remover ligamine",
 	"visualeditor-linkinspector-title": "Ligamine",
 	"visualeditor-listbutton-bullet-tooltip": "Lista a punctos",
@@ -171,6 +172,8 @@
 	"visualeditor-specialcharacterinspector-title": "Character special",
 	"visualeditor-table-caption": "Legenda",
 	"visualeditor-table-contextitem-properties": "Proprietates",
+	"visualeditor-table-contextitem-selectionmode-cells": "Seliger cellulas",
+	"visualeditor-table-contextitem-selectionmode-contents": "Seliger contento",
 	"visualeditor-table-delete-col": "Deler {{PLURAL:$1|columna|columnas}}",
 	"visualeditor-table-delete-row": "Deler {{PLURAL:$1|linea|lineas}}",
 	"visualeditor-table-format-data": "Cellula de contento",

@@ -25,7 +25,6 @@ OO.inheritClass( ve.ui.CommandRegistry, OO.Registry );
 /**
  * Register a command with the factory.
  *
- * @method
  * @param {ve.ui.Command} command Command object
  * @throws {Error} If command is not an instance of ve.ui.Command
  */
@@ -224,8 +223,14 @@ ve.ui.commandRegistry.register(
 );
 ve.ui.commandRegistry.register(
 	new ve.ui.Command(
-		'blockquote', 'format', 'convert',
-		{ args: [ 'blockquote' ], supportedSelections: [ 'linear' ] }
+		'blockquote', 'blockquote', 'toggle',
+		{ supportedSelections: [ 'linear' ] }
+	)
+);
+ve.ui.commandRegistry.register(
+	new ve.ui.Command(
+		'blockquoteWrap', 'blockquote', 'wrap',
+		{ supportedSelections: [ 'linear' ] }
 	)
 );
 ve.ui.commandRegistry.register(
@@ -261,6 +266,12 @@ ve.ui.commandRegistry.register(
 ve.ui.commandRegistry.register(
 	new ve.ui.Command(
 		'submit', 'content', 'submit',
+		{ supportedSelections: [ 'linear', 'table' ] }
+	)
+);
+ve.ui.commandRegistry.register(
+	new ve.ui.Command(
+		'focusContext', 'content', 'focusContext',
 		{ supportedSelections: [ 'linear', 'table' ] }
 	)
 );
@@ -306,7 +317,7 @@ ve.ui.commandRegistry.register(
 ve.ui.commandRegistry.register(
 	new ve.ui.Command(
 		'deleteTable', 'table', 'delete',
-		{ args: [ 'table' ], supportedSelections: [ 'table' ] }
+		{ args: [ 'table' ], supportedSelections: [ 'linear', 'table' ] }
 	)
 );
 
@@ -379,5 +390,11 @@ ve.ui.commandRegistry.register(
 	new ve.ui.Command(
 		'enterTableCell', 'table', 'enterTableCell',
 		{ supportedSelections: [ 'table' ] }
+	)
+);
+ve.ui.commandRegistry.register(
+	new ve.ui.Command(
+		'exitTableCell', 'table', 'exitTableCell',
+		{ supportedSelections: [ 'linear' ] }
 	)
 );

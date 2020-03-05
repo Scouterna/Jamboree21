@@ -29,8 +29,15 @@ ve.dm.Node = function VeDmNode( element ) {
 };
 
 /**
+ * @event attributeChange
+ * @param {string} key
+ * @param {Mixed} oldValue
+ * @param {Mixed} newValue
+ */
+
+/**
  * @event lengthChange
- * @param diff
+ * @param {number} diff
  */
 
 /**
@@ -533,7 +540,6 @@ ve.dm.Node.prototype.isDiffedAsLeaf = function () {
 /**
  * Check if the node can have a slug before it.
  *
- * @method
  * @return {boolean} Whether the node can have a slug before it
  */
 ve.dm.Node.prototype.canHaveSlugBefore = function () {
@@ -594,7 +600,6 @@ ve.dm.Node.prototype.isSurfaceable = function () {
 /**
  * Check if the node has an ancestor with matching type and attribute values.
  *
- * @method
  * @param {string} type Node type to match
  * @param {Object} [attributes] Node attributes to match
  * @return {boolean} Node has an ancestor with matching type and attribute values
@@ -615,7 +620,6 @@ ve.dm.Node.prototype.hasMatchingAncestor = function ( type, attributes ) {
 /**
  * Check if the node matches type and attribute values.
  *
- * @method
  * @param {string} type Node type to match
  * @param {Object} [attributes] Node attributes to match
  * @return {boolean} Node matches type and attribute values
@@ -651,7 +655,6 @@ ve.dm.Node.prototype.getLength = function () {
  * This should only be called after a relevant change to the document data. Calling this method will
  * not change the document data.
  *
- * @method
  * @param {number} length Length of content
  * @fires lengthChange
  * @fires update
@@ -681,7 +684,6 @@ ve.dm.Node.prototype.setLength = function ( length ) {
  * This should only be called after a relevant change to the document data. Calling this method will
  * not change the document data.
  *
- * @method
  * @param {number} adjustment Amount to adjust length by
  * @fires lengthChange
  * @fires update
@@ -724,7 +726,6 @@ ve.dm.Node.prototype.getOffset = function () {
  *  - Have the same depth
  *  - Have similar ancestry (each node upstream must have the same type)
  *
- * @method
  * @param {ve.dm.Node} node Node to consider merging with
  * @return {boolean} Nodes can be merged
  */

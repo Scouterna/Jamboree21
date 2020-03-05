@@ -17,6 +17,8 @@
 ve.init.sa.MobileTarget = function VeInitSaMobileTarget( config ) {
 	// Parent constructor
 	ve.init.sa.MobileTarget.super.call( this, config );
+
+	this.$element.addClass( 've-init-mobileTarget' );
 };
 
 /* Inheritance */
@@ -65,14 +67,9 @@ ve.init.sa.MobileTarget.static.toolbarGroups = [
 	}
 ];
 
-/* Methods */
+// Move action groups into main toolbar
+ve.init.sa.MobileTarget.static.toolbarGroups = ve.init.sa.MobileTarget.static.toolbarGroups.concat(
+	ve.init.sa.MobileTarget.static.actionGroups
+);
 
-/**
- * @inheritdoc
- */
-ve.init.sa.MobileTarget.prototype.setupToolbar = function ( surface ) {
-	// Parent method
-	ve.init.sa.MobileTarget.super.prototype.setupToolbar.call( this, surface );
-
-	this.getToolbar().$bar.append( surface.context.$element );
-};
+ve.init.sa.MobileTarget.static.actionGroups = [];

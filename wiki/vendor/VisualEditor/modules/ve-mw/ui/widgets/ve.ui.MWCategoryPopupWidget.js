@@ -27,7 +27,7 @@ ve.ui.MWCategoryPopupWidget = function VeUiMWCategoryPopupWidget( config ) {
 	this.removed = false;
 	this.$title = $( '<label>' );
 	this.$menu = $( '<div>' );
-	this.fallbackSortKey = mw.config.get( 'wgTitle' );
+	this.fallbackSortKey = ve.init.target.getPageName();
 	this.removeButton = new OO.ui.ButtonWidget( {
 		framed: false,
 		icon: 'trash',
@@ -87,7 +87,6 @@ OO.inheritClass( ve.ui.MWCategoryPopupWidget, OO.ui.PopupWidget );
 /**
  * Handle category remove events.
  *
- * @method
  * @fires removeCategory
  */
 ve.ui.MWCategoryPopupWidget.prototype.onRemoveCategory = function () {
@@ -99,8 +98,8 @@ ve.ui.MWCategoryPopupWidget.prototype.onRemoveCategory = function () {
 /**
  * Handle sort key form submit events.
  *
- * @method
  * @param {jQuery.Event} e Form submit event
+ * @return {boolean}
  * @fires updateSortkey
  */
 ve.ui.MWCategoryPopupWidget.prototype.onSortKeySubmit = function () {
@@ -111,7 +110,6 @@ ve.ui.MWCategoryPopupWidget.prototype.onSortKeySubmit = function () {
 /**
  * Open a category item popup.
  *
- * @method
  * @param {ve.ui.MWCategoryItemWidget} item Category item
  */
 ve.ui.MWCategoryPopupWidget.prototype.openPopup = function ( item ) {
@@ -126,7 +124,6 @@ ve.ui.MWCategoryPopupWidget.prototype.openPopup = function ( item ) {
  * Handle popup toggle events.
  *
  * @param {boolean} show Widget is being made visible
- * @method
  */
 ve.ui.MWCategoryPopupWidget.prototype.onToggle = function ( show ) {
 	var newSortkey;
@@ -146,7 +143,6 @@ ve.ui.MWCategoryPopupWidget.prototype.onToggle = function ( show ) {
 /**
  * Load item information into the popup.
  *
- * @method
  * @param {ve.ui.MWCategoryItemWidget} item Category item
  */
 ve.ui.MWCategoryPopupWidget.prototype.loadCategoryIntoPopup = function ( item ) {
@@ -163,8 +159,6 @@ ve.ui.MWCategoryPopupWidget.prototype.loadCategoryIntoPopup = function ( item ) 
 
 /**
  * Close the popup.
- *
- * @method
  */
 ve.ui.MWCategoryPopupWidget.prototype.closePopup = function () {
 	this.toggle( false );
@@ -177,7 +171,6 @@ ve.ui.MWCategoryPopupWidget.prototype.closePopup = function () {
 /**
  * Set the default sort key.
  *
- * @method
  * @param {string} value Default sort key value
  */
 ve.ui.MWCategoryPopupWidget.prototype.setDefaultSortKey = function ( value ) {
@@ -187,7 +180,6 @@ ve.ui.MWCategoryPopupWidget.prototype.setDefaultSortKey = function ( value ) {
 /**
  * Display the popup next to an item.
  *
- * @method
  * @param {ve.ui.MWCategoryItemWidget} item Category item
  */
 ve.ui.MWCategoryPopupWidget.prototype.setPopup = function ( item ) {

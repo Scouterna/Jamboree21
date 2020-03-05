@@ -13,7 +13,7 @@
  *
  * @constructor
  * @param {mw.Title} title Page sub-title
- * @param {rebaserUrl} string Rebaser server URL
+ * @param {string} rebaserUrl Rebaser server URL
  * @param {Object} [config] Configuration options
  * @cfg {mw.Title} [importTitle] Title to import
  */
@@ -32,22 +32,16 @@ ve.init.mw.CollabTarget = function VeInitMwCollabTarget( title, rebaserUrl, conf
 	// Parent constructor
 	ve.init.mw.CollabTarget.super.call( this, config );
 
-	// HACK: Disable history commands until supported (T185706)
-	ve.ui.commandRegistry.unregister( 'undo' );
+	// HACK: Disable redo command until supported (T185706)
 	ve.ui.commandRegistry.unregister( 'redo' );
 
 	// HACK: Disable references until supported (T194838)
 	ve.ui.commandRegistry.unregister( 'reference' );
 	ve.ui.commandRegistry.unregister( 'referencesList' );
-	ve.ui.commandRegistry.unregister( 'citefromid' );
+	ve.ui.commandRegistry.unregister( 'citoid' );
 
 	// eslint-disable-next-line no-jquery/no-global-selector
 	this.$editableContent = $( '#mw-content-text' );
-
-	this.toolbarExportButton = new OO.ui.ButtonWidget( {
-		label: ve.msg( 'visualeditor-rebase-client-export' ),
-		flags: [ 'progressive', 'primary' ]
-	} ).connect( this, { click: 'onExportButtonClick' } );
 
 	// Initialization
 	this.$element.addClass( 've-init-mw-articleTarget ve-init-mw-collabTarget' );
@@ -73,6 +67,9 @@ ve.init.mw.CollabTarget.static.toolbarGroups = ve.init.mw.CollabTarget.static.to
 	return group.name !== 'reference';
 } );
 
+ve.init.mw.CollabTarget.static.importRules = ve.copy( ve.init.mw.CollabTarget.static.importRules );
+ve.init.mw.CollabTarget.static.importRules.external.blacklist[ 'link/mwExternal' ] = false;
+
 ve.init.mw.CollabTarget.static.actionGroups = [
 	{
 		name: 'help',
@@ -89,10 +86,23 @@ ve.init.mw.CollabTarget.static.actionGroups = [
 	{
 		name: 'authorList',
 		include: [ 'authorList' ]
+	},
+	{
+		name: 'export',
+		include: [ 'export' ]
 	}
 ];
 
 /* Methods */
+
+/**
+ * @inheritdoc
+ */
+ve.init.mw.CollabTarget.prototype.getSurfaceConfig = function ( config ) {
+	return ve.init.mw.CollabTarget.super.prototype.getSurfaceConfig.call( this, ve.extendObject( {
+		nullSelectionOnBlur: false
+	}, config ) );
+};
 
 /**
  * Page modifications after editor load.
@@ -104,25 +114,6 @@ ve.init.mw.CollabTarget.prototype.transformPage = function () {
  * Page modifications after editor teardown.
  */
 ve.init.mw.CollabTarget.prototype.restorePage = function () {
-};
-
-/**
- * @inheritdoc
- */
-ve.init.mw.CollabTarget.prototype.setupToolbar = function () {
-	// Parent method
-	ve.init.mw.CollabTarget.super.prototype.setupToolbar.apply( this, arguments );
-
-	this.getToolbar().$actions.append( this.toolbarExportButton.$element );
-};
-
-/**
- * Handle click events from the export button
- */
-ve.init.mw.CollabTarget.prototype.onExportButtonClick = function () {
-	var surface = this.getSurface(),
-		windowAction = ve.ui.actionFactory.create( 'window', surface );
-	windowAction.open( 'mwExportWikitext', { surface: surface } );
 };
 
 /**
@@ -144,3 +135,33 @@ ve.init.mw.CollabTarget.prototype.getPageName = function () {
 /* Registration */
 
 ve.init.mw.targetFactory.register( ve.init.mw.CollabTarget );
+
+/**
+ * Export tool
+ */
+ve.ui.MWExportTool = function VeUiMWExportTool() {
+	// Parent constructor
+	ve.ui.MWExportTool.super.apply( this, arguments );
+
+	if ( OO.ui.isMobile() ) {
+		this.setIcon( 'upload' );
+		this.setTitle( null );
+	}
+};
+OO.inheritClass( ve.ui.MWExportTool, ve.ui.Tool );
+ve.ui.MWExportTool.static.name = 'export';
+ve.ui.MWExportTool.static.displayBothIconAndLabel = !OO.ui.isMobile();
+ve.ui.MWExportTool.static.group = 'export';
+ve.ui.MWExportTool.static.autoAddToCatchall = false;
+ve.ui.MWExportTool.static.flags = [ 'progressive', 'primary' ];
+ve.ui.MWExportTool.static.title =
+	OO.ui.deferMsg( 'visualeditor-rebase-client-export' );
+ve.ui.MWExportTool.static.commandName = 'mwExportWikitext';
+ve.ui.toolFactory.register( ve.ui.MWExportTool );
+
+ve.ui.commandRegistry.register(
+	new ve.ui.Command(
+		'mwExportWikitext', 'window', 'open',
+		{ args: [ 'mwExportWikitext' ] }
+	)
+);

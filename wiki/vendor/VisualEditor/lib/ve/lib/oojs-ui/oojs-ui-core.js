@@ -1,12 +1,12 @@
 /*!
- * OOUI v0.31.1
+ * OOUI v0.34.1-pre (3913589098)
  * https://www.mediawiki.org/wiki/OOUI
  *
  * Copyright 2011–2019 OOUI Team and other contributors.
  * Released under the MIT license
  * http://oojs.mit-license.org
  *
- * Date: 2019-03-21T15:54:37Z
+ * Date: 2019-09-10T23:46:03Z
  */
 ( function ( OO ) {
 
@@ -292,7 +292,7 @@ OO.ui.warnDeprecation = function ( message ) {
  */
 OO.ui.throttle = function ( func, wait ) {
 	var context, args, timeout,
-		previous = 0,
+		previous = Date.now() - wait,
 		run = function () {
 			timeout = null;
 			previous = Date.now();
@@ -304,31 +304,15 @@ OO.ui.throttle = function ( func, wait ) {
 		// period. If it's less, run the function immediately. If it's more,
 		// set a timeout for the remaining time -- but don't replace an
 		// existing timeout, since that'd indefinitely prolong the wait.
-		var remaining = wait - ( Date.now() - previous );
+		var remaining = Math.max( wait - ( Date.now() - previous ), 0 );
 		context = this;
 		args = arguments;
-		if ( remaining <= 0 ) {
-			// Note: unless wait was ridiculously large, this means we'll
-			// automatically run the first time the function was called in a
-			// given period. (If you provide a wait period larger than the
-			// current Unix timestamp, you *deserve* unexpected behavior.)
-			clearTimeout( timeout );
-			run();
-		} else if ( !timeout ) {
+		if ( !timeout ) {
+			// If time is up, do setTimeout( run, 0 ) so the function
+			// always runs asynchronously, just like Promise#then .
 			timeout = setTimeout( run, remaining );
 		}
 	};
-};
-
-/**
- * A (possibly faster) way to get the current timestamp as an integer.
- *
- * @deprecated Since 0.31.1; use `Date.now()` instead.
- * @return {number} Current timestamp, in milliseconds since the Unix epoch
- */
-OO.ui.now = function () {
-	OO.ui.warnDeprecation( 'OO.ui.now() is deprecated, use Date.now() instead' );
-	return Date.now();
 };
 
 /**
@@ -347,124 +331,74 @@ OO.ui.infuse = function ( idOrNode, config ) {
 	return OO.ui.Element.static.infuse( idOrNode, config );
 };
 
-( function () {
-	/**
-	 * Message store for the default implementation of OO.ui.msg.
-	 *
-	 * Environments that provide a localization system should not use this, but should override
-	 * OO.ui.msg altogether.
-	 *
-	 * @private
-	 */
-	var messages = {
-		// Tool tip for a button that moves items in a list down one place
-		'ooui-outline-control-move-down': 'Move item down',
-		// Tool tip for a button that moves items in a list up one place
-		'ooui-outline-control-move-up': 'Move item up',
-		// Tool tip for a button that removes items from a list
-		'ooui-outline-control-remove': 'Remove item',
-		// Label for the toolbar group that contains a list of all other available tools
-		'ooui-toolbar-more': 'More',
-		// Label for the fake tool that expands the full list of tools in a toolbar group
-		'ooui-toolgroup-expand': 'More',
-		// Label for the fake tool that collapses the full list of tools in a toolbar group
-		'ooui-toolgroup-collapse': 'Fewer',
-		// Default label for the tooltip for the button that removes a tag item
-		'ooui-item-remove': 'Remove',
-		// Default label for the accept button of a confirmation dialog
-		'ooui-dialog-message-accept': 'OK',
-		// Default label for the reject button of a confirmation dialog
-		'ooui-dialog-message-reject': 'Cancel',
-		// Title for process dialog error description
-		'ooui-dialog-process-error': 'Something went wrong',
-		// Label for process dialog dismiss error button, visible when describing errors
-		'ooui-dialog-process-dismiss': 'Dismiss',
-		// Label for process dialog retry action button, visible when describing only recoverable
-		// errors
-		'ooui-dialog-process-retry': 'Try again',
-		// Label for process dialog retry action button, visible when describing only warnings
-		'ooui-dialog-process-continue': 'Continue',
-		// Label for button in combobox input that triggers its dropdown
-		'ooui-combobox-button-label': 'Dropdown for combobox',
-		// Label for the file selection widget's select file button
-		'ooui-selectfile-button-select': 'Select a file',
-		// Label for the file selection widget if file selection is not supported
-		'ooui-selectfile-not-supported': 'File selection is not supported',
-		// Label for the file selection widget when no file is currently selected
-		'ooui-selectfile-placeholder': 'No file is selected',
-		// Label for the file selection widget's drop target
-		'ooui-selectfile-dragdrop-placeholder': 'Drop file here',
-		// Label for the help icon attached to a form field
-		'ooui-field-help': 'Help'
-	};
-
-	/**
-	 * Get a localized message.
-	 *
-	 * After the message key, message parameters may optionally be passed. In the default
-	 * implementation, any occurrences of $1 are replaced with the first parameter, $2 with the
-	 * second parameter, etc.
-	 * Alternative implementations of OO.ui.msg may use any substitution system they like, as long
-	 * as they support unnamed, ordered message parameters.
-	 *
-	 * In environments that provide a localization system, this function should be overridden to
-	 * return the message translated in the user's language. The default implementation always
-	 * returns English messages. An example of doing this with
-	 * [jQuery.i18n](https://github.com/wikimedia/jquery.i18n) follows.
-	 *
-	 *     @example
-	 *     var i, iLen, button,
-	 *         messagePath = 'oojs-ui/dist/i18n/',
-	 *         languages = [ $.i18n().locale, 'ur', 'en' ],
-	 *         languageMap = {};
-	 *
-	 *     for ( i = 0, iLen = languages.length; i < iLen; i++ ) {
-	 *         languageMap[ languages[ i ] ] = messagePath + languages[ i ].toLowerCase() + '.json';
-	 *     }
-	 *
-	 *     $.i18n().load( languageMap ).done( function() {
-	 *         // Replace the built-in `msg` only once we've loaded the internationalization.
-	 *         // OOUI uses `OO.ui.deferMsg` for all initially-loaded messages. So long as
-	 *         // you put off creating any widgets until this promise is complete, no English
-	 *         // will be displayed.
-	 *         OO.ui.msg = $.i18n;
-	 *
-	 *         // A button displaying "OK" in the default locale
-	 *         button = new OO.ui.ButtonWidget( {
-	 *             label: OO.ui.msg( 'ooui-dialog-message-accept' ),
-	 *             icon: 'check'
-	 *         } );
-	 *         $( document.body ).append( button.$element );
-	 *
-	 *         // A button displaying "OK" in Urdu
-	 *         $.i18n().locale = 'ur';
-	 *         button = new OO.ui.ButtonWidget( {
-	 *             label: OO.ui.msg( 'ooui-dialog-message-accept' ),
-	 *             icon: 'check'
-	 *         } );
-	 *         $( document.body ).append( button.$element );
-	 *     } );
-	 *
-	 * @param {string} key Message key
-	 * @param {...Mixed} [params] Message parameters
-	 * @return {string} Translated message with parameters substituted
-	 */
-	OO.ui.msg = function ( key ) {
-		var message = messages[ key ],
-			params = Array.prototype.slice.call( arguments, 1 );
-		if ( typeof message === 'string' ) {
-			// Perform $1 substitution
-			message = message.replace( /\$(\d+)/g, function ( unused, n ) {
-				var i = parseInt( n, 10 );
-				return params[ i - 1 ] !== undefined ? params[ i - 1 ] : '$' + n;
-			} );
-		} else {
-			// Return placeholder if message not found
-			message = '[' + key + ']';
-		}
-		return message;
-	};
-}() );
+/**
+ * Get a localized message.
+ *
+ * After the message key, message parameters may optionally be passed. In the default
+ * implementation, any occurrences of $1 are replaced with the first parameter, $2 with the
+ * second parameter, etc.
+ * Alternative implementations of OO.ui.msg may use any substitution system they like, as long
+ * as they support unnamed, ordered message parameters.
+ *
+ * In environments that provide a localization system, this function should be overridden to
+ * return the message translated in the user's language. The default implementation always
+ * returns English messages. An example of doing this with
+ * [jQuery.i18n](https://github.com/wikimedia/jquery.i18n) follows.
+ *
+ *     @example
+ *     var i, iLen, button,
+ *         messagePath = 'oojs-ui/dist/i18n/',
+ *         languages = [ $.i18n().locale, 'ur', 'en' ],
+ *         languageMap = {};
+ *
+ *     for ( i = 0, iLen = languages.length; i < iLen; i++ ) {
+ *         languageMap[ languages[ i ] ] = messagePath + languages[ i ].toLowerCase() + '.json';
+ *     }
+ *
+ *     $.i18n().load( languageMap ).done( function() {
+ *         // Replace the built-in `msg` only once we've loaded the internationalization.
+ *         // OOUI uses `OO.ui.deferMsg` for all initially-loaded messages. So long as
+ *         // you put off creating any widgets until this promise is complete, no English
+ *         // will be displayed.
+ *         OO.ui.msg = $.i18n;
+ *
+ *         // A button displaying "OK" in the default locale
+ *         button = new OO.ui.ButtonWidget( {
+ *             label: OO.ui.msg( 'ooui-dialog-message-accept' ),
+ *             icon: 'check'
+ *         } );
+ *         $( document.body ).append( button.$element );
+ *
+ *         // A button displaying "OK" in Urdu
+ *         $.i18n().locale = 'ur';
+ *         button = new OO.ui.ButtonWidget( {
+ *             label: OO.ui.msg( 'ooui-dialog-message-accept' ),
+ *             icon: 'check'
+ *         } );
+ *         $( document.body ).append( button.$element );
+ *     } );
+ *
+ * @param {string} key Message key
+ * @param {...Mixed} [params] Message parameters
+ * @return {string} Translated message with parameters substituted
+ */
+OO.ui.msg = function ( key ) {
+	// `OO.ui.msg.messages` is defined in code generated during the build process
+	var messages = OO.ui.msg.messages,
+		message = messages[ key ],
+		params = Array.prototype.slice.call( arguments, 1 );
+	if ( typeof message === 'string' ) {
+		// Perform $1 substitution
+		message = message.replace( /\$(\d+)/g, function ( unused, n ) {
+			var i = parseInt( n, 10 );
+			return params[ i - 1 ] !== undefined ? params[ i - 1 ] : '$' + n;
+		} );
+	} else {
+		// Return placeholder if message not found
+		message = '[' + key + ']';
+	}
+	return message;
+};
 
 /**
  * Package a message and arguments for deferred resolution.
@@ -583,6 +517,36 @@ OO.ui.getDefaultOverlay = function () {
 	return OO.ui.$defaultOverlay;
 };
 
+/**
+ * Message store for the default implementation of OO.ui.msg.
+ *
+ * Environments that provide a localization system should not use this, but should override
+ * OO.ui.msg altogether.
+ *
+ * @private
+ */
+OO.ui.msg.messages = {
+	"ooui-outline-control-move-down": "Move item down",
+	"ooui-outline-control-move-up": "Move item up",
+	"ooui-outline-control-remove": "Remove item",
+	"ooui-toolbar-more": "More",
+	"ooui-toolgroup-expand": "More",
+	"ooui-toolgroup-collapse": "Fewer",
+	"ooui-item-remove": "Remove",
+	"ooui-dialog-message-accept": "OK",
+	"ooui-dialog-message-reject": "Cancel",
+	"ooui-dialog-process-error": "Something went wrong",
+	"ooui-dialog-process-dismiss": "Dismiss",
+	"ooui-dialog-process-retry": "Try again",
+	"ooui-dialog-process-continue": "Continue",
+	"ooui-combobox-button-label": "Dropdown for combobox",
+	"ooui-selectfile-button-select": "Select a file",
+	"ooui-selectfile-not-supported": "File selection is not supported",
+	"ooui-selectfile-placeholder": "No file is selected",
+	"ooui-selectfile-dragdrop-placeholder": "Drop file here",
+	"ooui-field-help": "Help"
+};
+
 /*!
  * Mixin namespace.
  */
@@ -633,10 +597,6 @@ OO.ui.Element = function OoUiElement( config ) {
 	config = config || {};
 
 	// Properties
-	this.$ = function () {
-		OO.ui.warnDeprecation( 'this.$ is deprecated, use global $ instead' );
-		return $.apply( this, arguments );
-	};
 	this.elementId = null;
 	this.visible = true;
 	this.data = config.data;
@@ -914,29 +874,6 @@ OO.ui.Element.static.gatherPreInfuseState = function () {
 };
 
 /**
- * Get a jQuery function within a specific document.
- *
- * @static
- * @param {jQuery|HTMLElement|HTMLDocument|Window} context Context to bind the function to
- * @param {jQuery} [$iframe] HTML iframe element that contains the document, omit if document is
- *   not in an iframe
- * @return {Function} Bound jQuery function
- */
-OO.ui.Element.static.getJQuery = function ( context, $iframe ) {
-	function wrapper( selector ) {
-		return $( selector, wrapper.context );
-	}
-
-	wrapper.context = this.getDocument( context );
-
-	if ( $iframe ) {
-		wrapper.$iframe = $iframe;
-	}
-
-	return wrapper;
-};
-
-/**
  * Get the document of an element.
  *
  * @static
@@ -1115,7 +1052,7 @@ OO.ui.Element.static.getDimensions = function ( el ) {
 			borders: { top: 0, left: 0, bottom: 0, right: 0 },
 			scroll: {
 				top: $win.scrollTop(),
-				left: $win.scrollLeft()
+				left: OO.ui.Element.static.getScrollLeft( win )
 			},
 			scrollbar: { right: 0, bottom: 0 },
 			rect: {
@@ -1131,7 +1068,7 @@ OO.ui.Element.static.getDimensions = function ( el ) {
 			borders: this.getBorders( el ),
 			scroll: {
 				top: $el.scrollTop(),
-				left: $el.scrollLeft()
+				left: OO.ui.Element.static.getScrollLeft( el )
 			},
 			scrollbar: {
 				right: $el.innerWidth() - el.clientWidth,
@@ -1142,29 +1079,12 @@ OO.ui.Element.static.getDimensions = function ( el ) {
 	}
 };
 
-/**
- * Get the number of pixels that an element's content is scrolled to the left.
- *
- * Adapted from <https://github.com/othree/jquery.rtl-scroll-type>.
- * Original code copyright 2012 Wei-Ko Kao, licensed under the MIT License.
- *
- * This function smooths out browser inconsistencies (nicely described in the README at
- * <https://github.com/othree/jquery.rtl-scroll-type>) and produces a result consistent
- * with Firefox's 'scrollLeft', which seems the sanest.
- *
- * @static
- * @method
- * @param {HTMLElement|Window} el Element to measure
- * @return {number} Scroll position from the left.
- *  If the element's direction is LTR, this is a positive number between `0` (initial scroll
- *  position) and `el.scrollWidth - el.clientWidth` (furthest possible scroll position).
- *  If the element's direction is RTL, this is a negative number between `0` (initial scroll
- *  position) and `-el.scrollWidth + el.clientWidth` (furthest possible scroll position).
- */
-OO.ui.Element.static.getScrollLeft = ( function () {
+( function () {
 	var rtlScrollType = null;
 
-	function test() {
+	// Adapted from <https://github.com/othree/jquery.rtl-scroll-type>.
+	// Original code copyright 2012 Wei-Ko Kao, licensed under the MIT License.
+	function rtlScrollTypeTest() {
 		var $definer = $( '<div>' ).attr( {
 				dir: 'rtl',
 				style: 'font-size: 14px; width: 4px; height: 1px; position: absolute; top: -1000px; overflow: scroll;'
@@ -1188,27 +1108,112 @@ OO.ui.Element.static.getScrollLeft = ( function () {
 		$definer.remove();
 	}
 
-	return function getScrollLeft( el ) {
-		var isRoot = el.window === el ||
-				el === el.ownerDocument.body ||
-				el === el.ownerDocument.documentElement,
-			scrollLeft = isRoot ? $( window ).scrollLeft() : el.scrollLeft,
-			// All browsers use the correct scroll type ('negative') on the root, so don't
-			// do any fixups when looking at the root element
-			direction = isRoot ? 'ltr' : $( el ).css( 'direction' );
+	function isRoot( el ) {
+		return el.window === el ||
+			el === el.ownerDocument.body ||
+			el === el.ownerDocument.documentElement;
+	}
+
+	/**
+	 * Convert native `scrollLeft` value to a value consistent between browsers. See #getScrollLeft.
+	 * @param {number} nativeOffset Native `scrollLeft` value
+	 * @param {HTMLElement|Window} el Element from which the value was obtained
+	 * @return {number}
+	 */
+	OO.ui.Element.static.computeNormalizedScrollLeft = function ( nativeOffset, el ) {
+		// All browsers use the correct scroll type ('negative') on the root, so don't
+		// do any fixups when looking at the root element
+		var direction = isRoot( el ) ? 'ltr' : $( el ).css( 'direction' );
 
 		if ( direction === 'rtl' ) {
 			if ( rtlScrollType === null ) {
-				test();
+				rtlScrollTypeTest();
 			}
 			if ( rtlScrollType === 'reverse' ) {
-				scrollLeft = -scrollLeft;
+				return -nativeOffset;
 			} else if ( rtlScrollType === 'default' ) {
-				scrollLeft = scrollLeft - el.scrollWidth + el.clientWidth;
+				return nativeOffset - el.scrollWidth + el.clientWidth;
 			}
 		}
 
+		return nativeOffset;
+	};
+
+	/**
+	 * Convert our normalized `scrollLeft` value to a value for current browser. See #getScrollLeft.
+	 * @param {number} normalizedOffset Normalized `scrollLeft` value
+	 * @param {HTMLElement|Window} el Element on which the value will be set
+	 * @return {number}
+	 */
+	OO.ui.Element.static.computeNativeScrollLeft = function ( normalizedOffset, el ) {
+		// All browsers use the correct scroll type ('negative') on the root, so don't
+		// do any fixups when looking at the root element
+		var direction = isRoot( el ) ? 'ltr' : $( el ).css( 'direction' );
+
+		if ( direction === 'rtl' ) {
+			if ( rtlScrollType === null ) {
+				rtlScrollTypeTest();
+			}
+			if ( rtlScrollType === 'reverse' ) {
+				return -normalizedOffset;
+			} else if ( rtlScrollType === 'default' ) {
+				return normalizedOffset + el.scrollWidth - el.clientWidth;
+			}
+		}
+
+		return normalizedOffset;
+	};
+
+	/**
+	 * Get the number of pixels that an element's content is scrolled to the left.
+	 *
+	 * This function smooths out browser inconsistencies (nicely described in the README at
+	 * <https://github.com/othree/jquery.rtl-scroll-type>) and produces a result consistent
+	 * with Firefox's 'scrollLeft', which seems the sanest.
+	 *
+	 * (Firefox's scrollLeft handling is nice because it increases from left to right, consistently
+	 * with `getBoundingClientRect().left` and related APIs; because initial value is zero, so
+	 * resetting it is easy; because adapting a hardcoded scroll position to a symmetrical RTL
+	 * interface requires just negating it, rather than involving `clientWidth` and `scrollWidth`;
+	 * and because if you mess up and don't adapt your code to RTL, it will scroll to the beginning
+	 * rather than somewhere randomly in the middle but not where you wanted.)
+	 *
+	 * @static
+	 * @method
+	 * @param {HTMLElement|Window} el Element to measure
+	 * @return {number} Scroll position from the left.
+	 *  If the element's direction is LTR, this is a positive number between `0` (initial scroll
+	 *  position) and `el.scrollWidth - el.clientWidth` (furthest possible scroll position).
+	 *  If the element's direction is RTL, this is a negative number between `0` (initial scroll
+	 *  position) and `-el.scrollWidth + el.clientWidth` (furthest possible scroll position).
+	 */
+	OO.ui.Element.static.getScrollLeft = function ( el ) {
+		var scrollLeft = isRoot( el ) ? $( window ).scrollLeft() : el.scrollLeft;
+		scrollLeft = OO.ui.Element.static.computeNormalizedScrollLeft( scrollLeft, el );
 		return scrollLeft;
+	};
+
+	/**
+	 * Set the number of pixels that an element's content is scrolled to the left.
+	 *
+	 * See #getScrollLeft.
+	 *
+	 * @static
+	 * @method
+	 * @param {HTMLElement|Window} el Element to scroll (and to use in calculations)
+	 * @param {number} scrollLeft Scroll position from the left.
+	 *  If the element's direction is LTR, this must be a positive number between `0` (initial scroll
+	 *  position) and `el.scrollWidth - el.clientWidth` (furthest possible scroll position).
+	 *  If the element's direction is RTL, this must be a negative number between `0` (initial scroll
+	 *  position) and `-el.scrollWidth + el.clientWidth` (furthest possible scroll position).
+	 */
+	OO.ui.Element.static.setScrollLeft = function ( el, scrollLeft ) {
+		scrollLeft = OO.ui.Element.static.computeNativeScrollLeft( scrollLeft, el );
+		if ( isRoot( el ) ) {
+			$( window ).scrollLeft( scrollLeft );
+		} else {
+			el.scrollLeft = scrollLeft;
+		}
 	};
 }() );
 
@@ -1303,75 +1308,110 @@ OO.ui.Element.static.getClosestScrollableContainer = function ( el, dimension ) 
  * Scroll element into view.
  *
  * @static
- * @param {HTMLElement} el Element to scroll into view
+ * @param {HTMLElement|Object} elOrPosition Element to scroll into view
  * @param {Object} [config] Configuration options
+ * @param {string} [config.animate=true] Animate to the new scroll offset.
  * @param {string} [config.duration='fast'] jQuery animation duration value
  * @param {string} [config.direction] Scroll in only one direction, e.g. 'x' or 'y', omit
  *  to scroll in both directions
+ * @param {Object} [config.padding] Additional padding on the container to scroll past.
+ *  Object containing any of 'top', 'bottom', 'left', or 'right' as numbers.
+ * @param {Object} [config.scrollContainer] Scroll container. Defaults to
+ *  getClosestScrollableContainer of the element.
  * @return {jQuery.Promise} Promise which resolves when the scroll is complete
  */
-OO.ui.Element.static.scrollIntoView = function ( el, config ) {
-	var position, animations, container, $container, elementDimensions, containerDimensions,
-		$window,
+OO.ui.Element.static.scrollIntoView = function ( elOrPosition, config ) {
+	var position, animations, container, $container, elementPosition, containerDimensions,
+		$window, padding, animate, method,
 		deferred = $.Deferred();
 
 	// Configuration initialization
 	config = config || {};
 
+	padding = $.extend( {
+		top: 0,
+		bottom: 0,
+		left: 0,
+		right: 0
+	}, config.padding );
+
+	animate = config.animate !== false;
+
 	animations = {};
-	container = this.getClosestScrollableContainer( el, config.direction );
+	elementPosition = elOrPosition instanceof HTMLElement ?
+		this.getDimensions( elOrPosition ).rect :
+		elOrPosition;
+	container = config.scrollContainer || (
+		elOrPosition instanceof HTMLElement ?
+			this.getClosestScrollableContainer( elOrPosition, config.direction ) :
+			// No scrollContainer or element
+			this.getClosestScrollableContainer( document.body )
+	);
 	$container = $( container );
-	elementDimensions = this.getDimensions( el );
 	containerDimensions = this.getDimensions( container );
-	$window = $( this.getWindow( el ) );
+	$window = $( this.getWindow( container ) );
 
 	// Compute the element's position relative to the container
 	if ( $container.is( 'html, body' ) ) {
 		// If the scrollable container is the root, this is easy
 		position = {
-			top: elementDimensions.rect.top,
-			bottom: $window.innerHeight() - elementDimensions.rect.bottom,
-			left: elementDimensions.rect.left,
-			right: $window.innerWidth() - elementDimensions.rect.right
+			top: elementPosition.top,
+			bottom: $window.innerHeight() - elementPosition.bottom,
+			left: elementPosition.left,
+			right: $window.innerWidth() - elementPosition.right
 		};
 	} else {
 		// Otherwise, we have to subtract el's coordinates from container's coordinates
 		position = {
-			top: elementDimensions.rect.top -
+			top: elementPosition.top -
 				( containerDimensions.rect.top + containerDimensions.borders.top ),
 			bottom: containerDimensions.rect.bottom - containerDimensions.borders.bottom -
-				containerDimensions.scrollbar.bottom - elementDimensions.rect.bottom,
-			left: elementDimensions.rect.left -
+				containerDimensions.scrollbar.bottom - elementPosition.bottom,
+			left: elementPosition.left -
 				( containerDimensions.rect.left + containerDimensions.borders.left ),
 			right: containerDimensions.rect.right - containerDimensions.borders.right -
-				containerDimensions.scrollbar.right - elementDimensions.rect.right
+				containerDimensions.scrollbar.right - elementPosition.right
 		};
 	}
 
 	if ( !config.direction || config.direction === 'y' ) {
-		if ( position.top < 0 ) {
-			animations.scrollTop = containerDimensions.scroll.top + position.top;
-		} else if ( position.top > 0 && position.bottom < 0 ) {
+		if ( position.top < padding.top ) {
+			animations.scrollTop = containerDimensions.scroll.top + position.top - padding.top;
+		} else if ( position.bottom < padding.bottom ) {
 			animations.scrollTop = containerDimensions.scroll.top +
-				Math.min( position.top, -position.bottom );
+				// Scroll the bottom into view, but not at the expense
+				// of scrolling the top out of view
+				Math.min( position.top - padding.top, -position.bottom + padding.bottom );
 		}
 	}
 	if ( !config.direction || config.direction === 'x' ) {
-		if ( position.left < 0 ) {
-			animations.scrollLeft = containerDimensions.scroll.left + position.left;
-		} else if ( position.left > 0 && position.right < 0 ) {
+		if ( position.left < padding.left ) {
+			animations.scrollLeft = containerDimensions.scroll.left + position.left - padding.left;
+		} else if ( position.right < padding.right ) {
 			animations.scrollLeft = containerDimensions.scroll.left +
-				Math.min( position.left, -position.right );
+				// Scroll the right into view, but not at the expense
+				// of scrolling the left out of view
+				Math.min( position.left - padding.left, -position.right + padding.right );
+		}
+		if ( animations.scrollLeft !== undefined ) {
+			animations.scrollLeft = OO.ui.Element.static.computeNativeScrollLeft( animations.scrollLeft, container );
 		}
 	}
 	if ( !$.isEmptyObject( animations ) ) {
-		// eslint-disable-next-line no-jquery/no-animate
-		$container.stop( true ).animate( animations, config.duration === undefined ?
-			'fast' : config.duration );
-		$container.queue( function ( next ) {
+		if ( animate ) {
+			// eslint-disable-next-line no-jquery/no-animate
+			$container.stop( true ).animate( animations, config.duration === undefined ? 'fast' : config.duration );
+			$container.queue( function ( next ) {
+				deferred.resolve();
+				next();
+			} );
+		} else {
+			$container.stop( true );
+			for ( method in animations ) {
+				$container[ method ]( animations[ method ] );
+			}
 			deferred.resolve();
-			next();
-		} );
+		}
 	} else {
 		deferred.resolve();
 	}
@@ -1696,7 +1736,7 @@ OO.mixinClass( OO.ui.Layout, OO.EventEmitter );
  */
 OO.ui.Layout.prototype.resetScroll = function () {
 	this.$element[ 0 ].scrollTop = 0;
-	// TODO: Reset scrollLeft in an RTL-aware manner, see OO.ui.Element.static.getScrollLeft.
+	OO.ui.Element.static.setScrollLeft( this.$element[ 0 ], 0 );
 
 	return this;
 };
@@ -2273,7 +2313,7 @@ OO.ui.mixin.ButtonElement.prototype.setButtonElement = function ( $button ) {
  *
  * @protected
  * @param {jQuery.Event} e Mouse down event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.mixin.ButtonElement.prototype.onMouseDown = function ( e ) {
 	if ( this.isDisabled() || e.which !== OO.ui.MouseButtons.LEFT ) {
@@ -2310,7 +2350,7 @@ OO.ui.mixin.ButtonElement.prototype.onDocumentMouseUp = function ( e ) {
  * @protected
  * @param {jQuery.Event} e Mouse click event
  * @fires click
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.mixin.ButtonElement.prototype.onClick = function ( e ) {
 	if ( !this.isDisabled() && e.which === OO.ui.MouseButtons.LEFT ) {
@@ -2357,7 +2397,7 @@ OO.ui.mixin.ButtonElement.prototype.onDocumentKeyUp = function ( e ) {
  * @protected
  * @param {jQuery.Event} e Key press event
  * @fires click
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.mixin.ButtonElement.prototype.onKeyPress = function ( e ) {
 	if ( !this.isDisabled() && ( e.which === OO.ui.Keys.SPACE || e.which === OO.ui.Keys.ENTER ) ) {
@@ -2564,7 +2604,18 @@ OO.ui.mixin.GroupElement.prototype.addItems = function ( items, index ) {
 };
 
 /**
- * @inheritdoc
+ * Move an item from its current position to a new index.
+ *
+ * The item is expected to exist in the list. If it doesn't,
+ * the method will throw an exception.
+ *
+ * See https://doc.wikimedia.org/oojs/master/OO.EmitterList.html
+ *
+ * @private
+ * @param {OO.EventEmitter} items Item to add
+ * @param {number} newIndex Index to move the item to
+ * @return {number} The index the item was moved to
+ * @throws {Error} If item is not in the list
  */
 OO.ui.mixin.GroupElement.prototype.moveItem = function ( items, newIndex ) {
 	// insertItemElements expects this.items to not have been modified yet, so call before the mixin
@@ -2577,7 +2628,29 @@ OO.ui.mixin.GroupElement.prototype.moveItem = function ( items, newIndex ) {
 };
 
 /**
- * @inheritdoc
+ * Utility method to insert an item into the list, and
+ * connect it to aggregate events.
+ *
+ * Don't call this directly unless you know what you're doing.
+ * Use #addItems instead.
+ *
+ * This method can be extended in child classes to produce
+ * different behavior when an item is inserted. For example,
+ * inserted items may also be attached to the DOM or may
+ * interact with some other nodes in certain ways. Extending
+ * this method is allowed, but if overridden, the aggregation
+ * of events must be preserved, or behavior of emitted events
+ * will be broken.
+ *
+ * If you are extending this method, please make sure the
+ * parent method is called.
+ *
+ * See https://doc.wikimedia.org/oojs/master/OO.EmitterList.html
+ *
+ * @protected
+ * @param {OO.EventEmitter|Object} item Item to add
+ * @param {number} index Index to add items at
+ * @return {number} The index the item was added at
  */
 OO.ui.mixin.GroupElement.prototype.insertItem = function ( item, index ) {
 	item.setElementGroup( this );
@@ -2733,13 +2806,18 @@ OO.ui.mixin.LabelElement.static.label = null;
  * @param {string} text Text
  * @param {string} query Query to find
  * @param {Function} [compare] Optional string comparator, e.g. Intl.Collator().compare
+ * @param {boolean} [combineMarks=false] Pull combining marks into highlighted text
  * @return {jQuery} Text with the first match of the query
  *  sub-string wrapped in highlighted span
  */
-OO.ui.mixin.LabelElement.static.highlightQuery = function ( text, query, compare ) {
+OO.ui.mixin.LabelElement.static.highlightQuery = function ( text, query, compare, combineMarks ) {
 	var i, tLen, qLen,
 		offset = -1,
-		$result = $( '<span>' );
+		$result = $( '<span>' ),
+		comboLength = 0,
+		comboMarks = '',
+		comboRegex,
+		comboMatch;
 
 	if ( compare ) {
 		tLen = text.length;
@@ -2756,12 +2834,25 @@ OO.ui.mixin.LabelElement.static.highlightQuery = function ( text, query, compare
 	if ( !query.length || offset === -1 ) {
 		$result.text( text );
 	} else {
+		// Look for combining characters after the match
+		if ( combineMarks ) {
+			// Equivalent to \p{Mark} (which is not currently available in JavaScript)
+			comboMarks = '[\u0300-\u036F\u0483-\u0489\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u0711\u0730-\u074A\u07A6-\u07B0\u07EB-\u07F3\u07FD\u0816-\u0819\u081B-\u0823\u0825-\u0827\u0829-\u082D\u0859-\u085B\u08D3-\u08E1\u08E3-\u0903\u093A-\u093C\u093E-\u094F\u0951-\u0957\u0962\u0963\u0981-\u0983\u09BC\u09BE-\u09C4\u09C7\u09C8\u09CB-\u09CD\u09D7\u09E2\u09E3\u09FE\u0A01-\u0A03\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A70\u0A71\u0A75\u0A81-\u0A83\u0ABC\u0ABE-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AE2\u0AE3\u0AFA-\u0AFF\u0B01-\u0B03\u0B3C\u0B3E-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B56\u0B57\u0B62\u0B63\u0B82\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD7\u0C00-\u0C04\u0C3E-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C62\u0C63\u0C81-\u0C83\u0CBC\u0CBE-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CE2\u0CE3\u0D00-\u0D03\u0D3B\u0D3C\u0D3E-\u0D44\u0D46-\u0D48\u0D4A-\u0D4D\u0D57\u0D62\u0D63\u0D82\u0D83\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DF2\u0DF3\u0E31\u0E34-\u0E3A\u0E47-\u0E4E\u0EB1\u0EB4-\u0EB9\u0EBB\u0EBC\u0EC8-\u0ECD\u0F18\u0F19\u0F35\u0F37\u0F39\u0F3E\u0F3F\u0F71-\u0F84\u0F86\u0F87\u0F8D-\u0F97\u0F99-\u0FBC\u0FC6\u102B-\u103E\u1056-\u1059\u105E-\u1060\u1062-\u1064\u1067-\u106D\u1071-\u1074\u1082-\u108D\u108F\u109A-\u109D\u135D-\u135F\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773\u17B4-\u17D3\u17DD\u180B-\u180D\u1885\u1886\u18A9\u1920-\u192B\u1930-\u193B\u1A17-\u1A1B\u1A55-\u1A5E\u1A60-\u1A7C\u1A7F\u1AB0-\u1ABE\u1B00-\u1B04\u1B34-\u1B44\u1B6B-\u1B73\u1B80-\u1B82\u1BA1-\u1BAD\u1BE6-\u1BF3\u1C24-\u1C37\u1CD0-\u1CD2\u1CD4-\u1CE8\u1CED\u1CF2-\u1CF4\u1CF7-\u1CF9\u1DC0-\u1DF9\u1DFB-\u1DFF\u20D0-\u20F0\u2CEF-\u2CF1\u2D7F\u2DE0-\u2DFF\u302A-\u302F\u3099\u309A\uA66F-\uA672\uA674-\uA67D\uA69E\uA69F\uA6F0\uA6F1\uA802\uA806\uA80B\uA823-\uA827\uA880\uA881\uA8B4-\uA8C5\uA8E0-\uA8F1\uA8FF\uA926-\uA92D\uA947-\uA953\uA980-\uA983\uA9B3-\uA9C0\uA9E5\uAA29-\uAA36\uAA43\uAA4C\uAA4D\uAA7B-\uAA7D\uAAB0\uAAB2-\uAAB4\uAAB7\uAAB8\uAABE\uAABF\uAAC1\uAAEB-\uAAEF\uAAF5\uAAF6\uABE3-\uABEA\uABEC\uABED\uFB1E\uFE00-\uFE0F\uFE20-\uFE2F]';
+
+			comboRegex = new RegExp( '(^)' + comboMarks + '*' );
+			comboMatch = text.slice( offset + query.length ).match( comboRegex );
+
+			if ( comboMatch && comboMatch.length ) {
+				comboLength = comboMatch[ 0 ].length;
+			}
+		}
+
 		$result.append(
 			document.createTextNode( text.slice( 0, offset ) ),
 			$( '<span>' )
 				.addClass( 'oo-ui-labelElement-label-highlight' )
-				.text( text.slice( offset, offset + query.length ) ),
-			document.createTextNode( text.slice( offset + query.length ) )
+				.text( text.slice( offset, offset + query.length + comboLength ) ),
+			document.createTextNode( text.slice( offset + query.length + comboLength ) )
 		);
 	}
 	return $result.contents();
@@ -2841,11 +2932,16 @@ OO.ui.mixin.LabelElement.prototype.setInvisibleLabel = function ( invisibleLabel
  * @param {string} text Text label to set
  * @param {string} query Substring of text to highlight
  * @param {Function} [compare] Optional string comparator, e.g. Intl.Collator().compare
+ * @param {boolean} [combineMarks=false] Pull combining marks into highlighted text
  * @chainable
  * @return {OO.ui.Element} The element, for chaining
  */
-OO.ui.mixin.LabelElement.prototype.setHighlightedQuery = function ( text, query, compare ) {
-	return this.setLabel( this.constructor.static.highlightQuery( text, query, compare ) );
+OO.ui.mixin.LabelElement.prototype.setHighlightedQuery = function (
+	text, query, compare, combineMarks
+) {
+	return this.setLabel(
+		this.constructor.static.highlightQuery( text, query, compare, combineMarks )
+	);
 };
 
 /**
@@ -3041,16 +3137,6 @@ OO.ui.mixin.IconElement.prototype.getIcon = function () {
 };
 
 /**
- * Get the icon title. The title text is displayed when a user moves the mouse over the icon.
- *
- * @return {string} Icon title text
- * @deprecated
- */
-OO.ui.mixin.IconElement.prototype.getIconTitle = function () {
-	return this.iconTitle;
-};
-
-/**
  * IndicatorElement is often mixed into other classes to generate an indicator.
  * Indicators are small graphics that are generally used in two ways:
  *
@@ -3185,18 +3271,6 @@ OO.ui.mixin.IndicatorElement.prototype.getIndicator = function () {
 };
 
 /**
- * Get the indicator title.
- *
- * The title is displayed when a user moves the mouse over the indicator.
- *
- * @return {string} Indicator title text
- * @deprecated
- */
-OO.ui.mixin.IndicatorElement.prototype.getIndicatorTitle = function () {
-	return this.indicatorTitle;
-};
-
-/**
  * The FlaggedElement class is an attribute mixin, meaning that it is used to add
  * additional functionality to an element created by another class. The class provides
  * a ‘flags’ property assigned the name (or an array of names) of styling flags,
@@ -3252,9 +3326,13 @@ OO.ui.mixin.FlaggedElement = function OoUiMixinFlaggedElement( config ) {
 	this.$flagged = null;
 
 	// Initialization
-	this.setFlags( config.flags );
+	this.setFlags( config.flags || this.constructor.static.flags );
 	this.setFlaggedElement( config.$flagged || this.$element );
 };
+
+/* Setup */
+
+OO.initClass( OO.ui.mixin.FlaggedElement );
 
 /* Events */
 
@@ -3267,6 +3345,17 @@ OO.ui.mixin.FlaggedElement = function OoUiMixinFlaggedElement( config ) {
  * @param {Object.<string,boolean>} changes Object keyed by flag name. A Boolean `true` indicates
  * that the flag was added, `false` that the flag was removed.
  */
+
+/* Static Properties */
+
+/**
+ * Initial value to pass to setFlags if no value is provided in config.
+ *
+ * @static
+ * @inheritable
+ * @property {string|string[]|Object.<string, boolean>}
+ */
+OO.ui.mixin.FlaggedElement.static.flags = null;
 
 /* Methods */
 
@@ -3458,6 +3547,9 @@ OO.initClass( OO.ui.mixin.TitledElement );
  * The title text, a function that returns text, or `null` for no title. The value of the static
  * property is overridden if the #title config option is used.
  *
+ * If the element has a default title (e.g. `<input type=file>`), `null` will allow that title to be
+ * shown. Use empty string to suppress it.
+ *
  * @static
  * @inheritable
  * @property {string|Function|null}
@@ -3482,9 +3574,7 @@ OO.ui.mixin.TitledElement.prototype.setTitledElement = function ( $titled ) {
 	}
 
 	this.$titled = $titled;
-	if ( this.title ) {
-		this.updateTitle();
-	}
+	this.updateTitle();
 };
 
 /**
@@ -3497,7 +3587,7 @@ OO.ui.mixin.TitledElement.prototype.setTitledElement = function ( $titled ) {
  */
 OO.ui.mixin.TitledElement.prototype.setTitle = function ( title ) {
 	title = typeof title === 'function' ? OO.ui.resolveMsg( title ) : title;
-	title = ( typeof title === 'string' && title.length ) ? title : null;
+	title = typeof title === 'string' ? title : null;
 
 	if ( this.title !== title ) {
 		this.title = title;
@@ -4245,6 +4335,125 @@ OO.mixinClass( OO.ui.LabelWidget, OO.ui.mixin.TitledElement );
  * @inheritdoc
  */
 OO.ui.LabelWidget.static.tagName = 'label';
+
+/**
+ * MessageWidget produces a visual component for sending a notice to the user
+ * with an icon and distinct design noting its purpose. The MessageWidget changes
+ * its visual presentation based on the type chosen, which also denotes its UX
+ * purpose.
+ *
+ * @class
+ * @extends OO.ui.Widget
+ * @mixins OO.ui.mixin.IconElement
+ * @mixins OO.ui.mixin.LabelElement
+ * @mixins OO.ui.mixin.TitledElement
+ * @mixins OO.ui.mixin.FlaggedElement
+ *
+ * @constructor
+ * @param {Object} [config] Configuration options
+ * @cfg {string} [type='notice'] The type of the notice widget. This will also
+ *  impact the flags that the widget receives (and hence its CSS design) as well
+ *  as the icon that appears. Available types:
+ *  'notice', 'error', 'warning', 'success'
+ * @cfg {boolean} [inline] Set the notice as an inline notice. The default
+ *  is not inline, or 'boxed' style.
+ */
+OO.ui.MessageWidget = function OoUiMessageWidget( config ) {
+	// Configuration initialization
+	config = config || {};
+
+	// Parent constructor
+	OO.ui.MessageWidget.parent.call( this, config );
+
+	// Mixin constructors
+	OO.ui.mixin.IconElement.call( this, config );
+	OO.ui.mixin.LabelElement.call( this, config );
+	OO.ui.mixin.TitledElement.call( this, config );
+	OO.ui.mixin.FlaggedElement.call( this, config );
+
+	// Set type
+	this.setType( config.type );
+	this.setInline( config.inline );
+
+	// Build the widget
+	this.$element
+		.append( this.$icon, this.$label )
+		.addClass( 'oo-ui-messageWidget' );
+};
+
+/* Setup */
+
+OO.inheritClass( OO.ui.MessageWidget, OO.ui.Widget );
+OO.mixinClass( OO.ui.MessageWidget, OO.ui.mixin.IconElement );
+OO.mixinClass( OO.ui.MessageWidget, OO.ui.mixin.LabelElement );
+OO.mixinClass( OO.ui.MessageWidget, OO.ui.mixin.TitledElement );
+OO.mixinClass( OO.ui.MessageWidget, OO.ui.mixin.FlaggedElement );
+
+/* Static Properties */
+
+/**
+ * An object defining the icon name per defined type.
+ *
+ * @static
+ * @property {Object}
+ */
+OO.ui.MessageWidget.static.iconMap = {
+	notice: 'infoFilled',
+	error: 'error',
+	warning: 'alert',
+	success: 'check'
+};
+
+/* Methods */
+
+/**
+ * Set the inline state of the widget.
+ *
+ * @param {boolean} inline Widget is inline
+ */
+OO.ui.MessageWidget.prototype.setInline = function ( inline ) {
+	inline = !!inline;
+
+	if ( this.inline !== inline ) {
+		this.inline = inline;
+		this.$element
+			.toggleClass( 'oo-ui-messageWidget-block', !this.inline );
+	}
+};
+/**
+ * Set the widget type. The given type must belong to the list of
+ * legal types set by OO.ui.MessageWidget.static.iconMap
+ *
+ * @param  {string} [type] Given type. Defaults to 'notice'
+ */
+OO.ui.MessageWidget.prototype.setType = function ( type ) {
+	// Validate type
+	if ( Object.keys( this.constructor.static.iconMap ).indexOf( type ) === -1 ) {
+		type = 'notice'; // Default
+	}
+
+	if ( this.type !== type ) {
+
+		// Flags
+		this.clearFlags();
+		this.setFlags( type );
+
+		// Set the icon and its variant
+		this.setIcon( this.constructor.static.iconMap[ type ] );
+		this.$icon.removeClass( 'oo-ui-image-' + this.type );
+		this.$icon.addClass( 'oo-ui-image-' + type );
+
+		if ( type === 'error' ) {
+			this.$element.attr( 'role', 'alert' );
+			this.$element.removeAttr( 'aria-live' );
+		} else {
+			this.$element.removeAttr( 'role' );
+			this.$element.attr( 'aria-live', 'polite' );
+		}
+
+		this.type = type;
+	}
+};
 
 /**
  * PendingElement is a mixin that is used to create elements that notify users that something is
@@ -6461,8 +6670,7 @@ OO.ui.SelectWidget = function OoUiSelectWidget( config ) {
 
 	// Initialization
 	this.$element
-		// -depressed is a deprecated alias of -unpressed
-		.addClass( 'oo-ui-selectWidget oo-ui-selectWidget-unpressed oo-ui-selectWidget-depressed' )
+		.addClass( 'oo-ui-selectWidget oo-ui-selectWidget-unpressed' )
 		.attr( 'role', 'listbox' );
 	this.setFocusOwner( this.$element );
 	if ( Array.isArray( config.items ) ) {
@@ -6599,7 +6807,7 @@ OO.ui.SelectWidget.prototype.onFocus = function ( event ) {
  *
  * @private
  * @param {jQuery.Event} e Mouse down event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.SelectWidget.prototype.onMouseDown = function ( e ) {
 	var item;
@@ -6622,7 +6830,7 @@ OO.ui.SelectWidget.prototype.onMouseDown = function ( e ) {
  *
  * @private
  * @param {MouseEvent} e Mouse up event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.SelectWidget.prototype.onDocumentMouseUp = function ( e ) {
 	var item;
@@ -6669,7 +6877,7 @@ OO.ui.SelectWidget.prototype.onDocumentMouseMove = function ( e ) {
  *
  * @private
  * @param {jQuery.Event} e Mouse over event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.SelectWidget.prototype.onMouseOver = function ( e ) {
 	var item;
@@ -6688,7 +6896,7 @@ OO.ui.SelectWidget.prototype.onMouseOver = function ( e ) {
  *
  * @private
  * @param {jQuery.Event} e Mouse over event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.SelectWidget.prototype.onMouseLeave = function () {
 	if ( !this.isDisabled() ) {
@@ -6706,7 +6914,10 @@ OO.ui.SelectWidget.prototype.onMouseLeave = function () {
 OO.ui.SelectWidget.prototype.onDocumentKeyDown = function ( e ) {
 	var nextItem,
 		handled = false,
-		currentItem = this.findHighlightedItem(),
+		selected = this.findSelectedItems(),
+		currentItem = this.findHighlightedItem() || (
+			Array.isArray( selected ) ? selected[ 0 ] : selected
+		),
 		firstItem = this.getItems()[ 0 ];
 
 	if ( !this.isDisabled() && this.isVisible() ) {
@@ -6721,13 +6932,15 @@ OO.ui.SelectWidget.prototype.onDocumentKeyDown = function ( e ) {
 			case OO.ui.Keys.UP:
 			case OO.ui.Keys.LEFT:
 				this.clearKeyPressBuffer();
-				nextItem = currentItem ? this.findRelativeSelectableItem( currentItem, -1 ) : firstItem;
+				nextItem = currentItem ?
+					this.findRelativeSelectableItem( currentItem, -1 ) : firstItem;
 				handled = true;
 				break;
 			case OO.ui.Keys.DOWN:
 			case OO.ui.Keys.RIGHT:
 				this.clearKeyPressBuffer();
-				nextItem = currentItem ? this.findRelativeSelectableItem( currentItem, 1 ) : firstItem;
+				nextItem = currentItem ?
+					this.findRelativeSelectableItem( currentItem, 1 ) : firstItem;
 				handled = true;
 				break;
 			case OO.ui.Keys.ESCAPE:
@@ -6811,10 +7024,10 @@ OO.ui.SelectWidget.prototype.clearKeyPressBuffer = function () {
  *
  * @protected
  * @param {KeyboardEvent} e Key press event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.SelectWidget.prototype.onDocumentKeyPress = function ( e ) {
-	var c, filter, item;
+	var c, filter, item, selected;
 
 	if ( !e.charCode ) {
 		if ( e.keyCode === OO.ui.Keys.BACKSPACE && this.keyPressBuffer !== '' ) {
@@ -6836,7 +7049,10 @@ OO.ui.SelectWidget.prototype.onDocumentKeyPress = function ( e ) {
 	}
 	this.keyPressBufferTimer = setTimeout( this.clearKeyPressBuffer.bind( this ), 1500 );
 
-	item = this.findHighlightedItem() || this.findSelectedItem();
+	selected = this.findSelectedItems();
+	item = this.findHighlightedItem() || (
+		Array.isArray( selected ) ? selected[ 0 ] : selected
+	);
 
 	if ( this.keyPressBuffer === c ) {
 		// Common (if weird) special case: typing "xxxx" will cycle through all
@@ -7016,8 +7232,7 @@ OO.ui.SelectWidget.prototype.togglePressed = function ( pressed ) {
 	if ( pressed !== this.pressed ) {
 		this.$element
 			.toggleClass( 'oo-ui-selectWidget-pressed', pressed )
-			// -depressed is a deprecated alias of -unpressed
-			.toggleClass( 'oo-ui-selectWidget-unpressed oo-ui-selectWidget-depressed', !pressed );
+			.toggleClass( 'oo-ui-selectWidget-unpressed', !pressed );
 		this.pressed = pressed;
 	}
 };
@@ -7600,7 +7815,7 @@ OO.ui.MenuSectionOptionWidget.static.highlightable = false;
  * @cfg {boolean} [highlightOnFilter] Highlight the first result when filtering
  * @cfg {string} [filterMode='prefix'] The mode by which the menu filters the results.
  *  Options are 'exact', 'prefix' or 'substring'. See `OO.ui.SelectWidget#getItemMatcher`
- * @param {number|string} [width] Width of the menu as a number of pixels or CSS string with unit
+ * @cfg {number|string} [width] Width of the menu as a number of pixels or CSS string with unit
  *  suffix, used by {@link OO.ui.mixin.ClippableElement ClippableElement}
  */
 OO.ui.MenuSelectWidget = function OoUiMenuSelectWidget( config ) {
@@ -7779,7 +7994,8 @@ OO.ui.MenuSelectWidget.prototype.updateItemVisibility = function () {
 
 		if (
 			this.highlightOnFilter &&
-			!( this.lastHighlightedItem && this.lastHighlightedItem.isVisible() )
+			!( this.lastHighlightedItem && this.lastHighlightedItem.isVisible() ) &&
+			this.isVisible()
 		) {
 			// Highlight the first item on the list
 			item = null;
@@ -7793,7 +8009,6 @@ OO.ui.MenuSelectWidget.prototype.updateItemVisibility = function () {
 			this.highlightItem( item );
 			this.lastHighlightedItem = item;
 		}
-
 	}
 
 	// Reevaluate clipping
@@ -7995,8 +8210,8 @@ OO.ui.MenuSelectWidget.prototype.toggle = function ( visible ) {
 			selectedItem = this.findSelectedItem();
 			if ( !this.multiselect && selectedItem ) {
 				// TODO: Verify if this is even needed; This is already done on highlight changes
-				// in SelectWidget#highlightItem, so we should just need to highlight the item we need to
-				// highlight here and not bother with attr or checking selections.
+				// in SelectWidget#highlightItem, so we should just need to highlight the item
+				// we need to highlight here and not bother with attr or checking selections.
 				this.$focusOwner.attr( 'aria-activedescendant', selectedItem.getElementId() );
 				selectedItem.scrollElementIntoView( { duration: 0 } );
 			}
@@ -8015,6 +8230,7 @@ OO.ui.MenuSelectWidget.prototype.toggle = function ( visible ) {
 			this.getElementDocument().removeEventListener( 'mousedown', this.onDocumentMouseDownHandler, true );
 			this.togglePositioning( false );
 			this.toggleClipping( false );
+			this.lastHighlightedItem = null;
 		}
 	}
 
@@ -8080,10 +8296,10 @@ OO.ui.MenuSelectWidget.prototype.scrollToTop = function () {
  * @param {Object} [config] Configuration options
  * @cfg {Object} [menu] Configuration options to pass to
  *  {@link OO.ui.MenuSelectWidget menu select widget}.
- * @cfg {jQuery} [$overlay] Render the menu into a separate layer. This configuration is useful
- *  in cases where the expanded menu is larger than its containing `<div>`. The specified overlay
- *  layer is usually on top of the containing `<div>` and has a larger area. By default, the menu
- *  uses relative positioning.
+ * @cfg {jQuery|boolean} [$overlay] Render the menu into a separate layer. This configuration is
+ *  useful in cases where the expanded menu is larger than its containing `<div>`. The specified
+ *  overlay layer is usually on top of the containing `<div>` and has a larger area. By default,
+ *  the menu uses relative positioning. Pass 'true' to use the default overlay.
  *  See <https://www.mediawiki.org/wiki/OOUI/Concepts#Overlays>.
  */
 OO.ui.DropdownWidget = function OoUiDropdownWidget( config ) {
@@ -8094,7 +8310,7 @@ OO.ui.DropdownWidget = function OoUiDropdownWidget( config ) {
 	OO.ui.DropdownWidget.parent.call( this, config );
 
 	// Properties (must be set before TabIndexedElement constructor call)
-	this.$handle = $( '<button>' );
+	this.$handle = $( '<span>' );
 	this.$overlay = ( config.$overlay === true ?
 		OO.ui.getDefaultOverlay() : config.$overlay ) || this.$element;
 
@@ -8129,14 +8345,21 @@ OO.ui.DropdownWidget = function OoUiDropdownWidget( config ) {
 	} );
 
 	// Initialization
+	this.$label
+		.attr( {
+			role: 'textbox',
+			'aria-readonly': 'true'
+		} );
 	this.$handle
 		.addClass( 'oo-ui-dropdownWidget-handle' )
+		.append( this.$icon, this.$label, this.$indicator )
 		.attr( {
-			type: 'button',
-			'aria-owns': this.menu.getElementId(),
-			'aria-haspopup': 'listbox'
-		} )
-		.append( this.$icon, this.$label, this.$indicator );
+			role: 'combobox',
+			'aria-autocomplete': 'list',
+			'aria-expanded': 'false',
+			'aria-haspopup': 'true',
+			'aria-owns': this.menu.getElementId()
+		} );
 	this.$element
 		.addClass( 'oo-ui-dropdownWidget' )
 		.append( this.$handle );
@@ -8202,7 +8425,7 @@ OO.ui.DropdownWidget.prototype.onMenuToggle = function ( isVisible ) {
  *
  * @private
  * @param {jQuery.Event} e Mouse click event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.DropdownWidget.prototype.onClick = function ( e ) {
 	if ( !this.isDisabled() && e.which === OO.ui.MouseButtons.LEFT ) {
@@ -8216,7 +8439,7 @@ OO.ui.DropdownWidget.prototype.onClick = function ( e ) {
  *
  * @private
  * @param {jQuery.Event} e Key down event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.DropdownWidget.prototype.onKeyDown = function ( e ) {
 	if (
@@ -9467,6 +9690,7 @@ OO.ui.ButtonInputWidget.prototype.getInputId = function () {
  * @param {Object} [config] Configuration options
  * @cfg {boolean} [selected=false] Select the checkbox initially. By default, the checkbox is
  *  not selected.
+ * @cfg {boolean} [indeterminate=false] Whether the checkbox is in the indeterminate state.
  */
 OO.ui.CheckboxInputWidget = function OoUiCheckboxInputWidget( config ) {
 	// Configuration initialization
@@ -9487,11 +9711,23 @@ OO.ui.CheckboxInputWidget = function OoUiCheckboxInputWidget( config ) {
 		// Required for pretty styling in WikimediaUI theme
 		.append( this.checkIcon.$element );
 	this.setSelected( config.selected !== undefined ? config.selected : false );
+	this.setIndeterminate( config.indeterminate !== undefined ? config.indeterminate : false );
 };
 
 /* Setup */
 
 OO.inheritClass( OO.ui.CheckboxInputWidget, OO.ui.InputWidget );
+
+/* Events */
+
+/**
+ * @event change
+ *
+ * A change event is emitted when the state of the input changes.
+ *
+ * @param {boolean} selected
+ * @param {boolean} indeterminate
+ */
 
 /* Static Properties */
 
@@ -9531,6 +9767,7 @@ OO.ui.CheckboxInputWidget.prototype.onEdit = function () {
 		// Allow the stack to clear so the value will be updated
 		setTimeout( function () {
 			widget.setSelected( widget.$input.prop( 'checked' ) );
+			widget.setIndeterminate( widget.$input.prop( 'indeterminate' ) );
 		} );
 	}
 };
@@ -9538,16 +9775,20 @@ OO.ui.CheckboxInputWidget.prototype.onEdit = function () {
 /**
  * Set selection state of this checkbox.
  *
- * @param {boolean} state `true` for selected
+ * @param {boolean} state Selected state
+ * @param {boolean} internal Used for internal calls to suppress events
  * @chainable
- * @return {OO.ui.Widget} The widget, for chaining
+ * @return {OO.ui.CheckboxInputWidget} The widget, for chaining
  */
-OO.ui.CheckboxInputWidget.prototype.setSelected = function ( state ) {
+OO.ui.CheckboxInputWidget.prototype.setSelected = function ( state, internal ) {
 	state = !!state;
 	if ( this.selected !== state ) {
 		this.selected = state;
 		this.$input.prop( 'checked', this.selected );
-		this.emit( 'change', this.selected );
+		if ( !internal ) {
+			this.setIndeterminate( false, true );
+			this.emit( 'change', this.selected, this.indeterminate );
+		}
 	}
 	// The first time that the selection state is set (probably while constructing the widget),
 	// remember it in defaultSelected. This property can be later used to check whether
@@ -9572,6 +9813,42 @@ OO.ui.CheckboxInputWidget.prototype.isSelected = function () {
 		this.setSelected( selected );
 	}
 	return this.selected;
+};
+
+/**
+ * Set indeterminate state of this checkbox.
+ *
+ * @param {boolean} state Indeterminate state
+ * @param {boolean} internal Used for internal calls to suppress events
+ * @chainable
+ * @return {OO.ui.CheckboxInputWidget} The widget, for chaining
+ */
+OO.ui.CheckboxInputWidget.prototype.setIndeterminate = function ( state, internal ) {
+	state = !!state;
+	if ( this.indeterminate !== state ) {
+		this.indeterminate = state;
+		this.$input.prop( 'indeterminate', this.indeterminate );
+		if ( !internal ) {
+			this.setSelected( false, true );
+			this.emit( 'change', this.selected, this.indeterminate );
+		}
+	}
+	return this;
+};
+
+/**
+ * Check if this checkbox is selected.
+ *
+ * @return {boolean} Checkbox is selected
+ */
+OO.ui.CheckboxInputWidget.prototype.isIndeterminate = function () {
+	// Resynchronize our internal data with DOM data. Other scripts executing on the page can modify
+	// it, and we won't know unless they're kind enough to trigger a 'change' event.
+	var indeterminate = this.$input.prop( 'indeterminate' );
+	if ( this.indeterminate !== indeterminate ) {
+		this.setIndeterminate( indeterminate );
+	}
+	return this.indeterminate;
 };
 
 /**
@@ -9627,10 +9904,10 @@ OO.ui.CheckboxInputWidget.prototype.restorePreInfuseState = function ( state ) {
  * @param {Object} [config] Configuration options
  * @cfg {Object[]} [options=[]] Array of menu options in the format described above.
  * @cfg {Object} [dropdown] Configuration options for {@link OO.ui.DropdownWidget DropdownWidget}
- * @cfg {jQuery} [$overlay] Render the menu into a separate layer. This configuration is useful
- *  in cases where the expanded menu is larger than its containing `<div>`. The specified overlay
- *  layer is usually on top of the containing `<div>` and has a larger area. By default, the menu
- *  uses relative positioning.
+ * @cfg {jQuery|boolean} [$overlay] Render the menu into a separate layer. This configuration is
+ *  useful in cases where the expanded menu is larger than its containing `<div>`. The specified
+ *  overlay layer is usually on top of the containing `<div>` and has a larger area. By default,
+ *  the menu uses relative positioning. Pass 'true' to use the default overlay.
  *  See <https://www.mediawiki.org/wiki/OOUI/Concepts#Overlays>.
  */
 OO.ui.DropdownInputWidget = function OoUiDropdownInputWidget( config ) {
@@ -9660,6 +9937,9 @@ OO.ui.DropdownInputWidget = function OoUiDropdownInputWidget( config ) {
 	this.$element
 		.addClass( 'oo-ui-dropdownInputWidget' )
 		.append( this.dropdownWidget.$element );
+	if ( OO.ui.isMobile() ) {
+		this.$element.addClass( 'oo-ui-isMobile' );
+	}
 	this.setTabIndexedElement( this.dropdownWidget.$tabIndexed );
 	this.setTitledElement( this.dropdownWidget.$handle );
 };
@@ -9675,7 +9955,7 @@ OO.inheritClass( OO.ui.DropdownInputWidget, OO.ui.InputWidget );
  * @protected
  */
 OO.ui.DropdownInputWidget.prototype.getInputElement = function () {
-	return $( '<select>' );
+	return $( '<select>' ).addClass( 'oo-ui-indicator-down' );
 };
 
 /**
@@ -10612,7 +10892,7 @@ OO.ui.TextInputWidget.static.validationPatterns = {
  *
  * @private
  * @param {jQuery.Event} e Mouse down event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.TextInputWidget.prototype.onIconMouseDown = function ( e ) {
 	if ( e.which === OO.ui.MouseButtons.LEFT ) {
@@ -10626,7 +10906,7 @@ OO.ui.TextInputWidget.prototype.onIconMouseDown = function ( e ) {
  *
  * @private
  * @param {jQuery.Event} e Mouse down event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.TextInputWidget.prototype.onIndicatorMouseDown = function ( e ) {
 	if ( e.which === OO.ui.MouseButtons.LEFT ) {
@@ -11887,7 +12167,7 @@ OO.ui.FieldLayout = function OoUiFieldLayout( fieldWidget, config ) {
 	this.successMessages = [];
 	this.notices = [];
 	this.$field = this.isFieldInline() ? $( '<span>' ) : $( '<div>' );
-	this.$messages = $( '<ul>' );
+	this.$messages = $( '<div>' );
 	this.$header = $( '<span>' );
 	this.$body = $( '<div>' );
 	this.align = null;
@@ -11982,26 +12262,11 @@ OO.ui.FieldLayout.prototype.isFieldInline = function () {
  * @return {jQuery}
  */
 OO.ui.FieldLayout.prototype.makeMessage = function ( kind, text ) {
-	var $listItem, $icon, message;
-	$listItem = $( '<li>' );
-	if ( kind === 'error' ) {
-		$icon = new OO.ui.IconWidget( { icon: 'alert', flags: [ 'error' ] } ).$element;
-		$listItem.attr( 'role', 'alert' );
-	} else if ( kind === 'warning' ) {
-		$icon = new OO.ui.IconWidget( { icon: 'alert', flags: [ 'warning' ] } ).$element;
-		$listItem.attr( 'role', 'alert' );
-	} else if ( kind === 'success' ) {
-		$icon = new OO.ui.IconWidget( { icon: 'check', flags: [ 'success' ] } ).$element;
-	} else if ( kind === 'notice' ) {
-		$icon = new OO.ui.IconWidget( { icon: 'notice' } ).$element;
-	} else {
-		$icon = '';
-	}
-	message = new OO.ui.LabelWidget( { label: text } );
-	$listItem
-		.append( $icon, message.$element )
-		.addClass( 'oo-ui-fieldLayout-messages-' + kind );
-	return $listItem;
+	return new OO.ui.MessageWidget( {
+		type: kind,
+		inline: true,
+		label: text
+	} ).$element;
 };
 
 /**
@@ -12341,13 +12606,20 @@ OO.inheritClass( OO.ui.ActionFieldLayout, OO.ui.FieldLayout );
  * @param {Object} [config] Configuration options
  * @cfg {OO.ui.FieldLayout[]} [items] An array of fields to add to the fieldset.
  *  See OO.ui.FieldLayout for more information about fields.
- * @cfg {string|OO.ui.HtmlSnippet} [help] Help text. When help text is specified, a "help" icon
- *  will appear in the upper-right corner of the rendered field; clicking it will display the text
- *  in a popup. For important messages, you are advised to use `notices`, as they are always shown.
+ * @cfg {string|OO.ui.HtmlSnippet} [help] Help text. When help text is specified
+ *  and `helpInline` is `false`, a "help" icon will appear in the upper-right
+ *  corner of the rendered field; clicking it will display the text in a popup.
+ *  If `helpInline` is `true`, then a subtle description will be shown after the
+ *  label.
+ *  For feedback messages, you are advised to use `notices`.
+ * @cfg {boolean} [helpInline=false] Whether or not the help should be inline,
+ *  or shown when the "help" icon is clicked.
  * @cfg {jQuery} [$overlay] Passed to OO.ui.PopupButtonWidget for help popup, if `help` is given.
  *  See <https://www.mediawiki.org/wiki/OOUI/Concepts#Overlays>.
  */
 OO.ui.FieldsetLayout = function OoUiFieldsetLayout( config ) {
+	var helpWidget;
+
 	// Configuration initialization
 	config = config || {};
 
@@ -12361,36 +12633,44 @@ OO.ui.FieldsetLayout = function OoUiFieldsetLayout( config ) {
 
 	// Properties
 	this.$header = $( '<legend>' );
-	if ( config.help ) {
-		this.popupButtonWidget = new OO.ui.PopupButtonWidget( {
-			$overlay: config.$overlay,
-			popup: {
-				padded: true
-			},
-			classes: [ 'oo-ui-fieldsetLayout-help' ],
-			framed: false,
-			icon: 'info',
-			label: OO.ui.msg( 'ooui-field-help' ),
-			invisibleLabel: true
-		} );
-		if ( config.help instanceof OO.ui.HtmlSnippet ) {
-			this.popupButtonWidget.getPopup().$body.html( config.help.toString() );
-		} else {
-			this.popupButtonWidget.getPopup().$body.text( config.help );
-		}
-		this.$help = this.popupButtonWidget.$element;
-	} else {
-		this.$help = $( [] );
-	}
 
 	// Initialization
 	this.$header
 		.addClass( 'oo-ui-fieldsetLayout-header' )
-		.append( this.$icon, this.$label, this.$help );
+		.append( this.$icon, this.$label );
 	this.$group.addClass( 'oo-ui-fieldsetLayout-group' );
 	this.$element
 		.addClass( 'oo-ui-fieldsetLayout' )
 		.prepend( this.$header, this.$group );
+
+	// Help
+	if ( config.help ) {
+		if ( config.helpInline ) {
+			helpWidget = new OO.ui.LabelWidget( {
+				label: config.help,
+				classes: [ 'oo-ui-inline-help' ]
+			} );
+			this.$element.prepend( this.$header, helpWidget.$element, this.$group );
+		} else {
+			helpWidget = new OO.ui.PopupButtonWidget( {
+				$overlay: config.$overlay,
+				popup: {
+					padded: true
+				},
+				classes: [ 'oo-ui-fieldsetLayout-help' ],
+				framed: false,
+				icon: 'info',
+				label: OO.ui.msg( 'ooui-field-help' ),
+				invisibleLabel: true
+			} );
+			if ( config.help instanceof OO.ui.HtmlSnippet ) {
+				helpWidget.getPopup().$body.html( config.help.toString() );
+			} else {
+				helpWidget.getPopup().$body.text( config.help );
+			}
+			this.$header.append( helpWidget.$element );
+		}
+	}
 	if ( Array.isArray( config.items ) ) {
 		this.addItems( config.items );
 	}
@@ -12967,12 +13247,16 @@ OO.ui.NumberInputWidget.prototype.onButtonClick = function ( dir ) {
  *
  * @private
  * @param {jQuery.Event} event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.NumberInputWidget.prototype.onWheel = function ( event ) {
 	var delta = 0;
 
-	if ( !this.isDisabled() && this.$input.is( ':focus' ) ) {
+	if ( this.isDisabled() || this.isReadOnly() ) {
+		return;
+	}
+
+	if ( this.$input.is( ':focus' ) ) {
 		// Standard 'wheel' event
 		if ( event.originalEvent.deltaMode !== undefined ) {
 			this.sawWheelEvent = true;
@@ -13010,25 +13294,45 @@ OO.ui.NumberInputWidget.prototype.onWheel = function ( event ) {
  *
  * @private
  * @param {jQuery.Event} e Key down event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.NumberInputWidget.prototype.onKeyDown = function ( e ) {
-	if ( !this.isDisabled() ) {
-		switch ( e.which ) {
-			case OO.ui.Keys.UP:
-				this.adjustValue( this.buttonStep );
-				return false;
-			case OO.ui.Keys.DOWN:
-				this.adjustValue( -this.buttonStep );
-				return false;
-			case OO.ui.Keys.PAGEUP:
-				this.adjustValue( this.pageStep );
-				return false;
-			case OO.ui.Keys.PAGEDOWN:
-				this.adjustValue( -this.pageStep );
-				return false;
-		}
+	if ( this.isDisabled() || this.isReadOnly() ) {
+		return;
 	}
+
+	switch ( e.which ) {
+		case OO.ui.Keys.UP:
+			this.adjustValue( this.buttonStep );
+			return false;
+		case OO.ui.Keys.DOWN:
+			this.adjustValue( -this.buttonStep );
+			return false;
+		case OO.ui.Keys.PAGEUP:
+			this.adjustValue( this.pageStep );
+			return false;
+		case OO.ui.Keys.PAGEDOWN:
+			this.adjustValue( -this.pageStep );
+			return false;
+	}
+};
+
+/**
+ * Update the disabled state of the controls
+ *
+ * @chainable
+ * @protected
+ * @return {OO.ui.NumberInputWidget} The widget, for chaining
+ */
+OO.ui.NumberInputWidget.prototype.updateControlsDisabled = function () {
+	var disabled = this.isDisabled() || this.isReadOnly();
+	if ( this.minusButton ) {
+		this.minusButton.setDisabled( disabled );
+	}
+	if ( this.plusButton ) {
+		this.plusButton.setDisabled( disabled );
+	}
+	return this;
 };
 
 /**
@@ -13037,14 +13341,17 @@ OO.ui.NumberInputWidget.prototype.onKeyDown = function ( e ) {
 OO.ui.NumberInputWidget.prototype.setDisabled = function ( disabled ) {
 	// Parent method
 	OO.ui.NumberInputWidget.parent.prototype.setDisabled.call( this, disabled );
+	this.updateControlsDisabled();
+	return this;
+};
 
-	if ( this.minusButton ) {
-		this.minusButton.setDisabled( this.isDisabled() );
-	}
-	if ( this.plusButton ) {
-		this.plusButton.setDisabled( this.isDisabled() );
-	}
-
+/**
+ * @inheritdoc
+ */
+OO.ui.NumberInputWidget.prototype.setReadOnly = function () {
+	// Parent method
+	OO.ui.NumberInputWidget.parent.prototype.setReadOnly.apply( this, arguments );
+	this.updateControlsDisabled();
 	return this;
 };
 
@@ -13069,11 +13376,14 @@ OO.ui.NumberInputWidget.prototype.setDisabled = function ( disabled ) {
  * @constructor
  * @param {Object} [config] Configuration options
  * @cfg {string[]|null} [accept=null] MIME types to accept. null accepts all types.
+ * @cfg {boolean} [multiple=false] Allow multiple files to be selected.
  * @cfg {string} [placeholder] Text to display when no file is selected.
  * @cfg {Object} [button] Config to pass to select file button.
  * @cfg {string} [icon] Icon to show next to file info
  */
 OO.ui.SelectFileInputWidget = function OoUiSelectFileInputWidget( config ) {
+	var widget = this;
+
 	config = config || {};
 
 	// Construct buttons before parent method is called (calling setDisabled)
@@ -13103,25 +13413,51 @@ OO.ui.SelectFileInputWidget = function OoUiSelectFileInputWidget( config ) {
 	OO.ui.SelectFileInputWidget.parent.call( this, config );
 
 	// Properties
-	this.currentFile = null;
+	this.currentFiles = this.filterFiles( this.$input[ 0 ].files || [] );
 	if ( Array.isArray( config.accept ) ) {
 		this.accept = config.accept;
 	} else {
 		this.accept = null;
 	}
-	this.onFileSelectedHandler = this.onFileSelected.bind( this );
+	this.multiple = !!config.multiple;
 
 	// Events
 	this.info.connect( this, { change: 'onInfoChange' } );
 	this.selectButton.$button.on( {
 		keypress: this.onKeyPress.bind( this )
 	} );
+	this.$input.on( {
+		change: this.onFileSelected.bind( this ),
+		// Support: IE11
+		// In IE 11, focussing a file input (by clicking on it) displays a text cursor and scrolls
+		// the cursor into view (in this case, it scrolls the button, which has 'overflow: hidden').
+		// Since this messes with our custom styling (the file input has large dimensions and this
+		// causes the label to scroll out of view), scroll the button back to top. (T192131)
+		focus: function () {
+			widget.$input.parent().prop( 'scrollTop', 0 );
+		}
+	} );
 	this.connect( this, { change: 'updateUI' } );
 
-	// Initialization
-	this.setupInput();
-
 	this.fieldLayout = new OO.ui.ActionFieldLayout( this.info, this.selectButton, { align: 'top' } );
+
+	this.$input
+		.attr( {
+			type: 'file',
+			// this.selectButton is tabindexed
+			tabindex: -1,
+			// Infused input may have previously by
+			// TabIndexed, so remove aria-disabled attr.
+			'aria-disabled': null
+		} );
+
+	if ( this.accept ) {
+		this.$input.attr( 'accept', this.accept.join( ', ' ) );
+	}
+	if ( this.multiple ) {
+		this.$input.attr( 'multiple', '' );
+	}
+	this.selectButton.$button.append( this.$input );
 
 	this.$element
 		.addClass( 'oo-ui-selectFileInputWidget' )
@@ -13134,6 +13470,13 @@ OO.ui.SelectFileInputWidget = function OoUiSelectFileInputWidget( config ) {
 
 OO.inheritClass( OO.ui.SelectFileInputWidget, OO.ui.InputWidget );
 
+/* Static properties */
+
+// Set empty title so that browser default tooltips like "No file chosen" don't appear.
+// On SelectFileWidget this tooltip will often be incorrect, so create a consistent
+// experience on SelectFileInputWidget.
+OO.ui.SelectFileInputWidget.static.title = '';
+
 /* Methods */
 
 /**
@@ -13142,8 +13485,10 @@ OO.inheritClass( OO.ui.SelectFileInputWidget, OO.ui.InputWidget );
  * @return {string} Filename
  */
 OO.ui.SelectFileInputWidget.prototype.getFilename = function () {
-	if ( this.currentFile ) {
-		return this.currentFile.name;
+	if ( this.currentFiles.length ) {
+		return this.currentFiles.map( function ( file ) {
+			return file.name;
+		} ).join( ', ' );
 	} else {
 		// Try to strip leading fakepath.
 		return this.getValue().split( '\\' ).pop();
@@ -13166,7 +13511,7 @@ OO.ui.SelectFileInputWidget.prototype.setValue = function ( value ) {
 			this.emit( 'change', this.value );
 		}
 	} else {
-		this.currentFile = null;
+		this.currentFiles = [];
 		// Parent method
 		OO.ui.SelectFileInputWidget.super.prototype.setValue.call( this, '' );
 	}
@@ -13179,13 +13524,7 @@ OO.ui.SelectFileInputWidget.prototype.setValue = function ( value ) {
  * @param {jQuery.Event} e
  */
 OO.ui.SelectFileInputWidget.prototype.onFileSelected = function ( e ) {
-	var file = OO.getProp( e.target, 'files', 0 ) || null;
-
-	if ( file && !this.isAllowedType( file.type ) ) {
-		file = null;
-	}
-
-	this.currentFile = file;
+	this.currentFiles = this.filterFiles( e.target.files || [] );
 };
 
 /**
@@ -13198,55 +13537,38 @@ OO.ui.SelectFileInputWidget.prototype.updateUI = function () {
 };
 
 /**
- * Setup the input element.
- *
- * @protected
- */
-OO.ui.SelectFileInputWidget.prototype.setupInput = function () {
-	this.$input
-		.attr( {
-			type: 'file',
-			// this.selectButton is tabindexed
-			tabindex: -1,
-			// Infused input may have previously by
-			// TabIndexed, so remove aria-disabled attr.
-			'aria-disabled': null
-		} )
-		.on( 'change', this.onFileSelectedHandler );
-
-	if ( this.accept ) {
-		this.$input.attr( 'accept', this.accept.join( ', ' ) );
-	}
-	this.selectButton.$button.append( this.$input );
-};
-
-/**
  * Determine if we should accept this file.
  *
  * @private
- * @param {string} mimeType File MIME type
- * @return {boolean}
+ * @param {FileList|File[]} files Files to filter
+ * @return {File[]} Filter files
  */
-OO.ui.SelectFileInputWidget.prototype.isAllowedType = function ( mimeType ) {
-	var i, mimeTest;
+OO.ui.SelectFileInputWidget.prototype.filterFiles = function ( files ) {
+	var accept = this.accept;
 
-	if ( !this.accept || !mimeType ) {
-		return true;
-	}
+	function mimeAllowed( file ) {
+		var i, mimeTest,
+			mimeType = file.type;
 
-	for ( i = 0; i < this.accept.length; i++ ) {
-		mimeTest = this.accept[ i ];
-		if ( mimeTest === mimeType ) {
+		if ( !accept || !mimeType ) {
 			return true;
-		} else if ( mimeTest.substr( -2 ) === '/*' ) {
-			mimeTest = mimeTest.substr( 0, mimeTest.length - 1 );
-			if ( mimeType.substr( 0, mimeTest.length ) === mimeTest ) {
+		}
+
+		for ( i = 0; i < accept.length; i++ ) {
+			mimeTest = accept[ i ];
+			if ( mimeTest === mimeType ) {
 				return true;
+			} else if ( mimeTest.substr( -2 ) === '/*' ) {
+				mimeTest = mimeTest.substr( 0, mimeTest.length - 1 );
+				if ( mimeType.substr( 0, mimeTest.length ) === mimeTest ) {
+					return true;
+				}
 			}
 		}
+		return false;
 	}
 
-	return false;
+	return Array.prototype.filter.call( files, mimeAllowed );
 };
 
 /**
@@ -13269,7 +13591,7 @@ OO.ui.SelectFileInputWidget.prototype.onInfoChange = function ( value ) {
  *
  * @private
  * @param {jQuery.Event} e Key press event
- * @return {undefined/boolean} False to prevent default if event is handled
+ * @return {undefined|boolean} False to prevent default if event is handled
  */
 OO.ui.SelectFileInputWidget.prototype.onKeyPress = function ( e ) {
 	if ( !this.isDisabled() && this.$input &&

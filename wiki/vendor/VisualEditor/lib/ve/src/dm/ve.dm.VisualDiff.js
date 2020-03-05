@@ -13,13 +13,29 @@
  *
  * @class
  * @constructor
- * @param {ve.dm.Document} oldDoc
- * @param {ve.dm.Document} newDoc
+ * @param {ve.dm.Document|ve.dm.BranchNode} oldDocOrNode
+ * @param {ve.dm.Document|ve.dm.BranchNode} newDocOrNode
  * @param {number} [timeout=1000] Timeout after which to stop performing linear diffs (in ms)
  */
-ve.dm.VisualDiff = function VeDmVisualDiff( oldDoc, newDoc, timeout ) {
-	this.oldDoc = oldDoc.cloneFromRange( undefined, true, 'noMetadata' );
-	this.newDoc = newDoc.cloneFromRange( undefined, true, 'noMetadata' );
+ve.dm.VisualDiff = function VeDmVisualDiff( oldDocOrNode, newDocOrNode, timeout ) {
+	var oldDoc = oldDocOrNode instanceof ve.dm.Document ? oldDocOrNode : oldDocOrNode.getDocument(),
+		newDoc = newDocOrNode instanceof ve.dm.Document ? newDocOrNode : newDocOrNode.getDocument();
+
+	this.oldDoc = oldDoc.cloneFromRange(
+		oldDocOrNode instanceof ve.dm.DocumentNode || oldDocOrNode instanceof ve.dm.Document ?
+			undefined :
+			oldDocOrNode.getRange(),
+		true,
+		'noMetadata'
+	);
+	this.newDoc = newDoc.cloneFromRange(
+		newDocOrNode instanceof ve.dm.DocumentNode || newDocOrNode instanceof ve.dm.Document ?
+			undefined :
+			newDocOrNode.getRange(),
+		true,
+		'noMetadata'
+	);
+
 	this.oldDocNode = this.oldDoc.getDocumentNode();
 	this.newDocNode = this.newDoc.getDocumentNode();
 	this.oldDocChildren = this.getDocChildren( this.oldDocNode );
@@ -613,6 +629,14 @@ ve.dm.VisualDiff.prototype.alignTrees = function ( oldTree, newTree ) {
  * @param {ve.dm.Node} oldTreeNode Node from the old document
  * @param {ve.dm.Node} newTreeNode Node from the new document
  * @return {Object|boolean} Diff object, or false if nodes are too different
+ * @return {ve.DiffTreeNode[]} return.oldTreeOrderedNodes nodes of the old tree, deepest first then in document order
+ * @return {ve.DiffTreeNode[]} return.newTreeOrderedNodes nodes of the new tree, deepest first then in document order
+ * @return {Array[]} return.treeDiff Node correspondences as indexes in *TreeOrderedNodes
+ * @return {number[]} return.treeDiff.i The i'th correspondence [ oldTreeOrderedNodes index, newTreeOrderedNodes index ]
+ * @return {Object|null} return.diffInfo Linear diffs applying to each corresponding node pair
+ * @return {Object} return.diffInfo.i Linear diff applying to i'th node in newTreeOrderedNodes
+ * @return {Array|boolean} return.diffInfo.i.linearDiff Output of #diffContent
+ * @return {Array|boolean} return.diffInfo.i.attributeChange Output of #diffAttributes
  */
 ve.dm.VisualDiff.prototype.diffTreeNodes = function ( oldTreeNode, newTreeNode ) {
 	var i, ilen,

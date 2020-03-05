@@ -13,7 +13,7 @@
  *
  * @constructor
  * @param {mw.Title} title Page sub-title
- * @param {rebaserUrl} string Rebaser server URL
+ * @param {string} rebaserUrl Rebaser server URL
  * @param {Object} [config] Configuration options
  * @cfg {mw.Title} [importTitle] Title to import
  */
@@ -22,7 +22,7 @@ ve.init.mw.MobileCollabTarget = function VeInitMwMobileCollabTarget( title, reba
 	ve.init.mw.MobileCollabTarget.super.call( this, title, rebaserUrl, config );
 
 	// Initialization
-	this.$element.addClass( 've-init-mw-mobileArticleTarget ve-init-mw-mobileCollabTarget' );
+	this.$element.addClass( 've-init-mw-mobileArticleTarget ve-init-mw-mobileCollabTarget ve-init-mobileTarget' );
 
 	$( document.body ).removeClass( 'ns-special' );
 };
@@ -33,12 +33,58 @@ OO.inheritClass( ve.init.mw.MobileCollabTarget, ve.init.mw.CollabTarget );
 
 /* Static Properties */
 
-ve.init.mw.MobileCollabTarget.static.actionGroups = [
+ve.init.mw.MobileCollabTarget.static.toolbarGroups = [
+	// History
+	{
+		name: 'history',
+		include: [ 'undo' ]
+	},
+	// Style
+	{
+		name: 'style',
+		classes: [ 've-test-toolbar-style' ],
+		type: 'list',
+		icon: 'textStyle',
+		title: OO.ui.deferMsg( 'visualeditor-toolbar-style-tooltip' ),
+		include: [ { group: 'textStyle' }, 'language', 'clear' ],
+		forceExpand: [ 'bold', 'italic', 'clear' ],
+		promote: [ 'bold', 'italic' ],
+		demote: [ 'strikethrough', 'code', 'underline', 'language', 'clear' ]
+	},
+	// Link
+	{
+		name: 'link',
+		include: [ 'link' ]
+	},
+	{
+		name: 'commentAnnotation',
+		include: [ 'commentAnnotation' ]
+	},
+	// Placeholder for reference tools (e.g. Cite and/or Citoid)
+	{
+		name: 'reference'
+	},
+	{
+		name: 'insert',
+		header: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
+		title: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
+		type: 'list',
+		icon: 'add',
+		label: '',
+		include: '*',
+		exclude: [ 'comment', 'indent', 'outdent', { group: 'format' } ]
+	},
 	{
 		name: 'authorList',
 		include: [ 'authorList' ]
+	},
+	{
+		name: 'export',
+		include: [ 'export' ]
 	}
 ];
+
+ve.init.mw.MobileCollabTarget.static.actionGroups = [];
 
 /* Methods */
 

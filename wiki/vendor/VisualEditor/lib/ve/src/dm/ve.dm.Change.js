@@ -67,22 +67,24 @@
  *
  * @class
  * @constructor
- * @param {number} start Length of the history stack at change start
- * @param {ve.dm.Transaction[]} transactions Transactions to apply
- * @param {ve.dm.HashValueStore[]} stores For each transaction, a collection of new store items
- * @param {Object} selections For each author ID (key), latest ve.dm.Selection
+ * @param {number} [start] Length of the history stack at change start
+ * @param {ve.dm.Transaction[]} [transactions] Transactions to apply
+ * @param {ve.dm.HashValueStore[]} [stores] For each transaction, a collection of new store items
+ * @param {Object} [selections] For each author ID (key), latest ve.dm.Selection
  */
 ve.dm.Change = function VeDmChange( start, transactions, stores, selections ) {
 	var change = this;
-	this.start = start;
-	this.transactions = transactions;
+	this.start = start || 0;
+	this.transactions = transactions || [];
 	this.store = new ve.dm.HashValueStore();
 	this.storeLengthAtTransaction = [];
-	stores.forEach( function ( store ) {
-		change.store.merge( store );
-		change.storeLengthAtTransaction.push( change.store.getLength() );
-	} );
-	this.selections = selections;
+	if ( stores ) {
+		stores.forEach( function ( store ) {
+			change.store.merge( store );
+			change.storeLengthAtTransaction.push( change.store.getLength() );
+		} );
+	}
+	this.selections = selections || {};
 };
 
 /* Static methods */
@@ -96,12 +98,11 @@ ve.dm.Change.static = {};
  * Change object will be rebased and reserialized without ever being applied to a document.
  *
  * @param {Object} data Change serialized as a JSONable object
- * @param {ve.dm.Document} [doc] Document, used for creating proper selections if deserializing in the client
  * @param {boolean} [preserveStoreValues] Keep store values verbatim instead of deserializing
  * @param {boolean} [unsafe] Use unsafe deserialization (skipping DOMPurify), used via #unsafeDeserialize
  * @return {ve.dm.Change} Deserialized change
  */
-ve.dm.Change.static.deserialize = function ( data, doc, preserveStoreValues, unsafe ) {
+ve.dm.Change.static.deserialize = function ( data, preserveStoreValues, unsafe ) {
 	var authorId, deserializeStore, i, iLen, txSerialized, insertion, tx,
 		prevInfo,
 		hasOwn = Object.prototype.hasOwnProperty,
@@ -176,11 +177,10 @@ ve.dm.Change.static.deserialize = function ( data, doc, preserveStoreValues, uns
  * Deserialize a change from a JSONable object without sanitizing DOM nodes
  *
  * @param {Object} data
- * @param {ve.dm.Document} [doc]
  * @return {ve.dm.Change} Deserialized change
  */
-ve.dm.Change.static.unsafeDeserialize = function ( data, doc ) {
-	return this.deserialize( data, doc, false, true );
+ve.dm.Change.static.unsafeDeserialize = function ( data ) {
+	return this.deserialize( data, false, true );
 };
 
 ve.dm.Change.static.serializeValue = function ( value ) {
@@ -582,12 +582,7 @@ ve.dm.Change.static.getTransactionInfo = function ( tx ) {
  * @return {ve.dm.Change} Clone of this change
  */
 ve.dm.Change.prototype.clone = function () {
-	var authorId, doc;
-	for ( authorId in this.selections ) {
-		doc = this.selections[ authorId ].getDocument();
-		break;
-	}
-	return this.constructor.static.unsafeDeserialize( this.serialize(), doc );
+	return this.constructor.static.unsafeDeserialize( this.toJSON() );
 };
 
 /**
@@ -715,13 +710,17 @@ ve.dm.Change.prototype.concat = function ( other ) {
 };
 
 /**
- * Push a transaction, after having pushed to the hash value store if it needs to grow
+ * Push a transaction, after having grown the hash value store if required
  *
  * @param {ve.dm.Transaction} transaction The transaction
+ * @param {number} storeLength The corresponding store length required
  */
-ve.dm.Change.prototype.pushTransaction = function ( transaction ) {
+ve.dm.Change.prototype.pushTransaction = function ( transaction, storeLength ) {
+	if ( typeof storeLength !== 'number' ) {
+		throw new Error( 'Expected numerical storeLength argument, not ' + storeLength );
+	}
 	this.transactions.push( transaction );
-	this.storeLengthAtTransaction.push( this.store.getLength() );
+	this.storeLengthAtTransaction.push( storeLength );
 };
 
 /**
@@ -731,16 +730,19 @@ ve.dm.Change.prototype.pushTransaction = function ( transaction ) {
  * @throws {Error} If other does not start immediately after this
  */
 ve.dm.Change.prototype.push = function ( other ) {
-	var change = this;
+	var i, iLen, stores, transaction, store,
+		change = this;
 	if ( other.start !== this.start + this.getLength() ) {
 		throw new Error( 'this ends at ' + ( this.start + this.getLength() ) +
 			' but other starts at ' + other.start );
 	}
-	Array.prototype.push.apply( this.transactions, other.transactions );
-	other.getStores().forEach( function ( store ) {
+	stores = other.getStores();
+	for ( i = 0, iLen = other.transactions.length; i < iLen; i++ ) {
+		transaction = other.transactions[ i ];
+		store = stores[ i ];
 		change.store.merge( store );
-		change.storeLengthAtTransaction.push( change.store.getLength() );
-	} );
+		this.pushTransaction( transaction, change.store.getLength() );
+	}
 	this.selections = OO.cloneObject( other.selections );
 };
 
@@ -807,6 +809,8 @@ ve.dm.Change.prototype.applyTo = function ( surface, applySelection ) {
 	this.getStores().forEach( function ( store ) {
 		surface.documentModel.store.merge( store );
 	} );
+	// Isolate other users' changes from ours with a breakpoint
+	surface.breakpoint();
 	this.transactions.forEach( function ( tx ) {
 		var range, offset;
 		surface.change( tx );
@@ -825,6 +829,7 @@ ve.dm.Change.prototype.applyTo = function ( surface, applySelection ) {
 			}
 		}
 	} );
+	surface.breakpoint();
 };
 
 /**
@@ -879,7 +884,7 @@ ve.dm.Change.prototype.removeFromHistory = function ( doc ) {
  * already, i.e. the Change object was created by #deserialize without deserializing store values).
  *
  * @param {boolean} [preserveStoreValues] If true, keep store values verbatim instead of serializing
- * @return {ve.dm.Change} Deserialized change
+ * @return {Object} JSONable object
  */
 ve.dm.Change.prototype.serialize = function ( preserveStoreValues ) {
 	var authorId, serializeStoreValues, serializeStore, i, iLen, tx, info, prevInfo,
@@ -888,6 +893,8 @@ ve.dm.Change.prototype.serialize = function ( preserveStoreValues ) {
 		selections = {},
 		transactions = [];
 
+	// Recursively serialize, so this method is the inverse of deserialize
+	// without having to use JSON.stringify (which is also recursive).
 	for ( authorId in this.selections ) {
 		selections[ authorId ] = this.selections[ authorId ].toJSON();
 	}
@@ -911,7 +918,7 @@ ve.dm.Change.prototype.serialize = function ( preserveStoreValues ) {
 		) {
 			transactions.push( info.uniformInsert.text );
 		} else {
-			txSerialized = tx.serialize();
+			txSerialized = tx.toJSON();
 			if ( i > 0 && tx.authorId === this.transactions[ i - 1 ].authorId ) {
 				delete txSerialized.authorId;
 			}
@@ -937,54 +944,36 @@ ve.dm.Change.prototype.serialize = function ( preserveStoreValues ) {
 };
 
 /**
- * Squash a change in-place, to use as few transactions as possible
+ * Called automatically by JSON.stringify, see #serialize.
+ *
+ * @param {string} [key] Key in parent object
+ * @return {Object} JSONable object
+ */
+ve.dm.Change.prototype.toJSON = function () {
+	// Ensure no native arguments are passed through to #serialize.
+	return this.serialize();
+};
+
+/**
+ * Get a Change with all this Change's Transactions compacted into one (or zero)
+ *
+ * The Change has the same effect when applied as this Change does, but it may cause
+ * rebase conflicts where this change does not.
+ *
+ * TODO: introduce a "histLength" feature so the new change can be considered as
+ * having length > 1.
+ *
+ * @return {ve.dm.Change} One-Transaction version of this Change (or empty change)
  */
 ve.dm.Change.prototype.squash = function () {
-	var transactionA, transactionB, infoA, infoB, offset,
-		i = 0;
-	while ( i < this.transactions.length - 1 ) {
-		transactionA = this.transactions[ i ];
-		// (re)calculate infoA (it can change between iterations, even if i does not)
-		infoA = transactionA.getActiveRangeAndLengthDiff();
-		if ( infoA.start === undefined ) {
-			// No-op: remove, putting any store items into the next transaction
-			this.transactions.splice( i, 1 );
-			this.storeLengthAtTransaction[ i + 1 ] += this.storeLengthAtTransaction[ i ];
-			this.storeLengthAtTransaction.splice( i, 1 );
-			continue;
-		}
-		transactionB = this.transactions[ i + 1 ];
-		infoB = transactionB.getActiveRangeAndLengthDiff();
-		if ( infoB.start === undefined ) {
-			// No-op: remove, putting any store items into the previous transaction
-			this.transactions.splice( i + 1, 1 );
-			this.storeLengthAtTransaction[ i ] += this.storeLengthAtTransaction[ i + 1 ];
-			this.storeLengthAtTransaction.splice( i + 1, 1 );
-			continue;
-		}
-
-		if ( infoB.end <= infoA.start ) {
-			// Remove from A's start the retained content affected by B
-			transactionA.adjustRetain( 'start', infoB.start - infoB.end );
-			offset = infoB.start;
-		} else if ( infoA.end <= infoB.start - infoA.diff ) {
-			// Remove from A's end the retained content affected by B
-			transactionA.adjustRetain( 'end', infoB.start - infoB.end );
-			offset = infoB.start - infoA.diff;
-		} else {
-			// The active ranges overlap: continue without squashing this pair
-			i++;
-			continue;
-		}
-		transactionA.insertOperations(
-			offset,
-			transactionB.operations.slice(
-				infoB.startOpIndex,
-				infoB.endOpIndex
-			)
-		);
-		this.transactions.splice( i + 1, 1 );
-		this.storeLengthAtTransaction[ i ] += this.storeLengthAtTransaction[ i + 1 ];
-		this.storeLengthAtTransaction.splice( i + 1, 1 );
+	if ( this.transactions.length <= 1 ) {
+		return this.clone();
 	}
+	return new ve.dm.Change(
+		this.start,
+		[ ve.dm.TransactionSquasher.static.squash( this.transactions ) ],
+		[ this.store.clone() ],
+		// Shallow clone (the individual selections are immutable so need no cloning)
+		ve.cloneObject( this.selections )
+	);
 };

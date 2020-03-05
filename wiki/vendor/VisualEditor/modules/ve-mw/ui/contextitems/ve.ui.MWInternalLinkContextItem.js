@@ -50,11 +50,11 @@ ve.ui.MWInternalLinkContextItem.static.generateBody = function ( linkCache, mode
 		description = model.getAttribute( 'normalizedTitle' ),
 		href = model.getHref(),
 		fragment = model.getFragment(),
-		usePageImages = mw.config.get( 'wgVisualEditor' ).usePageImages,
-		usePageDescriptions = mw.config.get( 'wgVisualEditor' ).usePageDescriptions,
+		usePageImages = mw.config.get( 'wgVisualEditorConfig' ).usePageImages,
+		usePageDescriptions = mw.config.get( 'wgVisualEditorConfig' ).usePageDescriptions,
 		$wrapper = $( '<div>' ),
 		$link = $( '<a>' )
-			.addClass( 've-ui-mwInternalLinkContextItem-link' )
+			.addClass( 've-ui-linkContextItem-link' )
 			.text( description )
 			.attr( {
 				href: ve.resolveUrl( href, htmlDoc ),
@@ -122,7 +122,10 @@ ve.ui.MWInternalLinkContextItem.prototype.renderBody = function () {
 		this.model,
 		this.context.getSurface().getModel().getDocument().getHtmlDocument(),
 		this.context
-	), this.$labelLayout );
+	) );
+	if ( !this.context.isMobile() ) {
+		this.$body.append( this.$labelLayout );
+	}
 	this.updateLabelPreview();
 };
 

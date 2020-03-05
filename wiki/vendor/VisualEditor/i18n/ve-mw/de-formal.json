@@ -6,7 +6,7 @@
 			"Hwboehm"
 		]
 	},
-	"visualeditor-autosave-modified-prompt-message": "Diese Seite wurde seit Ihrer letzten Ladung bearbeitet. Möchten {{GENDER:|Sie}} {{GENDER:|Ihre}} Bearbeitung auf die alte Version wiederherstellen oder eine neue Bearbeitung der aktuellen Version beginnen?",
+	"visualeditor-autosave-modified-prompt-message": "Diese Seite wurde bearbeitet, seit Sie sie das letzte mal geladen haben. Möchten {{GENDER:|Sie}} die Bearbeitung der alten Version fortsetzen oder die aktuelle Version bearbeiten?",
 	"visualeditor-autosave-modified-prompt-title": "{{GENDER:|Ihre}} Bearbeitung wiederherstellen?",
 	"visualeditor-autosave-not-recovered-text": "Ihre ungespeicherten Änderungen konnten nicht wiederhergestellt werden.",
 	"visualeditor-autosave-not-recovered-title": "Die Wiederherstellung Ihrer Änderungen ist fehlgeschlagen",
@@ -35,7 +35,6 @@
 	"visualeditor-editingtabdialog-body": "{{SITENAME}} merkt sich jetzt, welchen Editor Sie bevorzugen. Sie können zwischen Bearbeitungsmodi wechseln und Ihre Einstellung später ändern.",
 	"visualeditor-editsummary": "Beschreiben Sie, was Sie geändert haben.",
 	"visualeditor-loadwarning-token": "Fehler beim Laden des Bearbeitungstokens vom Server: $1. Wollen Sie es erneut versuchen?",
-	"visualeditor-mweditmodesource-warning": "Sie wechseln zur Quelltextbearbeitung.\nMöchten Sie fortfahren?",
 	"visualeditor-mweditmodeve-popup-body": "Sie können jederzeit zur visuellen Bearbeitung zurückkehren, indem Sie auf dieses Symbol klicken.",
 	"visualeditor-mweditmodeve-popup-title": "Sie haben zum Quelltext-Editor gewechselt",
 	"visualeditor-mweditmodeve-warning": "Sie wechseln zur visuellen Bearbeitung.\nMöchten Sie fortfahren?",
@@ -53,7 +52,6 @@
 	"visualeditor-savedialog-label-review": "Überprüfen Sie Ihre Änderungen",
 	"visualeditor-savedialog-title-preview": "Eine Vorschau Ihrer Änderungen anzeigen",
 	"visualeditor-savedialog-warning-dirty": "Ihre Bearbeitung ist eventuell beschädigt. Bitte vor dem Speichern überprüfen.",
-	"visualeditor-saveerror-hookaborted": "Fehler beim Speichern der Seite: Eine Erweiterung auf dem Server hat Sie am Speichern gehindert.",
 	"visualeditor-toload": "Der Editor wird jetzt geladen. Wenn Sie diese Meldung nach einigen Sekunden noch sehen, [$1 laden Sie bitte die Seite] neu.",
 	"visualeditor-wikitext-warning": "Sie benutzen den visuellen Editor. [[{{MediaWiki:visualeditor-wikitext-warning-link}}|Wikitext]] funktioniert hier nicht. Um jederzeit ohne Verlust deiner Änderungen zur Quelltextbearbeitung zurückzukehren, klicken Sie auf den Wechseln-Button."
 }

@@ -180,9 +180,9 @@ ve.dm.MWTransclusionNode.static.toDomElements = function ( dataElement, doc, con
 		els[ 0 ].setAttribute( 'data-mw', JSON.stringify( dataElement.attributes.mw ) );
 	}
 	if ( converter.isForClipboard() ) {
-		// If the first element is a <link> or <meta> tag, e.g. a category, ensure it
-		// is not destroyed by copy-paste by replacing it with a span
-		if ( els[ 0 ].tagName === 'LINK' || els[ 0 ].tagName === 'META' ) {
+		// If the first element is a <link>, <meta> or <style> tag, e.g. a category or TemplateStyles,
+		// ensure it is not destroyed by copy-paste by replacing it with a span
+		if ( els[ 0 ].tagName === 'LINK' || els[ 0 ].tagName === 'META' || els[ 0 ].tagName === 'STYLE' ) {
 			span = doc.createElement( 'span' );
 			span.setAttribute( 'typeof', 'mw:Transclusion' );
 			span.setAttribute( 'data-mw', els[ 0 ].getAttribute( 'data-mw' ) );
@@ -286,7 +286,9 @@ ve.dm.MWTransclusionNode.static.describeChanges = function ( attributeChanges ) 
 	return descriptions;
 };
 
-/** */
+/**
+ * @inheritdoc ve.dm.Node
+ */
 ve.dm.MWTransclusionNode.static.cloneElement = function () {
 	// Parent method
 	var clone = ve.dm.MWTransclusionNode.super.static.cloneElement.apply( this, arguments );
@@ -403,7 +405,6 @@ ve.dm.MWTransclusionNode.static.getWikitext = function ( content ) {
 /**
  * Handle attribute change events.
  *
- * @method
  * @param {string} key Attribute key
  * @param {string} from Old value
  * @param {string} to New value
@@ -482,7 +483,6 @@ ve.dm.MWTransclusionNode.prototype.getPartsList = function () {
 /**
  * Wrapper for static method
  *
- * @method
  * @return {string} Wikitext like `{{foo|1=bar|baz=quux}}`
  */
 ve.dm.MWTransclusionNode.prototype.getWikitext = function () {

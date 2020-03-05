@@ -19,6 +19,6 @@
 		"no-jquery/no-show": "error",
 		"no-jquery/no-toggle": "error",
 		"max-len": "off",
-		"valid-jsdoc": "off"
+		"prefer-template": "off"
 	}
 }

@@ -14,7 +14,7 @@
  *
  * @constructor
  * @param {ve.ce.TableNode} tableNode
- * @param {string} itemGroup Tool group to use, 'col' or 'row'
+ * @param {string} itemGroup Tool group to use, 'col', 'row', or 'table'
  * @param {Object} [config] Configuration options
  */
 ve.ui.TableLineContext = function VeUiTableLineContext( tableNode, itemGroup, config ) {
@@ -27,13 +27,13 @@ ve.ui.TableLineContext = function VeUiTableLineContext( tableNode, itemGroup, co
 	this.tableNode = tableNode;
 	this.itemGroup = itemGroup;
 	this.icon = new OO.ui.IconWidget( {
-		icon: itemGroup === 'col' ? 'expand' : 'next'
+		icon: this.constructor.static.icons[ itemGroup ]
 	} );
 	this.popup = new OO.ui.PopupWidget( {
 		classes: [ 've-ui-tableLineContext-menu' ],
 		$container: this.surface.$element,
 		$floatableContainer: this.icon.$element,
-		position: itemGroup === 'col' ? 'below' : 'after',
+		position: this.constructor.static.positions[ this.itemGroup ],
 		width: null
 	} );
 
@@ -61,7 +61,20 @@ OO.inheritClass( ve.ui.TableLineContext, ve.ui.Context );
 
 ve.ui.TableLineContext.static.groups = {
 	col: [ 'insertColumnBefore', 'insertColumnAfter', 'moveColumnBefore', 'moveColumnAfter', 'deleteColumn' ],
-	row: [ 'insertRowBefore', 'insertRowAfter', 'moveRowBefore', 'moveRowAfter', 'deleteRow' ]
+	row: [ 'insertRowBefore', 'insertRowAfter', 'moveRowBefore', 'moveRowAfter', 'deleteRow' ],
+	table: [ 'tableProperties', 'toggleTableEditing', 'deleteTable' ]
+};
+
+ve.ui.TableLineContext.static.icons = {
+	col: 'expand',
+	row: 'next',
+	table: 'table'
+};
+
+ve.ui.TableLineContext.static.positions = {
+	col: 'below',
+	row: 'after',
+	table: 'after'
 };
 
 /* Methods */
@@ -100,7 +113,7 @@ ve.ui.TableLineContext.prototype.onContextItemCommand = function () {
  */
 ve.ui.TableLineContext.prototype.onIconMouseDown = function ( e ) {
 	e.preventDefault();
-	this.toggleMenu();
+	this.toggleMenu( undefined, true );
 };
 
 /**
@@ -110,7 +123,7 @@ ve.ui.TableLineContext.prototype.onIconMouseDown = function ( e ) {
  */
 ve.ui.TableLineContext.prototype.onDocumentMouseDown = function ( e ) {
 	if ( !$( e.target ).closest( this.$element ).length ) {
-		this.toggleMenu( false );
+		this.toggleMenu( false, true );
 	}
 };
 
@@ -126,17 +139,32 @@ ve.ui.TableLineContext.prototype.onModelSelect = function () {
 /**
  * @inheritdoc
  */
-ve.ui.TableLineContext.prototype.toggleMenu = function ( show ) {
+ve.ui.TableLineContext.prototype.toggleMenu = function ( show, restoreEditing ) {
 	var dir, surfaceModel, surfaceView;
 	show = show === undefined ? !this.popup.isVisible() : !!show;
 
 	surfaceModel = this.surface.getModel();
 	surfaceView = this.surface.getView();
 
+	// Remember whether the table was in editing mode, because some itemGroups
+	// will force it into editing mode so their commands can work on a
+	// TableSelection.
+	this.wasEditing = !!this.tableNode.editingFragment;
+
+	// Kick the table into/out of editing mode if needed:
+	if ( this.itemGroup !== 'table' ) {
+		if ( show ) {
+			this.tableNode.setEditing( false );
+		} else if ( restoreEditing && surfaceModel.getSelection() instanceof ve.dm.TableSelection ) {
+			this.tableNode.setEditing( this.wasEditing );
+		}
+	}
+
+	// Set up the close-if-anything-happens handlers:
 	if ( show ) {
-		this.tableNode.setEditing( false );
 		surfaceModel.connect( this, { select: 'onModelSelect' } );
 		surfaceView.$document.on( 'mousedown', this.onDocumentMouseDownHandler );
+		surfaceView.deactivate();
 		dir = surfaceView.getSelectionDirectionality();
 		this.$element
 			.removeClass( 've-ui-dir-block-rtl ve-ui-dir-block-ltr' )
@@ -144,6 +172,7 @@ ve.ui.TableLineContext.prototype.toggleMenu = function ( show ) {
 	} else {
 		surfaceModel.disconnect( this );
 		surfaceView.$document.off( 'mousedown', this.onDocumentMouseDownHandler );
+		surfaceView.activate();
 	}
 
 	// Parent method - call after selection has been possibly modified above

@@ -10,6 +10,7 @@
 ( function () {
 	var timing, editingSessionId,
 		actionPrefixMap = {
+			firstChange: 'first_change',
 			saveIntent: 'save_intent',
 			saveAttempt: 'save_attempt',
 			saveSuccess: 'save_success',
@@ -45,6 +46,8 @@
 				return timeStamp - timing.init;
 			case 'loaded':
 				return timeStamp - timing.init;
+			case 'firstChange':
+				return timeStamp - timing.ready;
 			case 'saveIntent':
 				return timeStamp - timing.ready;
 			case 'saveAttempt':
@@ -153,13 +156,22 @@
 			event.user_class = 'IP';
 		}
 
-		event[ actionPrefix + '_type' ] = event.type;
-		event[ actionPrefix + '_mechanism' ] = event.mechanism;
+		// Schema's kind of a mess of special properties
+		if ( action === 'init' || action === 'abort' || action === 'saveFailure' ) {
+			event[ actionPrefix + '_type' ] = event.type;
+		}
+		if ( action === 'init' || action === 'abort' ) {
+			event[ actionPrefix + '_mechanism' ] = event.mechanism;
+		}
 		if ( action !== 'init' ) {
+			// Schema actually does have an init_timing field, but we don't want to
+			// store it because it's not meaningful.
 			duration = Math.round( computeDuration( action, event, timeStamp ) );
 			event[ actionPrefix + '_timing' ] = duration;
 		}
-		event[ actionPrefix + '_message' ] = event.message;
+		if ( action === 'saveFailure' ) {
+			event[ actionPrefix + '_message' ] = event.message;
+		}
 		/* eslint-enable camelcase */
 
 		// Remove renamed properties
@@ -204,7 +216,7 @@
 			return;
 		}
 
-		if ( ve.init.target.constructor.static.platformType === 'phone' ) {
+		if ( ve.init.target && ve.init.target.constructor.static.platformType === 'phone' ) {
 			// handled in MobileFrontend for session-identification reasons
 			return;
 		}
@@ -222,19 +234,13 @@
 		}
 	}
 
-	if ( mw.loader.getState( 'schema.EditAttemptStep' ) !== null || trackdebug ) {
-		// Only route any events into the EditAttemptStep schema if the module is actually available.
-		// It won't be if EventLogging is installed but WikimediaEvents is not.
-		// Also load ext.eventLogging.subscriber to provide mw.eventLog.randomTokenMatch().
-		mw.loader.using( 'ext.eventLogging.subscriber' ).done( function () {
+	// Only log events if the WikimediaEvents extension is installed.
+	// It provides variables that the above code depends on and registers the schemas.
+	if ( mw.config.exists( 'wgWMESchemaEditAttemptStepSamplingRate' ) ) {
+		// Ensure 'ext.eventLogging' first, it provides mw.eventLog.randomTokenMatch.
+		mw.loader.using( 'ext.eventLogging' ).done( function () {
 			ve.trackSubscribe( 'mwedit.', mwEditHandler );
 			ve.trackSubscribe( 'mwtiming.', mwTimingHandler );
-		} );
-	}
-
-	if ( mw.loader.getState( 'schema.VisualEditorFeatureUse' ) !== null || trackdebug ) {
-		// Similarly for the VisualEditorFeatureUse schema
-		mw.loader.using( 'ext.eventLogging.subscriber' ).done( function () {
 			ve.trackSubscribe( 'activity.', activityHandler );
 		} );
 	}

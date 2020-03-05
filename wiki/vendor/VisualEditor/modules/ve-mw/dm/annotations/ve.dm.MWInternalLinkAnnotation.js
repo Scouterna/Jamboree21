@@ -32,6 +32,9 @@ ve.dm.MWInternalLinkAnnotation.static.name = 'link/mwInternal';
 
 ve.dm.MWInternalLinkAnnotation.static.matchRdfaTypes = [ 'mw:WikiLink', 'mw:MediaLink' ];
 
+// mw:MediaLink to non-existent files come with typeof="mw:Error"
+ve.dm.MWInternalLinkAnnotation.static.allowedRdfaTypes = [ 'mw:Error' ];
+
 ve.dm.MWInternalLinkAnnotation.static.toDataElement = function ( domElements, converter ) {
 	var targetData,
 		resource = domElements[ 0 ].getAttribute( 'resource' );
@@ -43,6 +46,10 @@ ve.dm.MWInternalLinkAnnotation.static.toDataElement = function ( domElements, co
 			domElements[ 0 ].getAttribute( 'href' ),
 			converter.getTargetHtmlDocument()
 		);
+
+		if ( !targetData.isInternal ) {
+			return ve.dm.MWExternalLinkAnnotation.static.toDataElement( domElements, converter );
+		}
 	}
 
 	return {
@@ -165,13 +172,21 @@ ve.dm.MWInternalLinkAnnotation.static.getHref = function ( dataElement ) {
 		encodedTitle = origTitle;
 	} else {
 		// Don't escape slashes in the title; they represent subpages.
-		encodedTitle = title.split( /(\/|#)/ ).map( function ( part ) {
-			if ( part === '/' || part === '#' ) {
+		// Don't escape colons to work around a Parsoid bug with interwiki links (T95850)
+		// TODO: Maybe this should be using mw.util.wikiUrlencode(), which also doesn't escape them?
+		encodedTitle = title.split( /(\/|#|:)/ ).map( function ( part ) {
+			if ( part === '/' || part === '#' || part === ':' ) {
 				return part;
 			} else {
 				return encodeURIComponent( part );
 			}
 		} ).join( '' );
+	}
+	if ( encodedTitle.slice( 0, 1 ) === '#' ) {
+		// Special case: For a newly created link to a #fragment with
+		// no explicit title use the current title as prefix (T218581)
+		// TODO: Pass a 'doc' param to getPageName
+		encodedTitle = ve.init.target.getPageName() + encodedTitle;
 	}
 	return './' + encodedTitle;
 };

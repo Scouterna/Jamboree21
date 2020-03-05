@@ -16,6 +16,9 @@ ve.init.Platform = function VeInitPlatform() {
 	// Mixin constructors
 	OO.EventEmitter.call( this );
 
+	this.localStorage = this.createLocalStorage();
+	this.sessionStorage = this.createSessionStorage();
+
 	// Register
 	ve.init.platform = this;
 
@@ -61,7 +64,6 @@ ve.init.Platform.static.initializedPromise = ve.init.Platform.static.deferredPla
  * Get client platform string from browser.
  *
  * @static
- * @method
  * @inheritable
  * @return {string} Client platform string
  */
@@ -73,7 +75,6 @@ ve.init.Platform.static.getSystemPlatform = function () {
  * Check whether we are running in Internet Explorer.
  *
  * @static
- * @method
  * @inheritable
  * @return {boolean} We are in IE
  */
@@ -85,7 +86,6 @@ ve.init.Platform.static.isInternetExplorer = function () {
  * Check whether we are running in Edge.
  *
  * @static
- * @method
  * @inheritable
  * @return {boolean} We are in Edge
  */
@@ -97,7 +97,6 @@ ve.init.Platform.static.isEdge = function () {
  * Check whether we are running on iOS
  *
  * @static
- * @method
  * @inheritable
  * @return {boolean} We are running on iOS
  */
@@ -111,7 +110,6 @@ ve.init.Platform.static.isIos = function () {
  * Get an anchored regular expression that matches allowed external link URLs
  * starting at the beginning of an input string.
  *
- * @method
  * @abstract
  * @return {RegExp} Regular expression object
  */
@@ -121,7 +119,6 @@ ve.init.Platform.prototype.getExternalLinkUrlProtocolsRegExp = null;
  * Get an unanchored regular expression that matches allowed external link URLs
  * anywhere in an input string.
  *
- * @method
  * @abstract
  * @return {RegExp} Regular expression object
  */
@@ -131,7 +128,6 @@ ve.init.Platform.prototype.getUnanchoredExternalLinkUrlProtocolsRegExp = null;
  * Get a regular expression that matches IDs used only for linking document
  * data to metadata. Use null if your document format does not have such IDs.
  *
- * @method
  * @return {RegExp|null} Regular expression object
  */
 ve.init.Platform.prototype.getMetadataIdRegExp = function () {
@@ -141,7 +137,6 @@ ve.init.Platform.prototype.getMetadataIdRegExp = function () {
 /**
  * Show a read-only notification to the user.
  *
- * @method
  * @abstract
  * @param {jQuery|string} message Message
  * @param {jQuery|string} [title] Title
@@ -151,7 +146,6 @@ ve.init.Platform.prototype.notify = null;
 /**
  * Get a platform config value
  *
- * @method
  * @abstract
  * @param {string|string[]} key Config key, or list of keys
  * @return {Mixed|Object} Config value, or keyed object of config values if list of keys provided
@@ -161,7 +155,6 @@ ve.init.Platform.prototype.getConfig = null;
 /**
  * Get a user config value
  *
- * @method
  * @abstract
  * @param {string|string[]} key Config key, or list of keys
  * @return {Mixed|Object} Config value, or keyed object of config values if list of keys provided
@@ -171,7 +164,6 @@ ve.init.Platform.prototype.getUserConfig = null;
 /**
  * Set a user config value
  *
- * @method
  * @abstract
  * @param {string|Object} keyOrValueMap Key to set value for, or object mapping keys to values
  * @param {Mixed} [value] Value to set (optional, only in use when key is a string)
@@ -179,143 +171,46 @@ ve.init.Platform.prototype.getUserConfig = null;
 ve.init.Platform.prototype.setUserConfig = null;
 
 /**
- * Get a session storage value
+ * Create a safe storage object
  *
- * @method
  * @abstract
- * @param {string} key Key to get
- * @return {string|null|boolean} Value, null if not set, false if storage not available
+ * @return {ve.init.SafeStorage}
  */
-ve.init.Platform.prototype.getSession = null;
+ve.init.Platform.prototype.createSafeStorage = null;
 
 /**
- * Set a session storage value
+ * Create a list storage object from a safe storage object
  *
- * @method
- * @abstract
- * @param {string} key Key to set value for
- * @param {string} value Value to set
- * @return {boolean} The value was set
+ * @param {ve.init.SafeStorage} safeStorage
+ * @return {ve.init.ListStorage}
  */
-ve.init.Platform.prototype.setSession = null;
-
-/**
- * Remove a session storage value
- *
- * @method
- * @abstract
- * @param {string} key Key to remove
- * @return {boolean} Key was removed
- */
-ve.init.Platform.prototype.removeSession = null;
-
-/**
- * Get a session storage object
- *
- * Object must be JSON-able.
- *
- * @param {string} key Key to get
- * @return {Object|null|boolean}  Value, null if not set, false if storage not available
- */
-ve.init.Platform.prototype.getSessionObject = function ( key ) {
-	var value,
-		json = this.getSession( key );
-	if ( json ) {
-		try {
-			value = JSON.parse( json );
-			return value;
-		} catch ( e ) {}
-	}
-	return json;
+ve.init.Platform.prototype.createListStorage = function ( safeStorage ) {
+	return new ve.init.ListStorage( safeStorage );
 };
 
-/**
- * Set a session storage object
- *
- * @param {string} key Key to set value for
- * @param {Object} value Value to set
- * @return {boolean} The value was set
- */
-ve.init.Platform.prototype.setSessionObject = function ( key, value ) {
-	var json;
+ve.init.Platform.prototype.createLocalStorage = function () {
+	var localStorage;
+
 	try {
-		json = JSON.stringify( value );
-		return this.setSession( key, json );
+		localStorage = window.localStorage;
 	} catch ( e ) {}
-	return false;
+
+	return this.createListStorage( this.createSafeStorage( localStorage ) );
 };
 
-/**
- * Append a value to a list stored in session storage
- *
- * @method
- * @param {string} key Key of list to set value for
- * @param {string} value Value to set
- * @return {boolean} The value was set
- */
-ve.init.Platform.prototype.appendToSessionList = function ( key, value ) {
-	var length = this.getSessionListLength( key );
+ve.init.Platform.prototype.createSessionStorage = function () {
+	var sessionStorage;
 
-	if ( this.setSession( key + '__' + length, value ) ) {
-		length++;
-		return this.setSession( key + '__length', length.toString() );
-	}
-	return false;
-};
+	try {
+		sessionStorage = window.sessionStorage;
+	} catch ( e ) {}
 
-/**
- * Get the length of a list in session storage
- *
- * @method
- * @param {string} key Key of list
- * @return {number} List length, 0 if the list doesn't exist
- */
-ve.init.Platform.prototype.getSessionListLength = function ( key ) {
-	return +this.getSession( key + '__length' ) || 0;
-};
-
-/**
- * Append a value to a list stored in session storage
- *
- * Internally this will use items with the keys:
- *  - key__length
- *  - key__0 … key__N
- *
- * @method
- * @param {string} key Key of list
- * @return {string[]} List
- */
-ve.init.Platform.prototype.getSessionList = function ( key ) {
-	var i,
-		list = [],
-		length = this.getSessionListLength( key );
-
-	for ( i = 0; i < length; i++ ) {
-		list.push( this.getSession( key + '__' + i ) );
-	}
-	return list;
-};
-
-/**
- * Remove a list stored in session storage
- *
- * @method
- * @param {string} key Key of list
- */
-ve.init.Platform.prototype.removeSessionList = function ( key ) {
-	var i,
-		length = this.getSessionListLength( key );
-
-	for ( i = 0; i < length; i++ ) {
-		this.removeSession( key + '__' + i );
-	}
-	this.removeSession( key + '__length' );
+	return this.createListStorage( this.createSafeStorage( sessionStorage ) );
 };
 
 /**
  * Add multiple messages to the localization system.
  *
- * @method
  * @abstract
  * @param {Object} messages Containing plain message values
  */
@@ -324,7 +219,6 @@ ve.init.Platform.prototype.addMessages = null;
 /**
  * Get a message from the localization system.
  *
- * @method
  * @abstract
  * @param {string} key Message key
  * @param {...Mixed} [args] List of arguments which will be injected at $1, $2, etc. in the message
@@ -335,7 +229,6 @@ ve.init.Platform.prototype.getMessage = null;
 /**
  * Get an HTML message from the localization system, with HTML or DOM arguments
  *
- * @method
  * @abstract
  * @param {string} key Message key
  * @param {...Mixed} [args] List of arguments which will be injected at $1, $2, etc. in the message
@@ -346,7 +239,6 @@ ve.init.Platform.prototype.getHtmlMessage = null;
 /**
  * Add multiple parsed messages to the localization system.
  *
- * @method
  * @abstract
  * @param {Object} messages Map of message-key/html pairs
  */
@@ -357,7 +249,6 @@ ve.init.Platform.prototype.addParsedMessages = null;
  *
  * Does not support $# replacements.
  *
- * @method
  * @abstract
  * @param {string} key Message key
  * @return {string} Parsed localized message as HTML string
@@ -367,7 +258,6 @@ ve.init.Platform.prototype.getParsedMessage = null;
 /**
  * Get the user language and any fallback languages.
  *
- * @method
  * @abstract
  * @return {string[]} User language strings
  */
@@ -376,7 +266,6 @@ ve.init.Platform.prototype.getUserLanguages = null;
 /**
  * Get a list of URL entry points where media can be found.
  *
- * @method
  * @abstract
  * @return {string[]} API URLs
  */
@@ -385,7 +274,6 @@ ve.init.Platform.prototype.getMediaSources = null;
 /**
  * Get a list of all language codes.
  *
- * @method
  * @abstract
  * @return {string[]} Language codes
  */
@@ -394,7 +282,6 @@ ve.init.Platform.prototype.getLanguageCodes = null;
 /**
  * Get a language's name from its code, in the current user language if possible.
  *
- * @method
  * @abstract
  * @param {string} code Language code
  * @return {string} Language name
@@ -404,7 +291,6 @@ ve.init.Platform.prototype.getLanguageName = null;
 /**
  * Get a language's autonym from its code.
  *
- * @method
  * @abstract
  * @param {string} code Language code
  * @return {string} Language autonym
@@ -414,7 +300,6 @@ ve.init.Platform.prototype.getLanguageAutonym = null;
 /**
  * Get a language's direction from its code.
  *
- * @method
  * @abstract
  * @param {string} code Language code
  * @return {string} Language direction

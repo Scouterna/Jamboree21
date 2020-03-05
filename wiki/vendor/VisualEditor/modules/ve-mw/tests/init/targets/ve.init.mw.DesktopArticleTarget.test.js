@@ -54,6 +54,8 @@ QUnit.test( 'init', function ( assert ) {
 				basetimestamp: '20161119005107',
 				starttimestamp: '20180831122319',
 				oldid: 1804,
+				blockinfo: null,
+				canEdit: true,
 				content: '<!DOCTYPE html>\n' +
 					'<html prefix="dc: http://purl.org/dc/terms/ mw: http://mediawiki.org/rdf/" about="http://localhost/MediaWiki/core/index.php/Special:Redirect/revision/1804">' +
 						'<head prefix="mwr: http://localhost/MediaWiki/core/index.php/Special:Redirect/"><meta property="mw:TimeUuid" content="a4fc0409-ad18-11e8-9b45-dd8cefbedb6d"/>' +
@@ -100,8 +102,9 @@ QUnit.test( 'init', function ( assert ) {
 				'Object notice message is passed through from API'
 			);
 			assert.strictEqual( target.actionsToolbar.tools.notices.noticeItems[ 1 ].type, 'object notice', 'Object notice type is passed through from API' );
-			target.destroy();
-			done();
+			target.destroy().then( function () {
+				done();
+			} );
 		} );
 	} );
 	mw.config.get( 'wgVisualEditor' ).pageLanguageCode = 'he';
