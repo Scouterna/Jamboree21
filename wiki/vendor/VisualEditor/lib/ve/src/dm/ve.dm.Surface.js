@@ -51,6 +51,7 @@ ve.dm.Surface = function VeDmSurface( doc, attachedRoot, config ) {
 	this.stagingStack = [];
 	this.undoStack = [];
 	this.undoIndex = 0;
+	this.undoConflict = false;
 	this.historyTrackingInterval = null;
 	this.insertionAnnotations = new ve.dm.AnnotationSet( this.getDocument().getStore() );
 	this.selectedAnnotations = new ve.dm.AnnotationSet( this.getDocument().getStore() );
@@ -63,7 +64,12 @@ ve.dm.Surface = function VeDmSurface( doc, attachedRoot, config ) {
 	this.authorId = null;
 	this.lastStoredChange = doc.getCompleteHistoryLength();
 	this.autosaveFailed = false;
+	this.autosavePrefix = '';
 	this.synchronizer = null;
+	this.storage = ve.init.platform.sessionStorage;
+
+	// Let document know about the attachedRoot
+	this.documentModel.attachedRoot = this.attachedRoot;
 
 	// Events
 	this.getDocument().connect( this, {
@@ -122,7 +128,7 @@ OO.mixinClass( ve.dm.Surface, OO.EventEmitter );
 
 /**
  * @event undoStackChange
- * Emitted when the main undo stack changes.
+ * Emitted when the main undo stack changes (this.undoStack or this.undoIndex).
  */
 
 /**
@@ -520,7 +526,7 @@ ve.dm.Surface.prototype.canRedo = function () {
  * @return {boolean} Undo is allowed
  */
 ve.dm.Surface.prototype.canUndo = function () {
-	return this.hasBeenModified() && !this.readOnly && ( !this.isStaging() || this.doesStagingAllowUndo() );
+	return this.hasBeenModified() && !this.readOnly && ( !this.isStaging() || this.doesStagingAllowUndo() ) && !this.undoConflict;
 };
 
 /**
@@ -784,40 +790,43 @@ ve.dm.Surface.prototype.setSelection = function ( selection ) {
 		}
 		selectedNode = this.getSelectedNodeFromSelection( selection );
 
-		// Reset insertionAnnotations based on the neighbouring document data
-		insertionAnnotations = linearData.getInsertionAnnotationsFromRange( range );
-		// If there's *any* difference in insertion annotations (even order), then:
-		// * emit insertionAnnotationsChange
-		// * emit contextChange (TODO: is this desirable?)
-		if ( !insertionAnnotations.equalsInOrder( this.insertionAnnotations ) ) {
-			this.setInsertionAnnotations( insertionAnnotations );
-		}
+		// Source mode optimization
+		if ( !this.sourceMode ) {
+			// Reset insertionAnnotations based on the neighbouring document data
+			insertionAnnotations = linearData.getInsertionAnnotationsFromRange( range );
+			// If there's *any* difference in insertion annotations (even order), then:
+			// * emit insertionAnnotationsChange
+			// * emit contextChange (TODO: is this desirable?)
+			if ( !insertionAnnotations.equalsInOrder( this.insertionAnnotations ) ) {
+				this.setInsertionAnnotations( insertionAnnotations );
+			}
 
-		// Reset selectedAnnotations
-		if ( range.isCollapsed() ) {
-			selectedAnnotations = linearData.getAnnotationsFromOffset( range.start );
-		} else {
-			selectedAnnotations = linearData.getAnnotationsFromRange( range, true );
-		}
-		if ( !selectedAnnotations.compareTo( this.selectedAnnotations ) ) {
-			this.selectedAnnotations = selectedAnnotations;
-			contextChange = true;
-		}
-
-		// Did the annotations at the focus point of a non-collapsed selection
-		// change? (i.e. did the selection move in/out of an annotation as it
-		// expanded?)
-		if ( selectionChange && !range.isCollapsed() && oldSelection instanceof ve.dm.LinearSelection ) {
-			rangeFocus = new ve.Range( range.to );
-			oldRangeFocus = new ve.Range( oldSelection.getRange().to );
-			focusRangeMovingBack = rangeFocus.to < oldRangeFocus.to;
-			// If we're moving back in the document, getInsertionAnnotationsFromRange
-			// needs to be told to fetch the annotations after the cursor, otherwise
-			// it'll trigger one position too soon.
-			if (
-				!linearData.getInsertionAnnotationsFromRange( rangeFocus, focusRangeMovingBack ).compareTo( linearData.getInsertionAnnotationsFromRange( oldRangeFocus, focusRangeMovingBack ) )
-			) {
+			// Reset selectedAnnotations
+			if ( range.isCollapsed() ) {
+				selectedAnnotations = linearData.getAnnotationsFromOffset( range.start );
+			} else {
+				selectedAnnotations = linearData.getAnnotationsFromRange( range, true );
+			}
+			if ( !selectedAnnotations.compareTo( this.selectedAnnotations ) ) {
+				this.selectedAnnotations = selectedAnnotations;
 				contextChange = true;
+			}
+
+			// Did the annotations at the focus point of a non-collapsed selection
+			// change? (i.e. did the selection move in/out of an annotation as it
+			// expanded?)
+			if ( selectionChange && !range.isCollapsed() && oldSelection instanceof ve.dm.LinearSelection ) {
+				rangeFocus = new ve.Range( range.to );
+				oldRangeFocus = new ve.Range( oldSelection.getRange().to );
+				focusRangeMovingBack = rangeFocus.to < oldRangeFocus.to;
+				// If we're moving back in the document, getInsertionAnnotationsFromRange
+				// needs to be told to fetch the annotations after the cursor, otherwise
+				// it'll trigger one position too soon.
+				if (
+					!linearData.getInsertionAnnotationsFromRange( rangeFocus, focusRangeMovingBack ).compareTo( linearData.getInsertionAnnotationsFromRange( oldRangeFocus, focusRangeMovingBack ) )
+				) {
+					contextChange = true;
+				}
 			}
 		}
 	} else if ( selection instanceof ve.dm.TableSelection ) {
@@ -965,6 +974,7 @@ ve.dm.Surface.prototype.changeInternal = function ( transactions, selection, ski
 			}
 		}
 		this.transacting = false;
+		this.undoConflict = false;
 		this.emit( 'history' );
 	}
 	selectionAfter = this.selection;
@@ -1008,6 +1018,7 @@ ve.dm.Surface.prototype.breakpoint = function () {
 	this.resetHistoryTrackingInterval();
 	if ( this.newTransactions.length > 0 ) {
 		this.undoStack.push( {
+			start: this.getDocument().getCompleteHistoryLength() - this.newTransactions.length,
 			transactions: this.newTransactions,
 			selection: this.selection,
 			selectionBefore: this.selectionBefore
@@ -1026,7 +1037,10 @@ ve.dm.Surface.prototype.breakpoint = function () {
  * @fires undoStackChange
  */
 ve.dm.Surface.prototype.undo = function () {
-	var i, item, transaction, transactions = [];
+	var i, item, transaction, authorId,
+		history, done, result, selection,
+		transactions = [];
+
 	if ( !this.canUndo() ) {
 		return;
 	}
@@ -1038,15 +1052,57 @@ ve.dm.Surface.prototype.undo = function () {
 	this.breakpoint();
 	this.undoIndex++;
 
-	item = this.undoStack[ this.undoStack.length - this.undoIndex ];
-	if ( item ) {
-		// Apply reversed transactions in reversed order
-		for ( i = item.transactions.length - 1; i >= 0; i-- ) {
-			transaction = item.transactions[ i ].reversed();
-			transactions.push( transaction );
+	if ( !this.isMultiUser() ) {
+		item = this.undoStack[ this.undoStack.length - this.undoIndex ];
+		if ( item ) {
+			// Apply reversed transactions in reversed order
+			for ( i = item.transactions.length - 1; i >= 0; i-- ) {
+				transaction = item.transactions[ i ].reversed();
+				transactions.push( transaction );
+			}
+			this.changeInternal( transactions, item.selectionBefore, true );
+			this.emit( 'undoStackChange' );
 		}
-		this.changeInternal( transactions, item.selectionBefore, true );
-		this.emit( 'undoStackChange' );
+	} else {
+		// Find the most recent stack item by this user
+		while ( this.undoIndex <= this.undoStack.length ) {
+			item = this.undoStack[ this.undoStack.length - this.undoIndex ];
+			// Assume every transaction in the stack item has the same author (see ve.dm.Change#applyTo)
+			authorId = item.transactions[ 0 ].authorId;
+			if ( authorId === null || authorId === this.getAuthorId() ) {
+				break;
+			}
+			item = null;
+			this.undoIndex++;
+		}
+		if ( item ) {
+			history = this.getDocument().getChangeSince( item.start + item.transactions.length );
+			done = new ve.dm.Change(
+				item.start,
+				item.transactions,
+				item.transactions.map( function () {
+					// Undo cannot add store items, so we don't need to worry here
+					return new ve.dm.HashValueStore();
+				} ),
+				{}
+			);
+			result = ve.dm.Change.static.rebaseUncommittedChange( history, done.reversed() );
+			if ( result.rejected ) {
+				// Rebasing conflict: move pointer back and don't try again until next transaction
+				this.undoIndex--;
+				this.undoConflict = true;
+				// Undo stack didn't change, but ability to undo did
+				this.emit( 'history' );
+			} else {
+				selection = item.selectionBefore.translateByChange( result.transposedHistory );
+				// Undo cannot add store items, so we can safely apply just transactions
+				this.changeInternal( result.rebased.transactions, selection, true );
+				this.emit( 'undoStackChange' );
+			}
+		} else {
+			// Undo stack didn't change, but ability to undo did
+			this.emit( 'history' );
+		}
 	}
 };
 
@@ -1278,9 +1334,9 @@ ve.dm.Surface.prototype.storeChanges = function () {
 	dmDoc = this.getDocument();
 	change = dmDoc.getChangeSince( this.lastStoredChange );
 	if ( !change.isEmpty() ) {
-		if ( ve.init.platform.appendToSessionList( 've-changes', JSON.stringify( change.serialize() ) ) ) {
+		if ( this.storage.appendToList( this.autosavePrefix + 've-changes', JSON.stringify( change ) ) ) {
 			this.lastStoredChange = dmDoc.getCompleteHistoryLength();
-			ve.init.platform.setSessionObject( 've-selection', this.getSelection() );
+			this.storage.setObject( this.autosavePrefix + 've-selection', this.getSelection() );
 		} else {
 			// Auto-save failed probably because of memory limits
 			// so flag it so we don't keep trying in vain.
@@ -1291,7 +1347,19 @@ ve.dm.Surface.prototype.storeChanges = function () {
 };
 
 /**
- * Start storing changes after very undoStackChange
+ * Set an document ID for autosave.
+ *
+ * For session storage this is only required if there is more
+ * than one document on the page.
+ *
+ * @param {string} docId Document ID.
+ */
+ve.dm.Surface.prototype.setAutosaveDocId = function ( docId ) {
+	this.autosavePrefix = docId + '/';
+};
+
+/**
+ * Start storing changes after every undoStackChange
  */
 ve.dm.Surface.prototype.startStoringChanges = function () {
 	this.on( 'undoStackChange', this.storeChangesListener );
@@ -1314,19 +1382,19 @@ ve.dm.Surface.prototype.restoreChanges = function () {
 	var selection,
 		surface = this,
 		restored = false,
-		changes = ve.init.platform.getSessionList( 've-changes' );
+		changes = this.storage.getList( this.autosavePrefix + 've-changes' );
 
 	try {
 		changes.forEach( function ( changeString ) {
 			var data = JSON.parse( changeString ),
-				change = ve.dm.Change.static.unsafeDeserialize( data, surface.getDocument() );
+				change = ve.dm.Change.static.unsafeDeserialize( data );
 			change.applyTo( surface, true );
 			surface.breakpoint();
 		} );
 		restored = !!changes.length;
 		try {
 			selection = ve.dm.Selection.static.newFromJSON(
-				ve.init.platform.getSessionObject( 've-selection' )
+				this.storage.getObject( this.autosavePrefix + 've-selection' )
 			);
 		} catch ( e ) {
 			// Didn't restore the selection, not a big deal.
@@ -1367,9 +1435,9 @@ ve.dm.Surface.prototype.storeDocState = function ( state, html ) {
 		}
 	}
 	// Store HTML separately to avoid wasteful JSON encoding
-	if ( !ve.init.platform.setSession( 've-dochtml', useLatestHtml ? this.getHtml() : html ) ) {
+	if ( !this.storage.set( this.autosavePrefix + 've-dochtml', useLatestHtml ? this.getHtml() : html ) ) {
 		// If we failed to store the html, wipe the docstate
-		ve.init.platform.removeSession( 've-docstate' );
+		this.storage.remove( this.autosavePrefix + 've-docstate' );
 		this.stopStoringChanges();
 		return false;
 	}
@@ -1390,15 +1458,15 @@ ve.dm.Surface.prototype.storeDocState = function ( state, html ) {
  * @return {boolean} Document metadata was successfully stored
  */
 ve.dm.Surface.prototype.updateDocState = function ( state ) {
-	return ve.init.platform.setSession( 've-docstate', JSON.stringify( state ) );
+	return this.storage.set( this.autosavePrefix + 've-docstate', JSON.stringify( state ) );
 };
 
 /**
  * Remove the auto-saved document state and stashed changes
  */
 ve.dm.Surface.prototype.removeDocStateAndChanges = function () {
-	ve.init.platform.removeSession( 've-docstate' );
-	ve.init.platform.removeSession( 've-dochtml' );
-	ve.init.platform.removeSession( 've-selection' );
-	ve.init.platform.removeSessionList( 've-changes' );
+	this.storage.remove( this.autosavePrefix + 've-docstate' );
+	this.storage.remove( this.autosavePrefix + 've-dochtml' );
+	this.storage.remove( this.autosavePrefix + 've-selection' );
+	this.storage.removeList( this.autosavePrefix + 've-changes' );
 };

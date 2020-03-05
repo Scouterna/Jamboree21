@@ -34,7 +34,7 @@ OO.mixinClass( ve.ui.FragmentDialog, ve.ui.FragmentWindow );
 ve.ui.FragmentDialog.static.actions = [
 	{
 		label: OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
-		flags: [ 'safe', 'back' ],
+		flags: [ 'safe', 'close' ],
 		modes: [ 'readonly', 'edit', 'insert' ]
 	},
 	{
@@ -63,6 +63,16 @@ ve.ui.FragmentDialog.prototype.initialize = function ( data ) {
 	this.tabIndexScope = new ve.ui.TabIndexScope( {
 		root: this.$content
 	} );
+};
+
+/**
+ * @inheritdoc OO.ui.Dialog
+ */
+ve.ui.FragmentDialog.prototype.getActionWidgetConfig = function ( config ) {
+	// Mixin method
+	config = ve.ui.FragmentWindow.prototype.getActionWidgetConfig.call( this, config );
+	// Parent method
+	return ve.ui.FragmentDialog.super.prototype.getActionWidgetConfig.call( this, config );
 };
 
 /**

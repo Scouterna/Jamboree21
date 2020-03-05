@@ -24,7 +24,6 @@ module.exports = function ( grunt ) {
 			return pages;
 		}() );
 
-	grunt.loadNpmTasks( 'grunt-jsonlint' );
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
 	grunt.loadNpmTasks( 'grunt-contrib-clean' );
 	grunt.loadNpmTasks( 'grunt-contrib-concat' );
@@ -41,6 +40,15 @@ module.exports = function ( grunt ) {
 
 	// We want to use `grunt watch` to start this and karma watch together.
 	grunt.renameTask( 'watch', 'runwatch' );
+
+	function coverAll( pc ) {
+		return {
+			functions: pc,
+			branches: pc,
+			statements: pc,
+			lines: pc
+		};
+	}
 
 	grunt.initConfig( {
 		pkg: grunt.file.readJSON( 'package.json' ),
@@ -115,9 +123,9 @@ module.exports = function ( grunt ) {
 		},
 		cssUrlEmbed: {
 			options: {
-				// TODO: A few image paths aren't relative to src/ui/styles
-				failOnMissingUrl: false,
-				baseDir: 'src/ui/styles'
+				// TODO: Image paths are relative to their folders, but the files have already been
+				// flattened as this point, so supporting more that one baseDir is not possible.
+				baseDir: 'src/ui/styles/nodes'
 			},
 			dist: {
 				files: {
@@ -342,11 +350,16 @@ module.exports = function ( grunt ) {
 		eslint: {
 			options: {
 				reportUnusedDisableDirectives: true,
+				extensions: [ '.js', '.json' ],
 				cache: true
 			},
 			main: [
-				'*.js',
-				'{bin,build,demos,src,tests,rebaser}/**/*.js',
+				'**/*.js{on,}',
+				'!coverage/**',
+				'!dist/**',
+				'!docs/**',
+				'!lib/**',
+				'!node_modules/**',
 				'!rebaser/node_modules/**'
 			],
 			html: {
@@ -367,16 +380,6 @@ module.exports = function ( grunt ) {
 			all: [
 				'**/*.css',
 				'!coverage/**',
-				'!dist/**',
-				'!docs/**',
-				'!lib/**',
-				'!node_modules/**'
-			]
-		},
-		jsonlint: {
-			all: [
-				'.eslintrc.json',
-				'**/*.json',
 				'!dist/**',
 				'!docs/**',
 				'!lib/**',
@@ -404,8 +407,8 @@ module.exports = function ( grunt ) {
 				},
 				autoWatch: false
 			},
-			main: {
-				browsers: [ 'ChromeCustom' ], // T200347: Temporarily disabled `, 'Firefox'*/ ],`
+			chrome: {
+				browsers: [ 'ChromeCustom' ],
 				preprocessors: {
 					'rebaser/src/**/*.js': [ 'coverage' ],
 					'src/**/*.js': [ 'coverage' ]
@@ -421,12 +424,7 @@ module.exports = function ( grunt ) {
 					],
 					// https://github.com/karma-runner/karma-coverage/blob/v1.1.2/docs/configuration.md#check
 					check: {
-						global: {
-							functions: 60,
-							branches: 60,
-							statements: 60,
-							lines: 60
-						},
+						global: coverAll( 60 ),
 						each: {
 							functions: 20,
 							branches: 20,
@@ -439,17 +437,70 @@ module.exports = function ( grunt ) {
 								'rebaser/src/dm/ve.dm.TransportServer.js',
 								'src/ve.track.js',
 								'src/init/**/*.js',
-								'src/ce/**/*.js',
-								'src/ui/**/*.js',
+								// DM
+								'src/dm/ve.dm.InternalList.js',
+								'src/dm/ve.dm.SourceSurfaceFragment.js',
 								'src/dm/ve.dm.SurfaceSynchronizer.js',
 								'src/dm/ve.dm.TableSlice.js',
-								'src/dm/annotations/ve.dm.BidiAnnotation.js',
-								'src/dm/metaitems/ve.dm.CommentMetaItem.js',
-								'src/dm/nodes/ve.dm.GeneratedContentNode.js'
-							]
+								'src/dm/annotations/ve.dm.CommentAnnotation.js',
+								'src/dm/nodes/ve.dm.GeneratedContentNode.js',
+								'src/dm/nodes/ve.dm.HeadingNode.js',
+								'src/dm/nodes/ve.dm.ImageNode.js',
+								'src/dm/nodes/ve.dm.InternalItemNode.js',
+								// CE
+								'src/ce/annotations/ve.ce.DeleteAnnotation.js',
+								'src/ce/annotations/ve.ce.InsertAnnotation.js',
+								'src/ce/nodes/ve.ce.CheckListItemNode.js',
+								'src/ce/nodes/ve.ce.GeneratedContentNode.js',
+								'src/ce/nodes/ve.ce.InternalItemNode.js',
+								'src/ce/keydownhandlers/ve.ce.TableDeleteKeyDownHandler.js',
+								// UI
+								'src/ui/*.js',
+								'src/ui/actions/*.js',
+								'src/ui/commands/*.js',
+								'src/ui/contextitems/*.js',
+								'src/ui/contexts/*.js',
+								'src/ui/datatransferhandlers/*.js',
+								'src/ui/dialogs/*.js',
+								'src/ui/inspectors/ve.ui.CommentAnnotationInspector.js',
+								'src/ui/pages/*.js',
+								'src/ui/tools/*.js',
+								'src/ui/widgets/*.js',
+								'src/ui/windowmanagers/*.js'
+							],
+							overrides: {
+								// Core
+								// TODO: Fix a few cases for 80% coverage
+								'src/*.js': coverAll( 50 ),
+								// DM
+								'src/dm/*.js': coverAll( 50 ),
+								'src/dm/annotations/*.js': coverAll( 100 ),
+								'src/dm/lineardata/*.js': coverAll( 95 ),
+								// TODO: Fix AlienMetaItem for 100% coverage
+								'src/dm/metaitems/*.js': coverAll( 50 ),
+								// TODO: Fix a few cases for 80% coverage
+								'src/dm/nodes/*.js': coverAll( 50 ),
+								// TODO: Fix a few cases for 95% coverage
+								'src/dm/selections/*.js': coverAll( 50 ),
+								// CE
+								'src/ce/*.js': coverAll( 50 ),
+								// TODO: Fix a few cases for 80% coverage
+								'src/ce/annotations/*.js': coverAll( 50 ),
+								'src/ce/keydownhandlers/*.js': coverAll( 80 ),
+								'src/ce/nodes/*.js': coverAll( 50 ),
+								// TODO: Fix a few cases for 80% coverage
+								'src/ce/selections/*.js': coverAll( 50 ),
+								// UI
+								'src/ui/elements/*.js': coverAll( 50 ),
+								'src/ui/inspectors/*.js': coverAll( 50 )
+							}
 						}
 					}
 				}
+			},
+			// Seperate job for Firefox as we don't want a second coverage report.
+			firefox: {
+				browsers: [ 'FirefoxHeadless' ]
 			},
 			bg: {
 				browsers: [ 'Chrome', 'Firefox' ],
@@ -492,8 +543,8 @@ module.exports = function ( grunt ) {
 	} );
 
 	grunt.registerTask( 'build', [ 'clean', 'concat', 'cssjanus', 'cssUrlEmbed', 'copy', 'buildloader' ] );
-	grunt.registerTask( 'lint', [ 'tyops', 'eslint', 'stylelint', 'jsonlint', 'banana' ] );
-	grunt.registerTask( 'unit', [ 'karma:main' ] );
+	grunt.registerTask( 'lint', [ 'tyops', 'eslint', 'stylelint', 'banana' ] );
+	grunt.registerTask( 'unit', [ 'karma:chrome', 'karma:firefox' ] );
 	grunt.registerTask( '_test', [ 'lint', 'git-build', 'build', 'unit' ] );
 	grunt.registerTask( 'ci', [ '_test', 'svgmin', 'git-status' ] );
 	grunt.registerTask( 'watch', [ 'karma:bg:start', 'runwatch' ] );

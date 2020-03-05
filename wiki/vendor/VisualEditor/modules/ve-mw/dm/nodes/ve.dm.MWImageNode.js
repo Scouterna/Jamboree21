@@ -177,10 +177,12 @@ ve.dm.MWImageNode.static.describeChange = function ( key, change ) {
 	switch ( key ) {
 		case 'align':
 			return ve.htmlMsg( 'visualeditor-changedesc-align',
-				// Messages used:
-				// visualeditor-align-desc-left, visualeditor-align-desc-right,
-				// visualeditor-align-desc-center, visualeditor-align-desc-default,
-				// visualeditor-align-desc-none
+				// The following messages are used here:
+				// * visualeditor-align-desc-left
+				// * visualeditor-align-desc-right
+				// * visualeditor-align-desc-center
+				// * visualeditor-align-desc-default
+				// * visualeditor-align-desc-none
 				this.wrapText( 'del', ve.msg( 'visualeditor-align-desc-' + change.from ) ),
 				this.wrapText( 'ins', ve.msg( 'visualeditor-align-desc-' + change.to ) )
 			);
@@ -201,7 +203,8 @@ ve.dm.MWImageNode.static.describeChange = function ( key, change ) {
  * @return {Object} The new width and height of the scaled image
  */
 ve.dm.MWImageNode.static.scaleToThumbnailSize = function ( dimensions, mediaType ) {
-	var defaultThumbSize = mw.config.get( 'wgVisualEditorConfig' ).defaultUserOptions.defaultthumbsize;
+	var defaultThumbSize = mw.config.get( 'wgVisualEditorConfig' )
+		.thumbLimits[ mw.user.options.get( 'thumbsize' ) ];
 
 	mediaType = mediaType || 'BITMAP';
 
@@ -252,7 +255,8 @@ ve.dm.MWImageNode.static.resizeToBoundingBox = function ( imageDimensions, bound
  */
 ve.dm.MWImageNode.static.syncScalableToType = function ( type, mediaType, scalable ) {
 	var originalDimensions, dimensions,
-		defaultThumbSize = mw.config.get( 'wgVisualEditorConfig' ).defaultUserOptions.defaultthumbsize;
+		defaultThumbSize = mw.config.get( 'wgVisualEditorConfig' )
+			.thumbLimits[ mw.user.options.get( 'thumbsize' ) ];
 
 	originalDimensions = scalable.getOriginalDimensions();
 
@@ -323,7 +327,6 @@ ve.dm.MWImageNode.static.getScalablePromise = function ( filename ) {
  * Update the rendering of the 'align', src', 'width' and 'height' attributes
  * when they change in the model.
  *
- * @method
  * @param {string} key Attribute key
  * @param {string} from Old value
  * @param {string} to New value
@@ -347,7 +350,8 @@ ve.dm.MWImageNode.prototype.getFilename = function () {
  * @inheritdoc
  */
 ve.dm.MWImageNode.prototype.getScalable = function () {
-	var imageNode = this;
+	var oldMediaType,
+		imageNode = this;
 	if ( !this.scalablePromise ) {
 		this.scalablePromise = ve.dm.MWImageNode.static.getScalablePromise( this.getFilename() );
 		// If the promise was already resolved before getScalablePromise returned, then jQuery will execute the done straight away.
@@ -358,6 +362,7 @@ ve.dm.MWImageNode.prototype.getScalable = function () {
 					width: info.width,
 					height: info.height
 				} );
+				oldMediaType = imageNode.mediaType;
 				// Update media type
 				imageNode.mediaType = info.mediatype;
 				// Update according to type
@@ -366,6 +371,7 @@ ve.dm.MWImageNode.prototype.getScalable = function () {
 					imageNode.mediaType,
 					imageNode.getScalable()
 				);
+				imageNode.emit( 'attributeChange', 'mediaType', oldMediaType, imageNode.mediaType );
 			}
 		} );
 	}

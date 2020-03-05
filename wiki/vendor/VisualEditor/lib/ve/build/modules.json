@@ -285,6 +285,8 @@
 	"visualEditor.core.init": {
 		"scripts": [
 			"src/init/ve.init.js",
+			"src/init/ve.init.SafeStorage.js",
+			"src/init/ve.init.ListStorage.js",
 			"src/init/ve.init.Platform.js",
 			"src/init/ve.init.Target.js"
 		],
@@ -295,6 +297,7 @@
 	"visualEditor.core.build": {
 		"dependencies": [
 			"visualEditor.base.build",
+			"visualEditor.sanitize",
 			"visualEditor.core.utils.client",
 			"visualEditor.core.root",
 			"visualEditor.core.model",
@@ -343,6 +346,7 @@
 			"src/dm/ve.dm.TransactionProcessor.js",
 			"src/dm/ve.dm.Transaction.js",
 			"src/dm/ve.dm.TransactionBuilder.js",
+			"src/dm/ve.dm.TransactionSquasher.js",
 			"src/dm/ve.dm.Change.js",
 			"src/dm/ve.dm.TreeCursor.js",
 			"src/dm/ve.dm.TreeModifier.js",
@@ -421,6 +425,7 @@
 			"src/dm/annotations/ve.dm.UserInputAnnotation.js",
 			"src/dm/annotations/ve.dm.VariableAnnotation.js",
 			"src/dm/metaitems/ve.dm.AlienMetaItem.js",
+			"src/dm/metaitems/ve.dm.RemovableAlienMetaItem.js",
 			"src/dm/metaitems/ve.dm.CommentMetaItem.js",
 			"src/dm/nodes/ve.dm.CommentNode.js",
 			"src/dm/nodes/ve.dm.FakeCommentNode.js",
@@ -495,6 +500,7 @@
 			"src/ce/nodes/ve.ce.TableRowNode.js",
 			"src/ce/nodes/ve.ce.TableSectionNode.js",
 			"src/ce/nodes/ve.ce.TextNode.js",
+			"src/ce/nodes/ve.ce.UnrenderedNode.js",
 			"src/ce/nodes/ve.ce.ImageNode.js",
 			"src/ce/nodes/ve.ce.BlockImageNode.js",
 			"src/ce/nodes/ve.ce.BlockImageCaptionNode.js",
@@ -594,6 +600,7 @@
 			"src/ui/ve.ui.TabIndexScope.js",
 			"src/ui/windowmanagers/ve.ui.SurfaceWindowManager.js",
 			"src/ui/actions/ve.ui.AnnotationAction.js",
+			"src/ui/actions/ve.ui.BlockquoteAction.js",
 			"src/ui/actions/ve.ui.ContentAction.js",
 			"src/ui/actions/ve.ui.FormatAction.js",
 			"src/ui/actions/ve.ui.HistoryAction.js",
@@ -676,6 +683,7 @@
 			"src/ui/styles/inspectors/ve.ui.CommentInspector.css",
 			"src/ui/styles/inspectors/ve.ui.FragmentInspector.css",
 			"src/ui/styles/inspectors/ve.ui.LanguageInspector.css",
+			"src/ui/styles/ve.ui.Context.css",
 			"src/ui/styles/ve.ui.ContextItem.css",
 			"src/ui/styles/contextitems/ve.ui.LinearContextItem.css",
 			"src/ui/styles/contextitems/ve.ui.TableLineContextItem.css",
@@ -810,6 +818,7 @@
 			"tests/dm/ve.dm.LinearData.test.js",
 			"tests/dm/ve.dm.Transaction.test.js",
 			"tests/dm/ve.dm.TransactionBuilder.test.js",
+			"tests/dm/ve.dm.TransactionSquasher.test.js",
 			"tests/dm/ve.dm.Change.test.js",
 			"tests/dm/ve.dm.TestRebaseClient.js",
 			"tests/dm/ve.dm.TestRebaseServer.js",
@@ -861,6 +870,7 @@
 			"tests/ui/ve.ui.DiffElement.test.js",
 			"tests/ui/ve.ui.PreviewElement.test.js",
 			"tests/ui/actions/ve.ui.AnnotationAction.test.js",
+			"tests/ui/actions/ve.ui.BlockquoteAction.test.js",
 			"tests/ui/actions/ve.ui.ContentAction.test.js",
 			"tests/ui/actions/ve.ui.FormatAction.test.js",
 			"tests/ui/actions/ve.ui.IndentationAction.test.js",
@@ -950,7 +960,6 @@
 	"visualEditor.mobile.build": {
 		"scripts": [
 			"src/ui/contexts/ve.ui.MobileContext.js",
-			"src/ui/contextitems/ve.ui.MobileTableCellContextItem.js",
 			"src/ui/windowmanagers/ve.ui.MobileWindowManager.js"
 		],
 		"styles": [
@@ -975,6 +984,7 @@
 	"visualEditor.standalone.build": {
 		"scripts": [
 			"src/init/sa/ve.init.sa.js",
+			"src/init/sa/ve.init.sa.SafeStorage.js",
 			"src/init/sa/ve.init.sa.Platform.js",
 			"src/init/sa/ve.init.sa.Target.js"
 		],

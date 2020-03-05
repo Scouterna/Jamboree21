@@ -101,28 +101,20 @@ ve.ui.MWLanguageVariantInspector.static.getImportRules = function () {
  * object to use when the equivalent of wikitext `-{}-` is inserted
  * in the document.
  *
- * @method
  * @return {Object}
  */
-ve.ui.MWLanguageVariantInspector.prototype.getDefaultVariantInfo = function () {
-	throw new Error( 'getDefaultVariantInfo must be implemented by subclass' );
-};
+ve.ui.MWLanguageVariantInspector.prototype.getDefaultVariantInfo = null;
 
-/* eslint-disable no-unused-vars */
 /**
  * Convert the current inspector state to new content which can be used
  * to update the ve.dm.SurfaceFragment backing this inspector.
  *
- * @method
  * @param {Object} An existing variantInfo object for this node, which will be
  *  mutated to update it with the latest content from this inspector.
  * @return {string|Array} New content for the ve.dm.SurfaceFragment
  *  being inspected/updated.
  */
-ve.ui.MWLanguageVariantInspector.prototype.getContentFromInspector = function ( variantInfo ) {
-	throw new Error( 'getContentFromInspector must be implemented by subclass' );
-};
-/* eslint-enable no-unused-vars */
+ve.ui.MWLanguageVariantInspector.prototype.getContentFromInspector = null;
 
 // Helper functions for creating sub-document editors for embedded HTML
 
@@ -130,8 +122,7 @@ ve.ui.MWLanguageVariantInspector.prototype.getContentFromInspector = function ( 
  * Helper function to create a subdocument editor for HTML embedded in the
  * language variant node.
  *
- * @method
- * @param {String} [placeholder] Placeholder text for this editor.
+ * @param {string} [placeholder] Placeholder text for this editor.
  * @return {ve.ui.TargetWidget}
  */
 ve.ui.MWLanguageVariantInspector.prototype.createTextTarget = function ( placeholder ) {
@@ -149,11 +140,10 @@ ve.ui.MWLanguageVariantInspector.prototype.createTextTarget = function ( placeho
  * Helper function to initialize a ve.ui.TargetWidget with a given HTML
  * string extracted from the language variant node.
  *
- * @method
  * @param {ve.ui.TargetWidget} [textTarget] A subdocument editor widget
  *   created by ve.ui.MWLanguageVariantInspector#createTextTarget.
- * @param {String} [htmlString] The HTML string extracted from this node.
- * @return {ve.Document} The document model now backing the widget.
+ * @param {string} [htmlString] The HTML string extracted from this node.
+ * @return {ve.dm.Document} The document model now backing the widget.
  */
 ve.ui.MWLanguageVariantInspector.prototype.setupTextTargetDoc = function ( textTarget, htmlString ) {
 	var doc = this.variantNode.getDocument().newFromHtml( htmlString );
@@ -169,10 +159,9 @@ ve.ui.MWLanguageVariantInspector.prototype.setupTextTargetDoc = function ( textT
  * and (TODO) determine if an inline node needs to be converted to a
  * block node or vice-versa.
  *
- * @method
- * @param {ve.Document} The document backing an editor widget, as returned
+ * @param {ve.dm.Document} doc The document backing an editor widget, as returned
  *  by ve.ui.MWLanguageVariantInspector#setupTextTargetDoc.
- * @return {String} An HTML string appropriate for embedding into a
+ * @return {string} An HTML string appropriate for embedding into a
  *  language variant node.
  */
 ve.ui.MWLanguageVariantInspector.prototype.getHtmlForDoc = function ( doc ) {
@@ -198,8 +187,6 @@ ve.ui.MWLanguageVariantInspector.prototype.getHtmlForDoc = function ( doc ) {
 
 /**
  * Handle frame ready events.
- *
- * @method
  */
 ve.ui.MWLanguageVariantInspector.prototype.initialize = function () {
 	// Parent method
@@ -222,7 +209,6 @@ ve.ui.MWLanguageVariantInspector.prototype.getActionProcess = function ( action 
 /**
  * Handle the inspector being setup.
  *
- * @method
  * @param {Object} [data] Inspector opening data
  * @return {OO.ui.Process}
  */
@@ -606,9 +592,8 @@ ve.ui.MWLanguageVariantTwoWayInspector.prototype.getSetupProcess = function ( da
 
 /**
  * Create widgets corresponding to a given mapping given by this rule.
- * @method
- * @param {String} [lang] The language code for the content text.
- * @param {String} [content] The HTML content text.
+ * @param {string} [lang] The language code for the content text.
+ * @param {string} [content] The HTML content text.
  * @return {Object} An object containing the required widgets and backing
  *  documents for this mapping item.
  */
@@ -677,7 +662,6 @@ ve.ui.MWLanguageVariantTwoWayInspector.prototype.getContentFromInspector = funct
 
 /**
  * Create a new mapping item in the inspector.
- * @method
  */
 ve.ui.MWLanguageVariantTwoWayInspector.prototype.onAddButtonClick = function () {
 	var idx = this.items.length;
@@ -687,7 +671,8 @@ ve.ui.MWLanguageVariantTwoWayInspector.prototype.onAddButtonClick = function () 
 
 /**
  * Remove a mapping item from the inspector.
- * @method
+ *
+ * @param {Object} item Item
  */
 ve.ui.MWLanguageVariantTwoWayInspector.prototype.onClearButtonClick = function ( item ) {
 	var idx = this.items.indexOf( item );
@@ -757,10 +742,9 @@ ve.ui.MWLanguageVariantOneWayInspector.prototype.getSetupProcess = function ( da
 
 /**
  * Create widgets corresponding to a given mapping given by this rule.
- * @method
- * @param {String} [from] The HTML source text.
- * @param {String} [lang] The language code for the destination text.
- * @param {String} [to] The HTML destination text.
+ * @param {string} [from] The HTML source text.
+ * @param {string} [lang] The language code for the destination text.
+ * @param {string} [to] The HTML destination text.
  * @return {Object} An object containing the required widgets and backing
  *  documents for this mapping item.
  */
@@ -836,7 +820,6 @@ ve.ui.MWLanguageVariantOneWayInspector.prototype.getContentFromInspector = funct
 
 /**
  * Create a new mapping item in the inspector.
- * @method
  */
 ve.ui.MWLanguageVariantOneWayInspector.prototype.onAddButtonClick = function () {
 	var idx = this.items.length;
@@ -846,7 +829,8 @@ ve.ui.MWLanguageVariantOneWayInspector.prototype.onAddButtonClick = function () 
 
 /**
  * Remove a mapping item from the inspector.
- * @method
+ *
+ * @param {Object} item Item
  */
 ve.ui.MWLanguageVariantOneWayInspector.prototype.onClearButtonClick = function ( item ) {
 	var idx = this.items.indexOf( item );

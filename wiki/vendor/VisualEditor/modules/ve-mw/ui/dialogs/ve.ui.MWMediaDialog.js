@@ -92,7 +92,7 @@ ve.ui.MWMediaDialog.static.actions = [
 	},
 	{
 		label: OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
-		flags: [ 'safe', 'back' ],
+		flags: [ 'safe', 'close' ],
 		modes: [ 'readonly', 'edit', 'insert', 'select', 'search', 'upload-upload' ]
 	},
 	{
@@ -137,23 +137,36 @@ ve.ui.MWMediaDialog.static.excludeCommands = [
  * @return {Object} Import rules
  */
 ve.ui.MWMediaDialog.static.getImportRules = function () {
+	var rules = ve.copy( ve.init.target.constructor.static.importRules );
 	return ve.extendObject(
-		ve.copy( ve.init.target.constructor.static.importRules ),
+		rules,
 		{
 			all: {
-				blacklist: OO.simpleArrayUnion(
-					ve.getProp( ve.init.target.constructor.static.importRules, 'all', 'blacklist' ) || [],
-					[
+				blacklist: ve.extendObject(
+					{
 						// Tables (but not lists) are possible in wikitext with a leading
 						// line break but we prevent creating these with the UI
-						'list', 'listItem', 'definitionList', 'definitionListItem',
-						'table', 'tableCaption', 'tableSection', 'tableRow', 'tableCell'
-					]
+						list: true,
+						listItem: true,
+						definitionList: true,
+						definitionListItem: true,
+						table: true,
+						tableCaption: true,
+						tableSection: true,
+						tableRow: true,
+						tableCell: true,
+						mwTable: true,
+						mwTransclusionTableCell: true
+					},
+					ve.getProp( rules, 'all', 'blacklist' )
 				),
 				// Headings are also possible, but discouraged
-				conversions: {
-					mwHeading: 'paragraph'
-				}
+				conversions: ve.extendObject(
+					{
+						mwHeading: 'paragraph'
+					},
+					ve.getProp( rules, 'all', 'conversions' )
+				)
 			}
 		}
 	);
@@ -269,22 +282,22 @@ ve.ui.MWMediaDialog.prototype.initialize = function () {
 		// TODO: Inline images require a bit of further work, will be coming soon
 		new OO.ui.MenuOptionWidget( {
 			data: 'thumb',
-			icon: 'image-thumbnail',
+			icon: 'imageLayoutThumbnail',
 			label: ve.msg( 'visualeditor-dialog-media-type-thumb' )
 		} ),
 		new OO.ui.MenuOptionWidget( {
 			data: 'frameless',
-			icon: 'image-frameless',
+			icon: 'imageLayoutFrameless',
 			label: ve.msg( 'visualeditor-dialog-media-type-frameless' )
 		} ),
 		new OO.ui.MenuOptionWidget( {
 			data: 'frame',
-			icon: 'image-frame',
+			icon: 'imageLayoutFrame',
 			label: ve.msg( 'visualeditor-dialog-media-type-frame' )
 		} ),
 		new OO.ui.MenuOptionWidget( {
 			data: 'none',
-			icon: 'image-none',
+			icon: 'imageLayoutBasic',
 			label: ve.msg( 'visualeditor-dialog-media-type-none' )
 		} )
 	] );
@@ -719,10 +732,9 @@ ve.ui.MWMediaDialog.prototype.buildMediaInfoPanel = function ( imageinfo ) {
  */
 ve.ui.MWMediaDialog.prototype.fetchThumbnail = function ( imageName, dimensions ) {
 	var dialog = this,
-		apiObj = {
+		params = {
 			action: 'query',
 			prop: 'imageinfo',
-			indexpageids: '1',
 			iiprop: 'url',
 			titles: imageName
 		};
@@ -733,19 +745,14 @@ ve.ui.MWMediaDialog.prototype.fetchThumbnail = function ( imageName, dimensions 
 	}
 
 	if ( dimensions.width ) {
-		apiObj.iiurlwidth = dimensions.width;
+		params.iiurlwidth = dimensions.width;
 	}
 	if ( dimensions.height ) {
-		apiObj.iiurlheight = dimensions.height;
+		params.iiurlheight = dimensions.height;
 	}
-	return ve.init.target.getContentApi( this.getFragment().getDocument() ).get( apiObj )
+	return ve.init.target.getContentApi( this.getFragment().getDocument() ).get( params )
 		.then( function ( response ) {
-			var thumburl = ve.getProp(
-				response.query.pages[ response.query.pageids[ 0 ] ],
-				'imageinfo',
-				0,
-				'thumburl'
-			);
+			var thumburl = ve.getProp( response.query.pages[ 0 ], 'imageinfo', 0, 'thumburl' );
 			// Cache
 			dialog.searchCache[ imageName ] = thumburl;
 			return thumburl;
@@ -1102,7 +1109,7 @@ ve.ui.MWMediaDialog.prototype.getSetupProcess = function ( data ) {
 		.next( function () {
 			var
 				dialog = this,
-				pageTitle = mw.config.get( 'wgTitle' ),
+				pageTitle = ve.init.target.getPageName( this.fragment.getDocument() ),
 				namespace = mw.config.get( 'wgNamespaceNumber' ),
 				namespacesWithSubpages = mw.config.get( 'wgVisualEditorConfig' ).namespacesWithSubpages,
 				isReadOnly = this.isReadOnly();

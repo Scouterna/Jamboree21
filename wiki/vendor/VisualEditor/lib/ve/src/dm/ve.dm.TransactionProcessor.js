@@ -41,7 +41,6 @@ ve.dm.TransactionProcessor = function VeDmTransactionProcessor( doc, transaction
 	this.replaceMinInsertLevel = 0;
 	this.retainDepth = 0;
 	this.balanced = true;
-	this.treeModifier = null;
 };
 
 /* Static members */
@@ -79,6 +78,19 @@ ve.dm.TransactionProcessor.prototype.executeOperation = function ( op ) {
 ve.dm.TransactionProcessor.prototype.process = function () {
 	var i, completed;
 
+	// Warning: some of this is vestigial. Before TreeModifier, things worked as follows:
+	// 1) executeOperation ran on each operation. This built a list of modifications,
+	// .modificationQueue, consisting of linear splices and attribute/annotation changes.
+	// 2) applyModifications processed .modificationQueue. In particular it executed the
+	// linear splices (invalidating the DM tree).
+	// 3) rebuildTree rebuilt the part of the DM tree invalidated by the linear splices.
+	//
+	// Since then, we removed annotation changes completely. And TreeModifier handles
+	// replacements. So for replacements:
+	// 1) executeOperation does very little (just a balancedness check)
+	// 2) applyModifications queues linear splices for rollback on error
+	// 3) rebuildTree is only called in the rollback case
+
 	// Ensure the pre-modification document tree has been generated
 	this.document.getDocumentNode();
 
@@ -95,10 +107,8 @@ ve.dm.TransactionProcessor.prototype.process = function () {
 	// Apply the queued modifications
 	try {
 		completed = false;
-		this.treeModifier = null;
 		this.applyModifications();
-		this.treeModifier = new ve.dm.TreeModifier( this.document, this.transaction );
-		this.treeModifier.process();
+		ve.dm.treeModifier.process( this.document, this.transaction );
 		completed = true;
 	} finally {
 		// Don't catch and re-throw errors so that they are reported properly
@@ -153,6 +163,7 @@ ve.dm.TransactionProcessor.prototype.queueUndoFunction = function ( func ) {
  */
 ve.dm.TransactionProcessor.prototype.applyModifications = function () {
 	var i, len, modifier, modifications = this.modificationQueue;
+
 	this.modificationQueue = [];
 	for ( i = 0, len = modifications.length; i < len; i++ ) {
 		modifier = ve.dm.TransactionProcessor.modifiers[ modifications[ i ].type ];
@@ -326,7 +337,6 @@ ve.dm.TransactionProcessor.modifiers.setAttribute = function ( offset, key, valu
  *
  * Called within the context of a transaction processor instance; moves the cursor by op.length
  *
- * @method
  * @param {Object} op Operation object:
  * @param {number} op.length Number of elements to retain
  */
@@ -355,7 +365,6 @@ ve.dm.TransactionProcessor.processors.retain = function ( op ) {
  * in reverse mode. So if `op.from` is incorrect, the transaction will commit fine, but won't roll
  * back correctly.
  *
- * @method
  * @param {Object} op Operation object
  * @param {string} op.key Attribute name
  * @param {Mixed} op.from Old attribute value, or undefined if not previously set
@@ -374,7 +383,6 @@ ve.dm.TransactionProcessor.processors.attribute = function ( op ) {
 /**
  * Verify a replace operation (the actual processing is now done in ve.dm.TreeModifier)
  *
- * @method
  * @param {Object} op Operation object
  * @param {Array} op.remove Linear model data to remove
  * @param {Array} op.insert Linear model data to insert

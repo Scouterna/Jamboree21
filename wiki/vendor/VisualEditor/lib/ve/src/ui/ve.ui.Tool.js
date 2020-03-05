@@ -89,7 +89,6 @@ ve.ui.Tool.static.getCommand = function ( surface ) {
 /**
  * Handle the toolbar state being updated.
  *
- * @method
  * @param {ve.dm.SurfaceFragment|null} fragment Surface fragment
  * @param {Object|null} direction Context direction with 'inline' & 'block' properties
  */
@@ -133,7 +132,7 @@ ve.ui.Tool.prototype.onSelect = function () {
 		// N.B. If contextClosePromise is already resolved, then the handler is called
 		// before the call to .done returns
 		contextClosePromise.done( function () {
-			if ( !command.execute( surface ) ) {
+			if ( !command.execute( surface, undefined, 'tool' ) ) {
 				// If the command fails, ensure the tool is not active
 				tool.setActive( false );
 			}

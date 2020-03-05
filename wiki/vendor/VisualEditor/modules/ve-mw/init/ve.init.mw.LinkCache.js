@@ -36,15 +36,15 @@ OO.inheritClass( ve.init.mw.LinkCache, ve.init.mw.ApiResponseCache );
  */
 ve.init.mw.LinkCache.static.getIconForLink = function ( linkData ) {
 	if ( linkData.missing ) {
-		return 'page-not-found';
+		return 'articleNotFound';
 	}
 	if ( linkData.redirect ) {
-		return 'page-redirect';
+		return 'articleRedirect';
 	}
 	if ( linkData.disambiguation ) {
-		return 'page-disambiguation';
+		return 'articleDisambiguation';
 	}
-	return 'page-existing';
+	return 'article';
 };
 
 /**
@@ -112,7 +112,7 @@ ve.init.mw.LinkCache.prototype.styleElement = function ( title, $element, hasFra
  * TODO: Evaluate if this method should be renamed/removed as it
  * now has nothing to do with the link cache.
  *
- * @param {jQuery} $element Elements to style
+ * @param {jQuery} $elements Elements to style
  * @param {HTMLDocument} doc Base document to use for normalisation
  */
 ve.init.mw.LinkCache.prototype.styleParsoidElements = function ( $elements ) {

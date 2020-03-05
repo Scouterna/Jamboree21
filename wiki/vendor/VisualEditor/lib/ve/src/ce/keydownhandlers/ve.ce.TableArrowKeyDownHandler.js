@@ -4,6 +4,7 @@
  * @copyright 2011-2019 VisualEditor Team and others; see http://ve.mit-license.org
  */
 
+/* istanbul ignore next */
 /**
  * Arrow key down handler for table selections.
  *
@@ -109,7 +110,7 @@ ve.ce.TableArrowKeyDownHandler.static.moveTableSelection = function ( surface, r
 			colOffset *= -1;
 		}
 	}
-	if ( !expand && !selection.isSingleCell( surface.getModel().getDocument() ) ) {
+	if ( !expand ) {
 		selection = selection.collapseToFrom();
 	}
 

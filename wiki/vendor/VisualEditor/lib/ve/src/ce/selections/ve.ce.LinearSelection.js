@@ -156,7 +156,7 @@ ve.ce.LinearSelection.prototype.getNodeClientRectFromRange = function ( range ) 
 		// Nail heights are 0, so use the annotation's height
 		if ( node && node.nodeType === Node.ELEMENT_NODE && node.classList.contains( 've-ce-nail' ) ) {
 			annotationNode = offset ? node.previousSibling : node.nextSibling;
-			fixHeight = annotationNode.getClientRects()[ 0 ].height;
+			fixHeight = annotationNode.offsetHeight;
 		}
 	} else {
 		node = containerNode;
@@ -215,6 +215,16 @@ ve.ce.LinearSelection.prototype.getNodeClientRectFromRange = function ( range ) 
 			height: rect.height
 		};
 	}
+};
+
+/**
+ * @inheritdoc
+ */
+ve.ce.LinearSelection.prototype.getSelectionFocusRect = function () {
+	return !this.isNativeCursor() ?
+		// Don't collapse selection for focus rect if we are on a focusable node.
+		this.getSelectionBoundingRect() :
+		ve.ce.LinearSelection.super.prototype.getSelectionFocusRect.call( this );
 };
 
 /**

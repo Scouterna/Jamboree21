@@ -16,14 +16,14 @@
  * @param {Object} [config] Configuration options
  */
 ve.ce.DocumentNode = function VeCeDocumentNode( model, surface, config ) {
+	// Properties
+	this.surface = surface;
+
 	// Parent constructor
 	ve.ce.DocumentNode.super.call( this, model, config );
 
 	// Mixin constructor
 	ve.ce.ContentEditableNode.call( this );
-
-	// Properties
-	this.surface = surface;
 
 	// Set root
 	this.setRoot( this );
@@ -53,7 +53,6 @@ ve.ce.DocumentNode.static.name = 'document';
  *
  * For a document node is the same as the inner length, which is why we override it here.
  *
- * @method
  * @return {number} Length of the entire node
  */
 ve.ce.DocumentNode.prototype.getOuterLength = function () {
@@ -63,7 +62,6 @@ ve.ce.DocumentNode.prototype.getOuterLength = function () {
 /**
  * Get the surface the document is attached to.
  *
- * @method
  * @return {ve.ce.Surface} Surface the document is attached to
  */
 ve.ce.DocumentNode.prototype.getSurface = function () {

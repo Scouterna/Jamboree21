@@ -1,12 +1,12 @@
 /*!
- * OOUI v0.31.1
+ * OOUI v0.34.1-pre (3913589098)
  * https://www.mediawiki.org/wiki/OOUI
  *
  * Copyright 2011–2019 OOUI Team and other contributors.
  * Released under the MIT license
  * http://oojs.mit-license.org
  *
- * Date: 2019-03-21T15:54:46Z
+ * Date: 2019-09-10T23:46:11Z
  */
 .oo-ui-icon-arrowNext {
   background-image: url('themes/wikimediaui/images/icons/arrowNext-ltr.png');
@@ -73,6 +73,24 @@
   background-image: url('themes/wikimediaui/images/icons/articleCheck.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/articleCheck.svg');
 }
+.oo-ui-icon-articleDisambiguation {
+  background-image: url('themes/wikimediaui/images/icons/articleDisambiguation-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/articleDisambiguation-ltr.svg');
+}
+.oo-ui-icon-articleNotFound {
+  background-image: url('themes/wikimediaui/images/icons/articleNotFound-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/articleNotFound-ltr.svg');
+}
+/* @noflip */
+.oo-ui-icon-articleNotFound:lang(he) {
+  background-image: url('themes/wikimediaui/images/icons/articleNotFound-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/articleNotFound-ltr.svg');
+}
+/* @noflip */
+.oo-ui-icon-articleNotFound:lang(yi) {
+  background-image: url('themes/wikimediaui/images/icons/articleNotFound-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/articleNotFound-ltr.svg');
+}
 .oo-ui-icon-articleSearch {
   background-image: url('themes/wikimediaui/images/icons/articleSearch.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/articleSearch.svg');
@@ -106,6 +124,15 @@
   background-image: url('themes/wikimediaui/images/icons/lightbulb.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/lightbulb.svg');
 }
+.oo-ui-icon-infoFilled {
+  background-image: url('themes/wikimediaui/images/icons/infoFilled.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/infoFilled.svg');
+}
+/* @noflip */
+.oo-ui-icon-infoFilled:lang(ar) {
+  background-image: url('themes/wikimediaui/images/icons/lightbulb.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/lightbulb.svg');
+}
 .oo-ui-icon-robot {
   background-image: url('themes/wikimediaui/images/icons/robot.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/robot.svg');
@@ -130,6 +157,14 @@
 .oo-ui-icon-bell {
   background-image: url('themes/wikimediaui/images/icons/bell.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/bell.svg');
+}
+.oo-ui-icon-bellOutline {
+  background-image: url('themes/wikimediaui/images/icons/bellOutline.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/bellOutline.svg');
+}
+.oo-ui-icon-error {
+  background-image: url('themes/wikimediaui/images/icons/error.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/error.svg');
 }
 .oo-ui-icon-message {
   background-image: url('themes/wikimediaui/images/icons/message.png');
@@ -219,18 +254,18 @@
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/help-ltr.svg');
 }
 .oo-ui-icon-helpNotice {
-  background-image: url('themes/wikimediaui/images/icons/helpOutlined-ltr.png');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/helpOutlined-ltr.svg');
+  background-image: url('themes/wikimediaui/images/icons/helpNotice-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/helpNotice-ltr.svg');
 }
 /* @noflip */
 .oo-ui-icon-helpNotice:lang(he) {
-  background-image: url('themes/wikimediaui/images/icons/helpOutlined-ltr.png');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/helpOutlined-ltr.svg');
+  background-image: url('themes/wikimediaui/images/icons/helpNotice-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/helpNotice-ltr.svg');
 }
 /* @noflip */
 .oo-ui-icon-helpNotice:lang(yi) {
-  background-image: url('themes/wikimediaui/images/icons/helpOutlined-ltr.png');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/helpOutlined-ltr.svg');
+  background-image: url('themes/wikimediaui/images/icons/helpNotice-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/helpNotice-ltr.svg');
 }
 .oo-ui-icon-key {
   background-image: url('themes/wikimediaui/images/icons/key.png');
@@ -353,6 +388,10 @@
 .oo-ui-icon-link {
   background-image: url('themes/wikimediaui/images/icons/link.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/link.svg');
+}
+.oo-ui-icon-unLink {
+  background-image: url('themes/wikimediaui/images/icons/unLink.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/unLink.svg');
 }
 .oo-ui-icon-linkExternal {
   background-image: url('themes/wikimediaui/images/icons/linkExternal-ltr.png');
@@ -798,8 +837,8 @@
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/attachment.svg');
 }
 .oo-ui-icon-beaker {
-  background-image: url('themes/wikimediaui/images/icons/beaker.png');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/beaker.svg');
+  background-image: url('themes/wikimediaui/images/icons/labFlask.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/labFlask.svg');
 }
 .oo-ui-icon-calendar {
   background-image: url('themes/wikimediaui/images/icons/calendar.png');
@@ -812,6 +851,26 @@
 .oo-ui-icon-hieroglyph {
   background-image: url('themes/wikimediaui/images/icons/hieroglyph.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/hieroglyph.svg');
+}
+.oo-ui-icon-imageLayoutBasic {
+  background-image: url('themes/wikimediaui/images/icons/imageLayoutBasic.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/imageLayoutBasic.svg');
+}
+.oo-ui-icon-imageLayoutFrame {
+  background-image: url('themes/wikimediaui/images/icons/imageLayoutFrame.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/imageLayoutFrame.svg');
+}
+.oo-ui-icon-imageLayoutFrameless {
+  background-image: url('themes/wikimediaui/images/icons/imageLayoutFrameless.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/imageLayoutFrameless.svg');
+}
+.oo-ui-icon-imageLayoutThumbnail {
+  background-image: url('themes/wikimediaui/images/icons/imageLayoutThumbnail.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/imageLayoutThumbnail.svg');
+}
+.oo-ui-icon-labFlask {
+  background-image: url('themes/wikimediaui/images/icons/labFlask.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/labFlask.svg');
 }
 .oo-ui-icon-language {
   background-image: url('themes/wikimediaui/images/icons/language.png');
@@ -962,10 +1021,6 @@
   background-image: url('themes/wikimediaui/images/icons/references-ltr.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/references-ltr.svg');
 }
-.oo-ui-icon-web {
-  background-image: url('themes/wikimediaui/images/icons/web.png');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/web.svg');
-}
 
 .oo-ui-icon-camera {
   background-image: url('themes/wikimediaui/images/icons/camera.png');
@@ -1057,6 +1112,14 @@
   background-image: url('themes/wikimediaui/images/icons/userAvatar.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/userAvatar.svg');
 }
+.oo-ui-icon-userAvatarOutline {
+  background-image: url('themes/wikimediaui/images/icons/userAvatarOutline.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/userAvatarOutline.svg');
+}
+.oo-ui-icon-userGroup {
+  background-image: url('themes/wikimediaui/images/icons/userGroup-ltr.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/userGroup-ltr.svg');
+}
 .oo-ui-icon-userTalk {
   background-image: url('themes/wikimediaui/images/icons/userTalk-ltr.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/userTalk-ltr.svg');
@@ -1133,8 +1196,8 @@
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/logo-Wikidata.svg');
 }
 .oo-ui-icon-logoWikimedia {
-  background-image: url('themes/wikimediaui/images/icons/logo-Wikidata.png');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/logo-Wikidata.svg');
+  background-image: url('themes/wikimediaui/images/icons/logo-Wikimedia.png');
+  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/icons/logo-Wikimedia.svg');
 }
 .oo-ui-icon-logoWikimediaCommons {
   background-image: url('themes/wikimediaui/images/icons/logo-Wikimedia-Commons.png');
@@ -1164,13 +1227,4 @@
 .oo-ui-indicator-required {
   background-image: url('themes/wikimediaui/images/indicators/required.png');
   background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/indicators/required.svg');
-}
-
-.oo-ui-texture-pending {
-  background-image: url('themes/wikimediaui/images/textures/pending.gif');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/textures/pending.gif');
-}
-.oo-ui-texture-transparency {
-  background-image: url('themes/wikimediaui/images/textures/transparency.png');
-  background-image: linear-gradient(transparent, transparent), /* @embed */ url('themes/wikimediaui/images/textures/transparency.svg');
 }

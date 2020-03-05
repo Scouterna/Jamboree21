@@ -341,20 +341,21 @@ ve.ui.DebugBar.prototype.onInputDebuggingToggleChange = function ( value ) {
  * @param {jQuery.Event} e Event
  */
 ve.ui.DebugBar.prototype.onFilibusterToggleClick = function () {
-	var debugBar = this,
-		value = this.filibusterToggle.getValue();
+	var value = this.filibusterToggle.getValue();
 	if ( value ) {
 		this.filibusterToggle.setLabel( ve.msg( 'visualeditor-debugbar-stopfilibuster' ) );
 		this.$filibuster.off( 'click' );
 		this.$filibuster.empty();
-		this.getSurface().startFilibuster();
+		ve.initFilibuster();
+		ve.filibuster.start();
 	} else {
-		this.getSurface().stopFilibuster();
-		this.$filibuster.html( this.getSurface().filibuster.getObservationsHtml() );
+		ve.filibuster.stop();
+		this.$filibuster.html( ve.filibuster.getObservationsHtml() );
 		this.$filibuster.on( 'click', function ( e ) {
 			var path,
 				$li = $( e.target ).closest( '.ve-filibuster-frame' );
 
+			// eslint-disable-next-line no-jquery/no-class-state
 			if ( $li.hasClass( 've-filibuster-frame-expandable' ) ) {
 				$li.removeClass( 've-filibuster-frame-expandable' );
 				path = $li.data( 've-filibuster-frame' );
@@ -362,11 +363,14 @@ ve.ui.DebugBar.prototype.onFilibusterToggleClick = function () {
 					return;
 				}
 				$li.children( 'span' ).replaceWith(
-					$( debugBar.getSurface().filibuster.getObservationsHtml( path ) )
+					$( ve.filibuster.getObservationsHtml( path ) )
 				);
+				// eslint-disable-next-line no-jquery/no-class-state
 				$li.toggleClass( 've-filibuster-frame-expanded' );
 			} else if ( $li.children( 'ul' ).length ) {
+				// eslint-disable-next-line no-jquery/no-class-state
 				$li.toggleClass( 've-filibuster-frame-collapsed' );
+				// eslint-disable-next-line no-jquery/no-class-state
 				$li.toggleClass( 've-filibuster-frame-expanded' );
 			}
 		} );
@@ -425,7 +429,7 @@ ve.ui.DebugBar.prototype.testSquasher = function () {
 		transactions = this.getSurface().getModel().getDocument().completeHistory.transactions;
 
 	function squashTransactions( transactions ) {
-		var change = new ve.dm.Change(
+		return new ve.dm.Change(
 			0,
 			transactions.map( function ( tx ) {
 				return tx.clone();
@@ -434,9 +438,7 @@ ve.ui.DebugBar.prototype.testSquasher = function () {
 				return new ve.dm.HashValueStore();
 			} ),
 			{}
-		);
-		change.squash();
-		return change.transactions;
+		).squash().transactions;
 	}
 	if ( transactions.length < 3 ) {
 		// Nothing interesting here
@@ -451,12 +453,8 @@ ve.ui.DebugBar.prototype.testSquasher = function () {
 			squashedBefore,
 			squashedAfter
 		) );
-		dump = JSON.stringify( squashed.map( function ( tx ) {
-			return tx.serialize();
-		} ) );
-		doubleDump = JSON.stringify( doubleSquashed.map( function ( tx ) {
-			return tx.serialize();
-		} ) );
+		dump = JSON.stringify( squashed );
+		doubleDump = JSON.stringify( doubleSquashed );
 		if ( dump !== doubleDump ) {
 			throw new Error( 'Discrepancy splitting at i=' + i );
 		}

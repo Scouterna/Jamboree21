@@ -9,7 +9,7 @@
  * ContentEditable Blockquote node.
  *
  * @class
- * @extends ve.ce.ContentBranchNode
+ * @extends ve.ce.BranchNode
  * @constructor
  * @param {ve.dm.BlockquoteNode} model Model to observe
  * @param {Object} [config] Configuration options
@@ -21,13 +21,15 @@ ve.ce.BlockquoteNode = function VeCeBlockquoteNode() {
 
 /* Inheritance */
 
-OO.inheritClass( ve.ce.BlockquoteNode, ve.ce.ContentBranchNode );
+OO.inheritClass( ve.ce.BlockquoteNode, ve.ce.BranchNode );
 
 /* Static Properties */
 
 ve.ce.BlockquoteNode.static.name = 'blockquote';
 
 ve.ce.BlockquoteNode.static.tagName = 'blockquote';
+
+ve.ce.BlockquoteNode.static.removeEmptyLastChildOnEnter = true;
 
 /* Registration */
 

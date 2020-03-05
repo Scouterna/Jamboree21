@@ -86,8 +86,7 @@ ve.ui.Toolbar.prototype.setup = function ( groups, surface ) {
 		groups = groups.map( function ( group ) {
 			if ( group.name ) {
 				group.classes = group.classes || [];
-				// ve-test-toolbar- prefix is deprecated, use ve-ui-toolbar-group- instead
-				group.classes.push( 've-test-toolbar-' + group.name, 've-ui-toolbar-group-' + group.name );
+				group.classes.push( 've-ui-toolbar-group-' + group.name );
 			} else {
 				OO.ui.warnDeprecation( 'No name: ' + JSON.stringify( group ) );
 			}
@@ -203,21 +202,18 @@ ve.ui.Toolbar.prototype.updateToolState = function () {
 		this.contextDirection.block = dirBlock;
 	}
 
-	// Array#map doesn't filter null elements
-	// eslint-disable-next-line no-jquery/no-map-util
-	activeDialogs = $.map(
-		[
-			this.surface.getDialogs(),
-			this.surface.getContext().getInspectors(),
-			this.surface.getToolbarDialogs()
-		],
-		function ( windowManager ) {
-			if ( windowManager.getCurrentWindow() ) {
-				return windowManager.getCurrentWindow().constructor.static.name;
-			}
-			return null;
+	activeDialogs = [
+		this.surface.getDialogs(),
+		this.surface.getContext().getInspectors(),
+		this.surface.getToolbarDialogs()
+	].map( function ( windowManager ) {
+		if ( windowManager.getCurrentWindow() ) {
+			return windowManager.getCurrentWindow().constructor.static.name;
 		}
-	);
+		return null;
+	} ).filter( function ( name ) {
+		return name !== null;
+	} );
 
 	this.emit( 'updateState', fragment, this.contextDirection, activeDialogs );
 };
