@@ -52,6 +52,26 @@ spec:
             secretKeyRef:
               key: mediawiki_upgrade_key
               name: mediawiki-secrets
+        - name: SAML_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: saml_admin_password
+              name: saml-credentials
+        - name: SAML_SECRET_SALT
+          valueFrom:
+            secretKeyRef:
+              key: saml_secret_salt
+              name: saml-credentials 
+        - name: SAML_APP_ID
+          valueFrom:
+            secretKeyRef:
+              key: saml_app_id
+              name: saml-credentials
+        - name: SAML_IDP
+          valueFrom:
+            secretKeyRef:
+              key: saml_idp
+              name: saml-credentials
         envFrom:
         - configMapRef:
             name: mediawiki-env
