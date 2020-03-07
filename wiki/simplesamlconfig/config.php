@@ -138,7 +138,7 @@ $config = [
      * metadata listing and diagnostics pages.
      * You can also put a hash here; run "bin/pwgen.php" to generate one.
      */
-    'auth.adminpassword' => getenv('SAML_ADMIN_PASSWORD'),
+    'auth.adminpassword' => 'hackspett',
 
     /*
      * Set this options to true if you want to require administrator password to access the web interface
