@@ -97,3 +97,11 @@ COPY vendor/VisualEditor extensions/VisualEditor
 COPY LocalSettings.php LocalSettings.php
 COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/MinervaNeue skins/MinervaNeue
+COPY vendor/simplesamlphp-1.18.4 simplesamlphp
+
+# SimpleSAML setup
+RUN ln -sf simplesamlphp/www simplesaml
+COPY simplesamlconfig/config.php simplesamlphp/config/config.php
+COPY simplesamlconfig/saml20-idp-remote.php simplesamlphp/metadata/saml20-idp-remote.php
+COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
+
