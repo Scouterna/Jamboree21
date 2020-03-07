@@ -42,7 +42,7 @@ ve.ui.MWInternalLinkAnnotationWidget.static.getAnnotationFromText = function ( v
  * @inheritdoc
  */
 ve.ui.MWInternalLinkAnnotationWidget.static.getTextFromAnnotation = function ( annotation ) {
-	return annotation ? annotation.getAttribute( 'origTitle' ) || annotation.getAttribute( 'normalizedTitle' ) : '';
+	return annotation ? annotation.getAttribute( 'normalizedTitle' ) : '';
 };
 
 /* Methods */
@@ -56,10 +56,11 @@ ve.ui.MWInternalLinkAnnotationWidget.static.getTextFromAnnotation = function ( a
 ve.ui.MWInternalLinkAnnotationWidget.prototype.createInputWidget = function ( config ) {
 	var input = new mw.widgets.TitleSearchWidget( ve.extendObject( {
 		icon: 'search',
-		showRedlink: true,
 		excludeCurrentPage: true,
-		showImages: mw.config.get( 'wgVisualEditor' ).usePageImages,
-		showDescriptions: mw.config.get( 'wgVisualEditor' ).usePageDescriptions,
+		showImages: mw.config.get( 'wgVisualEditorConfig' ).usePageImages,
+		showDescriptions: mw.config.get( 'wgVisualEditorConfig' ).usePageDescriptions,
+		showInterwikis: true,
+		addQueryInput: false,
 		api: ve.init.target.getContentApi(),
 		cache: ve.init.platform.linkCache
 	}, config ) );
@@ -67,6 +68,11 @@ ve.ui.MWInternalLinkAnnotationWidget.prototype.createInputWidget = function ( co
 	// Put query first in DOM
 	// TODO: Consider upstreaming this to SearchWidget
 	input.$element.prepend( input.$query );
+
+	// Remove 'maxlength', because it should not apply to full URLs, which we allow users to paste
+	// here. Maximum length of page titles will still be enforced by JS validation later (we can't
+	// override maxLength config option, because that would break the validation).
+	input.getQuery().$input.removeAttr( 'maxlength' );
 
 	return input;
 };
@@ -88,7 +94,9 @@ ve.ui.MWInternalLinkAnnotationWidget.prototype.getTextInputWidget = function () 
  */
 ve.ui.MWInternalLinkAnnotationWidget.prototype.onTextChange = function ( value ) {
 	var targetData,
-		htmlDoc = this.getElementDocument();
+		htmlDoc = this.getElementDocument(),
+		namespacesWithSubpages = mw.config.get( 'wgVisualEditorConfig' ).namespacesWithSubpages,
+		basePageObj = mw.Title.newFromText( mw.config.get( 'wgRelevantPageName' ) );
 	// Specific thing we want to check: has a valid URL for an internal page
 	// been pasted into here, in which case we want to convert it to just the
 	// page title. This has to happen /here/ because a URL can reference a
@@ -102,6 +110,13 @@ ve.ui.MWInternalLinkAnnotationWidget.prototype.onTextChange = function ( value )
 			value = targetData.title;
 			this.input.query.setValue( targetData.title );
 		}
+	} else if ( namespacesWithSubpages[ basePageObj.namespace ] && value[ 0 ] === '/' ) {
+		// This does make it more-difficult to deliberately link to a page in the
+		// default namespace that starts with a / when you're on a subpage-allowing
+		// namespace. However, the exact same trick you need to know to make it work
+		// in plain wikitext applies: search for `:/foo`.
+		value = basePageObj.getPrefixedText() + value;
+		this.input.query.setValue( value );
 	}
 	return ve.ui.MWInternalLinkAnnotationWidget.super.prototype.onTextChange.call( this, value );
 };

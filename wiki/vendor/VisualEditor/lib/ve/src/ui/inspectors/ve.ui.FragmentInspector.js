@@ -41,7 +41,7 @@ OO.mixinClass( ve.ui.FragmentInspector, ve.ui.FragmentWindow );
 ve.ui.FragmentInspector.static.actions = [
 	{
 		label: OO.ui.deferMsg( 'visualeditor-dialog-action-cancel' ),
-		flags: [ 'safe', 'back' ],
+		flags: [ 'safe', 'close' ],
 		modes: [ 'readonly', 'edit', 'insert' ]
 	},
 	{
@@ -66,8 +66,6 @@ ve.ui.FragmentInspector.static.size = 'large';
  * Handle form submit events.
  *
  * Executes the 'done' action when the user presses enter in the form.
- *
- * @method
  */
 ve.ui.FragmentInspector.prototype.onFormSubmit = function () {
 	this.executeAction( 'done' );
@@ -97,7 +95,7 @@ ve.ui.FragmentInspector.prototype.initialize = function () {
 	// Initialization
 	this.$element.addClass( 've-ui-fragmentInspector' );
 	this.$content.addClass( 've-ui-fragmentInspector-content' );
-	this.container.$element.append( this.form.$element, this.$otherActions );
+	this.container.$element.append( this.form.$element );
 	this.$body.append( this.container.$element );
 
 	this.tabIndexScope = new ve.ui.TabIndexScope( {
@@ -115,6 +113,16 @@ ve.ui.FragmentInspector.prototype.getActionProcess = function ( action ) {
 		}, this );
 	}
 	return ve.ui.FragmentInspector.super.prototype.getActionProcess.call( this, action );
+};
+
+/**
+ * @inheritdoc OO.ui.Dialog
+ */
+ve.ui.FragmentInspector.prototype.getActionWidgetConfig = function ( config ) {
+	// Mixin method
+	config = ve.ui.FragmentWindow.prototype.getActionWidgetConfig.call( this, config );
+	// Parent method
+	return ve.ui.FragmentInspector.super.prototype.getActionWidgetConfig.call( this, config );
 };
 
 /**

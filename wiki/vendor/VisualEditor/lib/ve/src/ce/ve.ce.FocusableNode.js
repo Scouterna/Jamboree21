@@ -249,8 +249,6 @@ ve.ce.FocusableNode.prototype.createHighlight = function () {
 
 /**
  * Handle node setup.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.onFocusableSetup = function () {
 	// Exit if already setup or not attached
@@ -261,9 +259,14 @@ ve.ce.FocusableNode.prototype.onFocusableSetup = function () {
 	this.focusableSurface = this.root.getSurface();
 
 	// DOM changes (duplicated from constructor in case this.$element is replaced)
-	this.$element
-		.addClass( 've-ce-focusableNode' )
-		.prop( 'contentEditable', 'false' );
+	// eslint-disable-next-line no-jquery/no-class-state
+	if ( !this.$element.hasClass( 've-ce-focusableNode' ) ) {
+		// Optimization: If this.$element has the correct class assume it has already
+		// been setup in the construct and avoid expensive DOM property manipulation
+		this.$element
+			.addClass( 've-ce-focusableNode' )
+			.prop( 'contentEditable', 'false' );
+	}
 
 	// Events
 	this.$focusable.on( {
@@ -315,8 +318,6 @@ ve.ce.FocusableNode.prototype.onFocusableSetup = function () {
  * If the node doesn't have a visible rendering, we insert an icon to represent
  * it. If the icon was already present, and this is called again when rendering
  * has developed, we remove the icon.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.updateInvisibleIcon = function () {
 	var showIcon,
@@ -401,8 +402,6 @@ ve.ce.FocusableNode.prototype.updateInvisibleIconLabel = function () {
 
 /**
  * Handle node teardown.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.onFocusableTeardown = function () {
 	// Exit if not setup or not attached
@@ -429,7 +428,6 @@ ve.ce.FocusableNode.prototype.onFocusableTeardown = function () {
 /**
  * Handle highlight mouse down events.
  *
- * @method
  * @param {jQuery.Event} e Mouse down event
  */
 ve.ce.FocusableNode.prototype.onFocusableMouseDown = function ( e ) {
@@ -448,8 +446,10 @@ ve.ce.FocusableNode.prototype.onFocusableMouseDown = function ( e ) {
 	}
 
 	if ( e.which === OO.ui.MouseButtons.RIGHT ) {
-		// Make ce=true so we get cut/paste options in context menu
+		// The same technique is used in ve.ce.TableNode:
+		// Make ce=true so we get cut/paste options in the context menu
 		this.$highlights.prop( 'contentEditable', 'true' );
+		// Select the clicked element so we get a copy option in the context menu
 		ve.selectElement( this.$highlights[ 0 ] );
 		setTimeout( function () {
 			// Undo ce=true as soon as the context menu is shown
@@ -469,13 +469,14 @@ ve.ce.FocusableNode.prototype.onFocusableMouseDown = function ( e ) {
 				nodeRange
 		).select();
 		node.focusableSurface.updateActiveAnnotations();
+		// Ensure surface is active as native 'focus' event won't be fired
+		node.focusableSurface.activate();
 	} );
 };
 
 /**
  * Handle highlight double click events.
  *
- * @method
  * @param {jQuery.Event} e Double click event
  */
 ve.ce.FocusableNode.prototype.onFocusableDblClick = function () {
@@ -489,8 +490,6 @@ ve.ce.FocusableNode.prototype.onFocusableDblClick = function () {
 
 /**
  * Execute the command associated with this node.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.executeCommand = function () {
 	var command, surface;
@@ -507,7 +506,6 @@ ve.ce.FocusableNode.prototype.executeCommand = function () {
 /**
  * Handle element drag start.
  *
- * @method
  * @param {jQuery.Event} e Drag start event
  */
 ve.ce.FocusableNode.prototype.onFocusableDragStart = function ( e ) {
@@ -522,7 +520,6 @@ ve.ce.FocusableNode.prototype.onFocusableDragStart = function ( e ) {
  *
  * If a relocation actually takes place the node is destroyed before this events fires.
  *
- * @method
  * @param {jQuery.Event} e Drag end event
  */
 ve.ce.FocusableNode.prototype.onFocusableDragEnd = function () {
@@ -536,7 +533,6 @@ ve.ce.FocusableNode.prototype.onFocusableDragEnd = function () {
 /**
  * Handle mouse enter events.
  *
- * @method
  * @param {jQuery.Event} e Mouse enter event
  */
 ve.ce.FocusableNode.prototype.onFocusableMouseEnter = function () {
@@ -548,7 +544,6 @@ ve.ce.FocusableNode.prototype.onFocusableMouseEnter = function () {
 /**
  * Handle touch start events.
  *
- * @method
  * @param {jQuery.Event} e Touch start event
  */
 ve.ce.FocusableNode.prototype.onFocusableTouchStart = function () {
@@ -558,7 +553,6 @@ ve.ce.FocusableNode.prototype.onFocusableTouchStart = function () {
 /**
  * Handle touch move events.
  *
- * @method
  * @param {jQuery.Event} e Touch move event
  */
 ve.ce.FocusableNode.prototype.onFocusableTouchMove = function () {
@@ -568,12 +562,12 @@ ve.ce.FocusableNode.prototype.onFocusableTouchMove = function () {
 /**
  * Handle surface mouse move events.
  *
- * @method
  * @param {jQuery.Event} e Mouse move event
  */
 ve.ce.FocusableNode.prototype.onSurfaceMouseMove = function ( e ) {
 	var $target = $( e.target );
 	if (
+		// eslint-disable-next-line no-jquery/no-class-state
 		!$target.hasClass( 've-ce-focusableNode-highlight' ) &&
 		!OO.ui.contains( this.$focusable.toArray(), $target[ 0 ], true )
 	) {
@@ -584,7 +578,6 @@ ve.ce.FocusableNode.prototype.onSurfaceMouseMove = function ( e ) {
 /**
  * Handle surface mouse leave events.
  *
- * @method
  * @param {jQuery.Event} e Mouse leave event
  */
 ve.ce.FocusableNode.prototype.onSurfaceMouseLeave = function ( e ) {
@@ -595,8 +588,6 @@ ve.ce.FocusableNode.prototype.onSurfaceMouseLeave = function ( e ) {
 
 /**
  * Handle resize start events.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.onFocusableResizeStart = function () {
 	this.clearHighlights();
@@ -604,8 +595,6 @@ ve.ce.FocusableNode.prototype.onFocusableResizeStart = function () {
 
 /**
  * Handle resize end event.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.onFocusableResizeEnd = function () {
 	this.redrawHighlightsDebounced();
@@ -613,8 +602,6 @@ ve.ce.FocusableNode.prototype.onFocusableResizeEnd = function () {
 
 /**
  * Handle rerender event.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.onFocusableRerender = function () {
 	if ( this.focused && this.focusableSurface ) {
@@ -627,7 +614,6 @@ ve.ce.FocusableNode.prototype.onFocusableRerender = function () {
 /**
  * Check if node is focused.
  *
- * @method
  * @return {boolean} Node is focused
  */
 ve.ce.FocusableNode.prototype.isFocused = function () {
@@ -637,7 +623,6 @@ ve.ce.FocusableNode.prototype.isFocused = function () {
 /**
  * Set the selected state of the node.
  *
- * @method
  * @param {boolean} value Node is focused
  * @fires focus
  * @fires blur
@@ -656,6 +641,7 @@ ve.ce.FocusableNode.prototype.setFocused = function ( value ) {
 		} else {
 			this.emit( 'blur' );
 			this.$element.removeClass( 've-ce-focusableNode-focused' );
+			this.$highlights.removeClass( 've-ce-focusableNode-highlights-deactivated' );
 			this.clearHighlights();
 		}
 	}
@@ -663,8 +649,6 @@ ve.ce.FocusableNode.prototype.setFocused = function ( value ) {
 
 /**
  * Creates highlights.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.createHighlights = function () {
 	if ( this.highlighted ) {
@@ -681,7 +665,10 @@ ve.ce.FocusableNode.prototype.createHighlights = function () {
 	this.positionHighlights();
 
 	this.focusableSurface.appendHighlights( this.$highlights, this.focused );
-	this.focusableSurface.connect( this, { position: 'positionHighlights' } );
+	this.focusableSurface.connect( this, {
+		position: 'positionHighlights',
+		activation: 'onSurfaceActivation'
+	} );
 
 	// Events
 	if ( !this.focused ) {
@@ -693,9 +680,14 @@ ve.ce.FocusableNode.prototype.createHighlights = function () {
 };
 
 /**
+ * Handle activation events from the surface
+ */
+ve.ce.FocusableNode.prototype.onSurfaceActivation = function () {
+	this.$highlights.toggleClass( 've-ce-focusableNode-highlights-deactivated', !!this.focusableSurface.isShownAsDeactivated() );
+};
+
+/**
  * Clears highlight.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.clearHighlights = function () {
 	if ( !this.highlighted ) {
@@ -703,15 +695,13 @@ ve.ce.FocusableNode.prototype.clearHighlights = function () {
 	}
 	this.$highlights.remove().empty();
 	this.focusableSurface.$element.off( '.ve-ce-focusableNode' );
-	this.focusableSurface.disconnect( this, { position: 'positionHighlights' } );
+	this.focusableSurface.disconnect( this );
 	this.highlighted = false;
 	this.boundingRect = null;
 };
 
 /**
  * Redraws highlight.
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.redrawHighlights = function () {
 	if ( this.focused ) {
@@ -748,8 +738,6 @@ ve.ce.FocusableNode.prototype.calculateHighlights = function () {
 
 /**
  * Positions highlights, and remove collapsed ones
- *
- * @method
  */
 ve.ce.FocusableNode.prototype.positionHighlights = function () {
 	var i, l;

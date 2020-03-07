@@ -54,7 +54,7 @@ ve.dm.MWImageModel = function VeDmMWImageModel( parentDoc, config ) {
 
 	// Get wiki default thumbnail size
 	this.defaultThumbSize = mw.config.get( 'wgVisualEditorConfig' )
-		.defaultUserOptions.defaultthumbsize;
+		.thumbLimits[ mw.user.options.get( 'thumbsize' ) ];
 
 	if ( config.resourceName ) {
 		this.setImageResourceName( config.resourceName );
@@ -123,7 +123,8 @@ ve.dm.MWImageModel.static.infoCache = {};
  */
 ve.dm.MWImageModel.static.createImageNode = function ( attributes, imageType ) {
 	var attrs, newNode, newDimensions,
-		defaultThumbSize = mw.config.get( 'wgVisualEditorConfig' ).defaultUserOptions.defaultthumbsize;
+		defaultThumbSize = mw.config.get( 'wgVisualEditorConfig' )
+			.thumbLimits[ mw.user.options.get( 'thumbsize' ) ];
 
 	attrs = ve.extendObject( {
 		mediaClass: 'Image',
@@ -759,6 +760,8 @@ ve.dm.MWImageModel.prototype.getType = function () {
 
 /**
  * Get the image size type of the image
+ *
+ * @return {string} Size type
  */
 ve.dm.MWImageModel.prototype.getSizeType = function () {
 	return this.sizeType;
@@ -777,6 +780,8 @@ ve.dm.MWImageModel.prototype.getMediaType = function () {
 
 /**
  * Get Parsoid media class: Image, Video or Audio
+ *
+ * @return {string} Media class
  */
 ve.dm.MWImageModel.prototype.getMediaClass = function () {
 	var mediaType = this.getMediaType();

@@ -30,7 +30,6 @@ OO.inheritClass( ve.ui.TriggerRegistry, OO.Registry );
  * The only supported platforms are 'mac' and 'pc'. All platforms not identified as 'mac' will be
  * considered to be 'pc', including 'win', 'linux', 'solaris', etc.
  *
- * @method
  * @param {string|string[]} name Symbolic name or list of symbolic names
  * @param {ve.ui.Trigger[]|Object} triggers Trigger object(s) or map of trigger object(s) keyed by
  * platform name e.g. 'mac' or 'pc'
@@ -276,5 +275,11 @@ ve.ui.triggerRegistry.register(
 	'submit', {
 		mac: new ve.ui.Trigger( 'cmd+enter' ),
 		pc: new ve.ui.Trigger( 'ctrl+enter' )
+	}
+);
+ve.ui.triggerRegistry.register(
+	'focusContext', {
+		mac: new ve.ui.Trigger( 'cmd+shift+enter' ),
+		pc: new ve.ui.Trigger( 'ctrl+shift+enter' )
 	}
 );

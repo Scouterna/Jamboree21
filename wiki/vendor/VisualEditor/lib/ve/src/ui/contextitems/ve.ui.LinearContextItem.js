@@ -17,6 +17,8 @@
  * @param {Object} [config] Configuration options
  */
 ve.ui.LinearContextItem = function VeUiLinearContextItem( context, model, config ) {
+	var contextItem = this;
+
 	config = config || {};
 
 	// Parent constructor
@@ -30,13 +32,39 @@ ve.ui.LinearContextItem = function VeUiLinearContextItem( context, model, config
 	this.$title = $( '<div>' );
 	this.$actions = $( '<div>' );
 	this.$body = $( '<div>' );
-	this.$info = $( '<div>' );
-	this.$description = $( '<div>' );
 	// Don't use mixins as they expect the icon and label to be children of this.$element.
 	this.icon = new OO.ui.IconWidget( { icon: config.icon || this.constructor.static.icon } );
 	this.label = new OO.ui.LabelWidget( { label: config.label || this.constructor.static.label } );
+	this.actionButtons = new OO.ui.ButtonGroupWidget();
 
-	if ( !this.context.isMobile() ) {
+	if ( this.context.isMobile() ) {
+		this.closeButton = new OO.ui.ButtonWidget( {
+			classes: [ 've-ui-linearContextItem-close' ],
+			framed: false,
+			icon: 'close'
+		} );
+		this.editButton = new OO.ui.ButtonWidget( {
+			framed: false,
+			icon: this.isReadOnly() ? 'eye' : 'edit',
+			flags: [ 'progressive' ]
+		} );
+		this.deleteButton = new OO.ui.ButtonWidget( {
+			framed: false,
+			label: ve.msg( 'visualeditor-contextitemwidget-label-remove' ),
+			icon: 'trash',
+			flags: [ 'destructive' ]
+		} );
+		this.$foot = $( '<div>' );
+		this.$bodyAction = $( '<div>' );
+		if ( this.isDeletable() ) {
+			this.$foot.append( this.deleteButton.$element );
+		}
+		this.closeButton.on( 'click', function () {
+			context.toggleMenu( false );
+			context.toggle( false );
+			ve.track( 'activity.' + contextItem.constructor.static.name, { action: 'context-close' } );
+		} );
+	} else {
 		// Desktop
 		this.editButton = new OO.ui.ButtonWidget( {
 			label: ve.msg( this.isReadOnly() ? 'visualeditor-contextitemwidget-label-view' : 'visualeditor-contextitemwidget-label-secondary' ),
@@ -46,22 +74,9 @@ ve.ui.LinearContextItem = function VeUiLinearContextItem( context, model, config
 			label: ve.msg( 'visualeditor-contextitemwidget-label-remove' ),
 			flags: [ 'destructive' ]
 		} );
-	} else {
-		// Mobile
-		this.editButton = new OO.ui.ButtonWidget( {
-			framed: false,
-			icon: this.isReadOnly() ? 'eye' : 'edit',
-			flags: [ 'progressive' ]
-		} );
-		this.deleteButton = new OO.ui.ButtonWidget( {
-			framed: false,
-			icon: 'trash',
-			flags: [ 'destructive' ]
-		} );
-	}
-	this.actionButtons = new OO.ui.ButtonGroupWidget();
-	if ( this.isDeletable() ) {
-		this.actionButtons.addItems( [ this.deleteButton ] );
+		if ( this.isDeletable() ) {
+			this.actionButtons.addItems( [ this.deleteButton ] );
+		}
 	}
 	if ( this.isEditable() ) {
 		this.actionButtons.addItems( [ this.editButton ] );
@@ -72,10 +87,6 @@ ve.ui.LinearContextItem = function VeUiLinearContextItem( context, model, config
 	this.deleteButton.connect( this, { click: 'onDeleteButtonClick' } );
 
 	// Initialization
-	this.$description.addClass( 've-ui-linearContextItem-description' );
-	this.$info
-		.addClass( 've-ui-linearContextItem-info' )
-		.append( this.$description );
 	this.$title
 		.addClass( 've-ui-linearContextItem-title' )
 		.append( this.icon.$element, this.label.$element );
@@ -84,11 +95,22 @@ ve.ui.LinearContextItem = function VeUiLinearContextItem( context, model, config
 		.append( this.actionButtons.$element );
 	this.$head
 		.addClass( 've-ui-linearContextItem-head' )
-		.append( this.$title, this.$info, this.$actions );
+		.append( this.$title, this.$actions );
 	this.$body.addClass( 've-ui-linearContextItem-body' );
 	this.$element
 		.addClass( 've-ui-linearContextItem' )
 		.append( this.$head, this.$body );
+
+	if ( this.context.isMobile() ) {
+		this.$foot.addClass( 've-ui-linearContextItem-foot' );
+		this.$head.append( this.closeButton.$element );
+		this.$bodyAction.addClass( 've-ui-linearContextItem-body-action' ).append( this.$body, this.$actions );
+		this.$element.append(
+			this.$head,
+			$( '<div>' ).addClass( 've-ui-linearContextItem-body-action-wrapper' ).append( this.$bodyAction ),
+			this.$foot
+		);
+	}
 };
 
 /* Inheritance */
@@ -131,7 +153,7 @@ ve.ui.LinearContextItem.prototype.onEditButtonClick = function () {
 	var command = this.getCommand();
 
 	if ( command ) {
-		command.execute( this.context.getSurface() );
+		command.execute( this.context.getSurface(), undefined, 'context' );
 		this.emit( 'command' );
 	}
 };
@@ -141,6 +163,8 @@ ve.ui.LinearContextItem.prototype.onEditButtonClick = function () {
  */
 ve.ui.LinearContextItem.prototype.onDeleteButtonClick = function () {
 	this.getFragment().removeContent();
+
+	ve.track( 'activity.' + this.constructor.static.name, { action: 'context-delete' } );
 };
 
 /**
@@ -158,7 +182,7 @@ ve.ui.LinearContextItem.prototype.isEditable = function () {
  * @return {boolean} Item is deletable
  */
 ve.ui.LinearContextItem.prototype.isDeletable = function () {
-	return this.constructor.static.deletable && this.isNode() && this.context.showDeleteButton() && this.isReadOnly();
+	return this.constructor.static.deletable && this.isNode() && this.context.showDeleteButton() && !this.isReadOnly();
 };
 
 /**
@@ -189,23 +213,27 @@ ve.ui.LinearContextItem.prototype.renderBody = function () {
 };
 
 /**
- * Render the description.
- *
- * @localdoc Renders the result of #getDescription, override for custom description rendering
- */
-ve.ui.LinearContextItem.prototype.renderDescription = function () {
-	this.$description.text( this.getDescription() );
-};
-
-/**
  * @inheritdoc
  */
 ve.ui.LinearContextItem.prototype.setup = function () {
-	if ( this.context.isMobile() ) {
-		this.renderDescription();
-	} else {
-		this.renderBody();
+	var isEmpty;
+
+	this.renderBody();
+
+	isEmpty = this.$body.is( ':empty' );
+	if ( isEmpty && this.context.isMobile() ) {
+		this.deleteButton.setLabel( null );
+		if ( this.isDeletable() ) {
+			this.$head.append( this.deleteButton.$element );
+		}
+		if ( this.isEditable() ) {
+			this.$head.append( this.editButton.$element );
+		}
+		this.closeButton.$element.remove();
 	}
+	this.$element.toggleClass( 've-ui-linearContextItem-empty', isEmpty );
+
+	ve.track( 'activity.' + this.constructor.static.name, { action: 'context-show' } );
 
 	return this;
 };
@@ -214,7 +242,6 @@ ve.ui.LinearContextItem.prototype.setup = function () {
  * @inheritdoc
  */
 ve.ui.LinearContextItem.prototype.teardown = function () {
-	this.$description.empty();
 	this.$body.empty();
 	return this;
 };

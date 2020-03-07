@@ -23,7 +23,6 @@ ve.dm.example = {};
  * The actual storage format has an instance of ve.dm.LinkAnnotation instead of the plain object,
  * and an instance of ve.dm.AnnotationSet instead of the array.
  *
- * @method
  * @param {Array} data Linear model data
  * @param {ve.dm.HashValueStore} [store] Hash-value store to use, creates one if undefined
  * @return {ve.dm.ElementLinearData} Linear data store
@@ -112,7 +111,6 @@ ve.dm.example.removeOriginalDomElements = function ( data ) {
 /**
  * Create an annotation object from shorthand notation.
  *
- * @method
  * @param {Object} annotation Plain object with type and attributes properties
  * @param {ve.dm.HashValueStore} [store] Hash value store
  * @return {ve.dm.Annotation} Instance of the right ve.dm.Annotation subclass
@@ -127,7 +125,6 @@ ve.dm.example.createAnnotation = function ( annotation, store ) {
  * This calls ve.dm.example.createAnnotation() for each element and puts the result in an
  * AnnotationSet.
  *
- * @method
  * @param {ve.dm.HashValueStore} store Hash-value store
  * @param {Array} annotations Array of annotations in shorthand format
  * @return {ve.dm.AnnotationSet}
@@ -248,7 +245,6 @@ ve.dm.example.createExampleDocumentFromData = function ( data, store ) {
 /**
  * Looks up a value in a node tree.
  *
- * @method
  * @param {ve.Node} root Root node to lookup from
  * @param {...number} [paths] Index path
  * @return {ve.Node} Node at given path
@@ -723,10 +719,10 @@ ve.dm.example.withMeta = [
 	'z',
 	{ type: '/paragraph' },
 	{
-		type: 'alienMeta',
-		originalDomElements: $( '<!-- inline -->' ).toArray()
+		type: 'removableAlienMeta',
+		originalDomElements: $( '<b></b>' ).toArray()
 	},
-	{ type: '/alienMeta' },
+	{ type: '/removableAlienMeta' },
 	// 25
 	{
 		type: 'alienMeta',
@@ -1686,8 +1682,7 @@ ve.dm.example.domToDataCases = {
 				'<li class="ve-ce-branchNode ve-ce-checkListItemNode">' +
 					'<p class="ve-ce-branchNode ve-ce-contentBranchNode ve-ce-paragraphNode">bar</p>' +
 				'</li>' +
-			'</ul>' +
-			'<div class="ve-ce-branchNode-slug ve-ce-branchNode-blockSlug"></div>'
+			'</ul>'
 	},
 	'strip leading whitespace in non-whitespace preserving nodes': {
 		// T53462/T142132
@@ -2324,10 +2319,10 @@ ve.dm.example.domToDataCases = {
 			{ type: 'paragraph' },
 			'F', 'o', 'o',
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<span id="anchorTarget"></span>' ).toArray()
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			'B', 'a', 'r',
 			{ type: '/paragraph' },
 			{ type: 'internalList' },
@@ -2339,10 +2334,10 @@ ve.dm.example.domToDataCases = {
 			'B', 'a', 'r',
 			{ type: '/paragraph' },
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<span id="anchorTarget"></span>' ).toArray()
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			{ type: 'internalList' },
 			{ type: '/internalList' }
 		]
@@ -2353,10 +2348,10 @@ ve.dm.example.domToDataCases = {
 			{ type: 'paragraph', internal: { generated: 'wrapper' } },
 			'F', 'o', 'o',
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<span id="anchorTarget"></span>' ).toArray()
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			'B', 'a', 'r',
 			{ type: '/paragraph' },
 			{ type: 'internalList' },
@@ -2368,10 +2363,10 @@ ve.dm.example.domToDataCases = {
 			'B', 'a', 'r',
 			{ type: '/paragraph' },
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<span id="anchorTarget"></span>' ).toArray()
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			{ type: 'internalList' },
 			{ type: '/internalList' }
 		]
@@ -2382,10 +2377,10 @@ ve.dm.example.domToDataCases = {
 			{ type: 'paragraph' },
 			'F', 'o', 'o',
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<i><b><u></u></b></i>' ).toArray()
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			'B', 'a', 'r',
 			{ type: '/paragraph' },
 			{ type: 'internalList' },
@@ -2397,10 +2392,10 @@ ve.dm.example.domToDataCases = {
 			'B', 'a', 'r',
 			{ type: '/paragraph' },
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<i><b><u></u></b></i>' ).toArray()
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			{ type: 'internalList' },
 			{ type: '/internalList' }
 		]
@@ -2413,11 +2408,11 @@ ve.dm.example.domToDataCases = {
 			[ 'o', [ ve.dm.example.italic ] ],
 			[ 'o', [ ve.dm.example.italic ] ],
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<b></b>' ).toArray(),
 				annotations: [ ve.dm.example.italic ]
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			{ type: '/paragraph' },
 			{ type: 'internalList' },
 			{ type: '/internalList' }
@@ -2429,11 +2424,11 @@ ve.dm.example.domToDataCases = {
 			[ 'o', [ ve.dm.example.italic ] ],
 			{ type: '/paragraph' },
 			{
-				type: 'alienMeta',
+				type: 'removableAlienMeta',
 				originalDomElements: $( '<b></b>' ).toArray(),
 				annotations: [ ve.dm.example.italic ]
 			},
-			{ type: '/alienMeta' },
+			{ type: '/removableAlienMeta' },
 			{ type: 'internalList' },
 			{ type: '/internalList' }
 		]
@@ -4099,7 +4094,9 @@ ve.dm.example.domToDataCases = {
 			{ type: 'horizontalRule' },
 			{ type: '/horizontalRule' },
 			{ type: 'blockquote' },
+			{ type: 'paragraph', internal: { generated: 'wrapper' } },
 			'B', 'a', 'r',
+			{ type: '/paragraph' },
 			{ type: '/blockquote' },
 			{ type: 'internalList' },
 			{ type: '/internalList' }
@@ -4108,7 +4105,9 @@ ve.dm.example.domToDataCases = {
 			'<center class="ve-ce-branchNode"><p class="ve-ce-branchNode ve-ce-contentBranchNode ve-ce-paragraphNode ve-ce-generated-wrapper">Foo</p></center>' +
 			'<div class="ve-ce-branchNode-slug ve-ce-branchNode-blockSlug"></div>' +
 			'<div class="ve-ce-focusableNode ve-ce-horizontalRuleNode" contenteditable="false"><hr class="ve-ce-leafNode"></div>' +
-			'<blockquote class="ve-ce-branchNode ve-ce-contentBranchNode">Bar</blockquote>'
+			'<div class="ve-ce-branchNode-slug ve-ce-branchNode-blockSlug"></div>' +
+			'<blockquote class="ve-ce-branchNode"><p class="ve-ce-branchNode ve-ce-contentBranchNode ve-ce-paragraphNode ve-ce-generated-wrapper">Bar</p></blockquote>' +
+			'<div class="ve-ce-branchNode-slug ve-ce-branchNode-blockSlug"></div>'
 	}
 };
 

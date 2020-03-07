@@ -35,7 +35,6 @@ ve.dm.SurfaceSynchronizer = function VeDmSurfaceSynchronizer( surface, documentI
 	this.authors = {};
 	this.authorSelections = {};
 	this.documentId = documentId;
-	this.defaultName = config.defaultName;
 
 	// Whether the document has been initialized
 	this.initialized = false;
@@ -47,11 +46,14 @@ ve.dm.SurfaceSynchronizer = function VeDmSurfaceSynchronizer( surface, documentI
 
 	// SocketIO events
 	path = ( config.server || '' );
-	options = { query: {
-		docName: this.documentId,
-		authorId: this.getAuthorId() || '',
-		token: this.token || ''
-	} };
+	options = {
+		query: {
+			docName: this.documentId,
+			authorId: this.getAuthorId() || '',
+			token: this.token || ''
+		},
+		transports: [ 'websocket' ]
+	};
 	this.socket = io( path, options );
 	this.socket.on( 'registered', this.onRegistered.bind( this ) );
 	this.socket.on( 'initDoc', this.onInitDoc.bind( this ) );
@@ -59,17 +61,16 @@ ve.dm.SurfaceSynchronizer = function VeDmSurfaceSynchronizer( surface, documentI
 	this.socket.on( 'authorChange', this.onAuthorChange.bind( this ) );
 	this.socket.on( 'authorDisconnect', this.onAuthorDisconnect.bind( this ) );
 
-	authorData = ve.init.platform.getSessionObject( 've-collab-author' );
+	authorData = ve.init.platform.sessionStorage.getObject( 've-collab-author' );
 	if ( authorData ) {
 		this.changeAuthor( authorData );
+	} else if ( config.defaultName ) {
+		this.changeAuthor( { name: config.defaultName } );
 	}
 
 	// Events
-	this.doc.connect( this, {
-		transact: 'onDocumentTransact'
-	} );
-
 	this.surface.connect( this, {
+		history: 'onSurfaceHistory',
 		select: 'onSurfaceSelect'
 	} );
 
@@ -150,7 +151,7 @@ ve.dm.SurfaceSynchronizer.prototype.submitChange = function () {
 ve.dm.SurfaceSynchronizer.prototype.sendChange = function ( backtrack, change ) {
 	this.socket.emit( 'submitChange', {
 		backtrack: this.backtrack,
-		change: change.serialize()
+		change: change
 	} );
 };
 
@@ -202,42 +203,34 @@ ve.dm.SurfaceSynchronizer.prototype.removeFromHistory = function ( change ) {
  * @inheritdoc
  */
 ve.dm.SurfaceSynchronizer.prototype.logEvent = function ( event ) {
-	// Serialize the event data and pass it on to the server for logging
-	var key,
-		ob = {};
 	if ( !this.initialized ) {
 		// Do not log before initialization is complete; this prevents us from logging the entire
 		// document history during initialization
 		return;
 	}
-	ob.sendTimestamp = Date.now();
-	for ( key in event ) {
-		if ( event[ key ] instanceof ve.dm.Change ) {
-			ob[ key ] = event[ key ].serialize();
-		} else {
-			ob[ key ] = event[ key ];
-		}
-	}
-	this.socket.emit( 'logEvent', ob );
+	this.socket.emit( 'logEvent', ve.extendObject( { sendTimestamp: Date.now() }, event ) );
 };
 
 /**
  * Respond to transactions happening on the document. Ignores transactions applied by
  * SurfaceSynchronizer itself.
- *
- * @param {ve.dm.Transaction} tx Transaction that was applied
  */
-ve.dm.SurfaceSynchronizer.prototype.onDocumentTransact = function ( tx ) {
+ve.dm.SurfaceSynchronizer.prototype.onSurfaceHistory = function () {
+	var change, authorId;
 	if ( this.applying || !this.initialized ) {
 		// Ignore our own synchronization or initialization transactions
 		return;
 	}
-	// HACK annotate transaction with authorship information
+	change = this.getChangeSince( this.sentLength, true );
+	authorId = this.authorId;
+	// HACK annotate transactions with authorship information
 	// This relies on being able to access the transaction object by reference;
 	// we should probably set the author deeper in dm.Surface or dm.Document instead.
-	tx.authorId = this.authorId;
+	change.transactions.forEach( function ( tx ) {
+		tx.authorId = authorId;
+	} );
 	// TODO deal with staged transactions somehow
-	this.applyNewSelections( this.authorSelections, tx );
+	this.applyNewSelections( this.authorSelections, change );
 	this.submitChangeThrottled();
 };
 
@@ -281,10 +274,13 @@ ve.dm.SurfaceSynchronizer.prototype.applyNewSelections = function ( newSelection
 
 /**
  * Get author data object
- * @param {number} authorId Author ID
+ * @param {number} [authorId] Author ID, defaults to current author
  * @return {Object} Author object, containing 'name' and 'color'
  */
 ve.dm.SurfaceSynchronizer.prototype.getAuthorData = function ( authorId ) {
+	if ( authorId === undefined ) {
+		authorId = this.getAuthorId();
+	}
 	return this.authors[ authorId ];
 };
 
@@ -293,7 +289,7 @@ ve.dm.SurfaceSynchronizer.prototype.onAuthorChange = function ( data ) {
 	this.emit( 'authorChange', data.authorId );
 
 	if ( data.authorId === this.getAuthorId() ) {
-		ve.init.platform.setSessionObject( 've-collab-author', data.authorData );
+		ve.init.platform.sessionStorage.setObject( 've-collab-author', data.authorData );
 	}
 };
 
@@ -328,7 +324,7 @@ ve.dm.SurfaceSynchronizer.prototype.onRegistered = function ( data ) {
 };
 
 ve.dm.SurfaceSynchronizer.prototype.saveSessionKey = function () {
-	ve.init.platform.setSessionObject( 'visualeditor-session-key', {
+	ve.init.platform.sessionStorage.setObject( 'visualeditor-session-key', {
 		serverId: this.serverId,
 		docName: this.documentId,
 		authorId: this.getAuthorId(),
@@ -337,7 +333,7 @@ ve.dm.SurfaceSynchronizer.prototype.saveSessionKey = function () {
 };
 
 ve.dm.SurfaceSynchronizer.prototype.loadSessionKey = function () {
-	var data = ve.init.platform.getSessionObject( 'visualeditor-session-key' );
+	var data = ve.init.platform.sessionStorage.getObject( 'visualeditor-session-key' );
 	if ( data && data.docName === this.documentId ) {
 		this.serverId = data.serverId;
 		this.setAuthorId( data.authorId );
@@ -364,7 +360,7 @@ ve.dm.SurfaceSynchronizer.prototype.onInitDoc = function ( data ) {
 			authorData: data.authors[ authorId ]
 		} );
 	}
-	history = ve.dm.Change.static.deserialize( data.history, this.doc );
+	history = ve.dm.Change.static.deserialize( data.history );
 	this.acceptChange( history );
 	this.emit( 'initDoc' );
 
@@ -388,7 +384,7 @@ ve.dm.SurfaceSynchronizer.prototype.onInitDoc = function ( data ) {
  * @param {Object} serializedChange Serialized ve.dm.Change that the server has applied
  */
 ve.dm.SurfaceSynchronizer.prototype.onNewChange = function ( serializedChange ) {
-	var change = ve.dm.Change.static.deserialize( serializedChange, this.doc );
+	var change = ve.dm.Change.static.deserialize( serializedChange );
 	// Make sure we don't attempt to submit any of the transactions we commit while manipulating
 	// the state of the document
 	this.applying = true;

@@ -17,7 +17,6 @@
 	"tooltip-ca-ve-edit": "ಈ ಪುಟವನ್ನು ಬದಲಾಯಿಸಿ",
 	"visualeditor-advancedsettings-tool": "ಸುಧಾರಿತ ಸಂಯೋಜನೆಗಳು",
 	"visualeditor-backbutton-tooltip": "ಹಿಂದೆ ಹೋಗಿ",
-	"visualeditor-beta-label": "ಬೀಟಾ",
 	"visualeditor-browserwarning": "ನೀವು ಬಳಸುತ್ತಿರುವ ವೀಕ್ಷಕವನ್ನು ದೃಶ್ಯ ಸಂಪಾದಕ ಅಧಿಕೃತವಾಗಿ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.",
 	"visualeditor-ca-createlocaldescriptionsource": "ಸ್ಥಳೀಯ ವಿವರಣೆಯ ಮೂಲವನ್ನ್ನು ಸೇರಿಸಿ",
 	"visualeditor-ca-createsource": "ಮೂಲವನ್ನು ಸೃಷ್ಟಿಸು",
@@ -147,7 +146,6 @@
 	"visualeditor-formatdropdown-format-mw-heading6": "ಉಪ ಶಿರೋನಾಮೆ ೪",
 	"visualeditor-languages-tool": "ಭಾಷೆಗಳು",
 	"visualeditor-linkinspector-button-link-external": "ಬಾಹ್ಯ ಸಂಪರ್ಕ",
-	"visualeditor-linkinspector-button-link-internal": "ಪುಟಗಳನ್ನು ಹುಡುಕಿ",
 	"visualeditor-linkinspector-illegal-title": "ಪುಟದ ಶೀರ್ಷಿಕ ಪಡೆಯಲಿಲ",
 	"visualeditor-linknodeinspector-title": "ಸರಳದ ಸಂಪರ್ಕ",
 	"visualeditor-loaderror-message": "ಪರಿಚಾರಕದಿಂದ ಡೇಟಾ ಬರುವಾಗ ದೋಷವುಂಟಾಗಿದೆ: $1",
@@ -159,9 +157,7 @@
 	"visualeditor-magiclinknodeinspector-title-rfc": "RFC ಕೊಂಡಿ",
 	"visualeditor-media-input-placeholder": "ಮಾಧ್ಯಮಗಳನ್ನು ಹುಡುಕಿ",
 	"visualeditor-meta-tool": "ಆಯ್ಕೆಗಳು",
-	"visualeditor-mweditmodesource-title": "ಮೂಲದಲಿ ಸಂಪಾದಿಸಲು ಹೊಗಿ?",
 	"visualeditor-mweditmodesource-warning-cancel": "ರದ್ದು ಮಾಡು",
-	"visualeditor-mweditmodesource-warning-switch": "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ",
 	"visualeditor-mweditmodesource-warning-switch-discard": "ಬದಲಾವಣೆಗಳನ್ನು ತ್ಯಜಿಸಿ",
 	"visualeditor-mweditmodeve-title": "ದೃಶ್ಯ ಸಂಪಾದನೆಗೆ ಬದಲಿಸುವುದೆ?",
 	"visualeditor-mwgallerydialog-card-images": "ಚಿತ್ರಗಳು",
@@ -187,7 +183,5 @@
 	"visualeditor-serializeerror": "ಪರಿಚಾರಕದಿಂದ ಡೇಟಾ ಬರುವಾಗ ದೋಷವುಂಟಾಗಿದೆ: $1",
 	"visualeditor-settings-tool": "ಪುಟದ ಸಂಯೋಜನೆಗಳು",
 	"visualeditor-special-characters-group-other": "ಆಗಾಗ ಬಳಸಿದ",
-	"visualeditor-toolbar-savedialog": "ಪುಟವನ್ನು ಉಳಿಸಿ",
-	"visualeditor-toolbar-savedialog-short": "ಉಳಿಸಿ",
 	"visualeditor-version-label": "ಆವೃತ್ತಿ"
 }

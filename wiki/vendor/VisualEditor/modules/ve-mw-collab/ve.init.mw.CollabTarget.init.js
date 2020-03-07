@@ -22,8 +22,8 @@
 		documentNameInput = OO.ui.infuse( $( '.ve-init-mw-collabTarget-nameInput' ) ),
 		documentNameButton = OO.ui.infuse( $( '.ve-init-mw-collabTarget-nameButton' ) ),
 		importInput = OO.ui.infuse( $( '.ve-init-mw-collabTarget-importInput' ), {
-			showImages: mw.config.get( 'wgVisualEditor' ).usePageImages,
-			showDescriptions: mw.config.get( 'wgVisualEditor' ).usePageDescriptions
+			showImages: mw.config.get( 'wgVisualEditorConfig' ).usePageImages,
+			showDescriptions: mw.config.get( 'wgVisualEditorConfig' ).usePageDescriptions
 		} ),
 		importButton = OO.ui.infuse( $( '.ve-init-mw-collabTarget-importButton' ) ),
 		// Infuse the form last to avoid recursive infusion with no config
@@ -60,6 +60,8 @@
 
 		modulePromise.done( function () {
 			var dummySurface, surfaceModel,
+				isNewAuthor = !ve.init.platform.sessionStorage.get( 've-collab-author' ),
+				username = mw.user.getName(),
 				progressDeferred = $.Deferred();
 
 			target = ve.init.mw.targetFactory.create( 'collab', title, conf.rebaserUrl, { importTitle: importTitle } );
@@ -84,7 +86,7 @@
 					// TODO: server could communicate with MW (via oauth?) to know the
 					// current-user's name. Disable changing name if logged in?
 					// Communicate an I-am-a-valid-user flag to other clients?
-					defaultName: mw.user.isAnon() ? mw.user.getName() : undefined
+					defaultName: username
 				}
 			);
 
@@ -103,6 +105,10 @@
 					target.once( 'surfaceReady', function () {
 						initPromise.then( function () {
 							surfaceModel.selectFirstContentOffset();
+							// For new anon users, open the author list so they can set their name
+							if ( isNewAuthor && !username ) {
+								target.actionsToolbar.tools.authorList.onSelect();
+							}
 						} );
 					} );
 

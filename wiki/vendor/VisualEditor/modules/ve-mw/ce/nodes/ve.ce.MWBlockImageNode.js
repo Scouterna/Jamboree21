@@ -63,6 +63,7 @@ ve.ce.MWBlockImageNode = function VeCeMWBlockImageNode() {
 	// Mixin constructors
 	ve.ce.MWImageNode.call( this, $focusable, $image );
 
+	this.updateMediaType();
 	this.updateSize();
 };
 
@@ -207,8 +208,6 @@ ve.ce.MWBlockImageNode.prototype.getCssClass = function ( type, alignment ) {
 /**
  * Override the default onSetup to add direction-dependent
  * classes to the image thumbnail.
- *
- * @method
  */
 ve.ce.MWBlockImageNode.prototype.onSetup = function () {
 	// Parent method
@@ -269,10 +268,26 @@ ve.ce.MWBlockImageNode.prototype.onAttributeChange = function ( key, from, to ) 
 					this.$image.attr( key, to );
 				}
 				break;
+			case 'mediaType':
+				this.updateMediaType();
+				break;
 			case 'defaultSize':
 				this.$element.toggleClass( 'mw-default-size', to );
 				break;
 		}
+	}
+};
+
+/**
+ * Update rendering when media type changes
+ */
+ve.ce.MWBlockImageNode.prototype.updateMediaType = function () {
+	if ( this.model.getMediaType() === 'AUDIO' ) {
+		this.$image.attr( 'src', ve.ce.minImgDataUri );
+		this.$image.addClass( 've-ce-mwBlockImageNode-audioPlayer' );
+	} else {
+		this.$image.attr( 'src', this.getResolvedAttribute( 'src' ) );
+		this.$image.removeClass( 've-ce-mwBlockImageNode-audioPlayer' );
 	}
 };
 
@@ -285,6 +300,13 @@ ve.ce.MWBlockImageNode.prototype.onResizableResizing = function ( dimensions ) {
 
 		this.updateSize( dimensions );
 	}
+};
+
+/**
+ * @inheritdoc ve.ce.MWResizableNode
+ */
+ve.ce.MWBlockImageNode.prototype.isResizable = function () {
+	return ve.ce.MWResizableNode.prototype.isResizable.call( this ) && this.model.getMediaType() !== 'AUDIO';
 };
 
 ve.ce.MWBlockImageNode.prototype.getDomPosition = function () {

@@ -40,6 +40,10 @@ ve.init.Target = function VeInitTarget( config ) {
 	this.actionsToolbar = null;
 	this.toolbarConfig = config.toolbarConfig || {};
 	this.$scrollContainer = this.getScrollContainer();
+	this.$scrollListener = this.$scrollContainer.is( 'html, body' ) ?
+		$( OO.ui.Element.static.getWindow( this.$scrollContainer[ 0 ] ) ) :
+		this.$scrollContainer;
+
 	this.toolbarScrollOffset = 0;
 	this.activeToolbars = 0;
 	this.wasSurfaceActive = null;
@@ -61,6 +65,10 @@ ve.init.Target = function VeInitTarget( config ) {
 	// use a combined class to simplify selectors.
 	if ( isIe || isEdge ) {
 		this.$element.addClass( 've-init-target-ie-or-edge' );
+	}
+
+	if ( ve.init.platform.constructor.static.isIos() ) {
+		this.$element.addClass( 've-init-target-ios' );
 	}
 
 	// Events
@@ -183,16 +191,24 @@ ve.init.Target.static.excludeCommands = [];
  */
 ve.init.Target.static.importRules = {
 	external: {
-		blacklist: [
+		blacklist: {
 			// Annotations
-			'textStyle/span', 'textStyle/font',
+			'textStyle/span': true,
+			'textStyle/font': true,
 			// Nodes
-			'alienInline', 'alienBlock', 'alienTableCell', 'comment', 'div'
-		],
+			alienInline: true,
+			alienBlock: true,
+			alienTableCell: true,
+			comment: true,
+			div: true
+		},
 		// Selectors to filter. Runs before model type blacklist above.
 		htmlBlacklist: {
-			// remove: [ 'selectorToRemove' ]
-			unwrap: [ 'fieldset', 'legend' ]
+			// remove: { '.selectorToRemove': true }
+			unwrap: {
+				fieldset: true,
+				legend: true
+			}
 		},
 		nodeSanitization: true
 	},
@@ -296,7 +312,7 @@ ve.init.Target.prototype.bindHandlers = function () {
 		visibilitychange: this.onDocumentVisibilityChangeHandler
 	} );
 	this.$element.on( 'keydown', this.onTargetKeyDownHandler );
-	ve.addPassiveEventListener( this.$scrollContainer[ 0 ], 'scroll', this.onContainerScrollHandler );
+	ve.addPassiveEventListener( this.$scrollListener[ 0 ], 'scroll', this.onContainerScrollHandler );
 };
 
 /**
@@ -309,7 +325,7 @@ ve.init.Target.prototype.unbindHandlers = function () {
 		visibilitychange: this.onDocumentVisibilityChangeHandler
 	} );
 	this.$element.off( 'keydown', this.onTargetKeyDownHandler );
-	ve.removePassiveEventListener( this.$scrollContainer[ 0 ], 'scroll', this.onContainerScrollHandler );
+	ve.removePassiveEventListener( this.$scrollListener[ 0 ], 'scroll', this.onContainerScrollHandler );
 };
 
 /**
@@ -355,7 +371,7 @@ ve.init.Target.prototype.setupTriggerListeners = function () {
  * @return {jQuery} The target's scroll container
  */
 ve.init.Target.prototype.getScrollContainer = function () {
-	return $( this.getElementWindow() );
+	return $( OO.ui.Element.static.getClosestScrollableContainer( document.body ) );
 };
 
 /**
@@ -397,7 +413,7 @@ ve.init.Target.prototype.onDocumentKeyDown = function ( e ) {
 	if ( trigger.isComplete() ) {
 		command = this.documentTriggerListener.getCommandByTrigger( trigger.toString() );
 		surface = this.getSurface();
-		if ( surface && command && command.execute( surface ) ) {
+		if ( surface && command && command.execute( surface, undefined, 'trigger' ) ) {
 			e.preventDefault();
 		}
 	}
@@ -434,7 +450,7 @@ ve.init.Target.prototype.onTargetKeyDown = function ( e ) {
 	if ( trigger.isComplete() ) {
 		command = this.targetTriggerListener.getCommandByTrigger( trigger.toString() );
 		surface = this.getSurface();
-		if ( surface && command && command.execute( surface ) ) {
+		if ( surface && command && command.execute( surface, undefined, 'trigger' ) ) {
 			e.preventDefault();
 		}
 	}
@@ -444,13 +460,14 @@ ve.init.Target.prototype.onTargetKeyDown = function ( e ) {
  * Handle toolbar resize events
  */
 ve.init.Target.prototype.onToolbarResize = function () {
-	this.getSurface().setToolbarHeight( this.getToolbar().getHeight() + this.toolbarScrollOffset );
+	this.getSurface().setPadding( {
+		top: this.getToolbar().getHeight() + this.toolbarScrollOffset
+	} );
 };
 
 /**
  * Create a target widget.
  *
- * @method
  * @param {Object} [config] Configuration options
  * @return {ve.ui.TargetWidget}
  */
@@ -461,7 +478,6 @@ ve.init.Target.prototype.createTargetWidget = function ( config ) {
 /**
  * Create a surface.
  *
- * @method
  * @param {ve.dm.Document|ve.dm.Surface} dmDocOrSurface Document model or surface model
  * @param {Object} [config] Configuration options
  * @return {ve.ui.Surface}
@@ -604,27 +620,48 @@ ve.init.Target.prototype.setupToolbar = function ( surface ) {
 };
 
 /**
+ * Deactivate the surface. Maybe save some properties that should be restored when it's activated.
+ *
+ * @protected
+ */
+ve.init.Target.prototype.deactivateSurfaceForToolbar = function () {
+	var view = this.getSurface().getView();
+	// Surface may already be deactivated (e.g. link inspector is open)
+	this.wasSurfaceActive = !view.deactivated;
+	if ( this.wasSurfaceActive ) {
+		view.deactivate();
+	}
+};
+
+/**
+ * Activate the surface. Restore any properties saved in #deactivate.
+ *
+ * @protected
+ */
+ve.init.Target.prototype.activateSurfaceForToolbar = function () {
+	var view = this.getSurface().getView();
+	// For non-collapsed mobile selections, don't reactivate
+	if ( this.wasSurfaceActive && !( OO.ui.isMobile() && !view.getModel().getSelection().isCollapsed() ) ) {
+		view.activate();
+	}
+};
+
+/**
  * Handle active events from the toolbar
  *
  * @param {boolean} active The toolbar is active
  */
 ve.init.Target.prototype.onToolbarActive = function ( active ) {
-	var view = this.getSurface().getView();
 	// Deactivate the surface when the toolbar is active (T109529, T201329)
 	if ( active ) {
 		this.activeToolbars++;
 		if ( this.activeToolbars === 1 ) {
-			// Surface may already be deactived (e.g. link inspector is open)
-			this.wasSurfaceActive = !view.deactivated;
-			if ( this.wasSurfaceActive ) {
-				this.getSurface().getView().deactivate();
-			}
+			this.deactivateSurfaceForToolbar();
 		}
 	} else {
 		this.activeToolbars--;
-		// Re-active surface if it was active when the toolbar first became active
-		if ( !this.activeToolbars && this.wasSurfaceActive ) {
-			this.getSurface().getView().activate();
+		if ( !this.activeToolbars ) {
+			this.activateSurfaceForToolbar();
 		}
 	}
 };

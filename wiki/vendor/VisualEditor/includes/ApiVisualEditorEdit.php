@@ -12,6 +12,8 @@ use \MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
 class ApiVisualEditorEdit extends ApiVisualEditor {
+	const MAX_CACHE_RECENT = 2;
+	const MAX_CACHE_TTL = 900;
 
 	/**
 	 * @inheritDoc
@@ -191,32 +193,57 @@ class ApiVisualEditorEdit extends ApiVisualEditor {
 	 * @return string The key of the wikitext in the serialisation cache
 	 */
 	protected function storeInSerializationCache( Title $title, $wikitext ) {
-		global $wgMemc;
-
 		if ( $wikitext === false ) {
 			return false;
 		}
 
+		$cache = ObjectCache::getLocalClusterInstance();
+
+		$services = MediaWikiServices::getInstance();
+		$statsd = $services->getStatsdDataFactory();
+		$editStash = $services->getPageEditStash();
+
 		// Store the corresponding wikitext, referenceable by a new key
 		$hash = md5( $wikitext );
-		$key = $wgMemc->makeKey( 'visualeditor', 'serialization', $hash );
-		$wgMemc->set( $key, $wikitext,
-			$this->veConfig->get( 'VisualEditorSerializationCacheTimeout' ) );
+		$key = $cache->makeKey( 'visualeditor', 'serialization', $hash );
+		$ok = $cache->set( $key, $wikitext, self::MAX_CACHE_TTL );
+		if ( $ok ) {
+			$this->pruneExcessStashedEntries( $cache, $this->getUser(), $key );
+		}
+
+		$status = $ok ? 'ok' : 'failed';
+		$statsd->increment( "editstash.ve_serialization_cache.set_" . $status );
 
 		// Also parse and prepare the edit in case it might be saved later
 		$page = WikiPage::factory( $title );
 		$content = ContentHandler::makeContent( $wikitext, $title, CONTENT_MODEL_WIKITEXT );
 
-		$status = ApiStashEdit::parseAndStash( $page, $content, $this->getUser(), '' );
-		if ( $status === ApiStashEdit::ERROR_NONE ) {
+		$status = $editStash->parseAndCache( $page, $content, $this->getUser(), '' );
+		if ( $status === $editStash::ERROR_NONE ) {
 			$logger = LoggerFactory::getInstance( 'StashEdit' );
 			$logger->debug( "Cached parser output for VE content key '$key'." );
 		}
-		MediaWikiServices::getInstance()->getStatsdDataFactory()->increment(
-			"editstash.ve_cache_stores.$status"
-		);
+		$statsd->increment( "editstash.ve_cache_stores.$status" );
 
 		return $hash;
+	}
+
+	/**
+	 * @param BagOStuff $cache
+	 * @param User $user
+	 * @param string $newKey
+	 */
+	private function pruneExcessStashedEntries( BagOStuff $cache, User $user, $newKey ) {
+		$key = $cache->makeKey( 'visualeditor-serialization-recent', $user->getName() );
+
+		$keyList = $cache->get( $key ) ?: [];
+		if ( count( $keyList ) >= self::MAX_CACHE_RECENT ) {
+			$oldestKey = array_shift( $keyList );
+			$cache->delete( $oldestKey );
+		}
+
+		$keyList[] = $newKey;
+		$cache->set( $key, $keyList, 2 * self::MAX_CACHE_TTL );
 	}
 
 	/**
@@ -226,9 +253,15 @@ class ApiVisualEditorEdit extends ApiVisualEditor {
 	 * @return string|null The wikitext
 	 */
 	protected function trySerializationCache( $hash ) {
-		global $wgMemc;
-		$key = $wgMemc->makeKey( 'visualeditor', 'serialization', $hash );
-		return $wgMemc->get( $key );
+		$cache = ObjectCache::getLocalClusterInstance();
+		$key = $cache->makeKey( 'visualeditor', 'serialization', $hash );
+		$value = $cache->get( $key );
+
+		$status = ( $value !== false ) ? 'hit' : 'miss';
+		$statsd = MediaWikiServices::getInstance()->getStatsdDataFactory();
+		$statsd->increment( "editstash.ve_serialization_cache.get_$status" );
+
+		return $value;
 	}
 
 	/**
@@ -237,7 +270,7 @@ class ApiVisualEditorEdit extends ApiVisualEditor {
 	 * @param string $path The RESTbase path of the transform endpoint
 	 * @param Title $title The title of the page
 	 * @param array $data An array of the HTML and the 'scrub_wikitext' option
-	 * @param array $parserParams Parsoid parser paramters to pass in
+	 * @param array $parserParams Parsoid parser parameters to pass in
 	 * @param string $etag The ETag to set in the HTTP request header
 	 * @return string Body of the RESTbase server's response
 	 */
@@ -246,11 +279,27 @@ class ApiVisualEditorEdit extends ApiVisualEditor {
 		if ( isset( $parserParams['oldid'] ) && $parserParams['oldid'] ) {
 			$path .= '/' . $parserParams['oldid'];
 		}
+		// Adapted from RESTBase mwUtil.parseETag()
+		if ( !preg_match( '/
+			^(?:W\\/)?"?
+			([^"\\/]+)
+			(?:\\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))
+			(?:\\/([^"]+))?
+			"?$
+		/x', $etag ) ) {
+			$this->logger->info(
+				__METHOD__ . ": Received funny ETag from client: {etag}",
+				[
+					'etag' => $etag,
+					'requestPath' => $path,
+				]
+			);
+		}
 		return $this->requestRestbase(
 			$title,
 			'POST', $path, $data,
 			[ 'If-Match' => $etag ]
-		);
+		)['body'];
 	}
 
 	/**
@@ -258,7 +307,7 @@ class ApiVisualEditorEdit extends ApiVisualEditor {
 	 *
 	 * @param Title $title The title of the page
 	 * @param string $html The HTML of the page to be transformed
-	 * @param array $parserParams Parsoid parser paramters to pass in
+	 * @param array $parserParams Parsoid parser parameters to pass in
 	 * @param string $etag The ETag to set in the HTTP request header
 	 * @return string Body of the RESTbase server's response
 	 */
@@ -373,13 +422,6 @@ class ApiVisualEditorEdit extends ApiVisualEditor {
 					'result' => 'error',
 					'edit' => $saveresult['edit']
 				];
-
-				if ( isset( $saveresult['edit']['spamblacklist'] ) ) {
-					$matches = explode( '|', $saveresult['edit']['spamblacklist'] );
-					$matcheslist = $this->getLanguage()->listToText( $matches );
-					$result['edit']['sberrorparsed'] = $this->msg( 'spamprotectiontext' )->parse() . ' ' .
-						$this->msg( 'spamprotectionmatch', $matcheslist )->parse();
-				}
 
 			// Success
 			} else {

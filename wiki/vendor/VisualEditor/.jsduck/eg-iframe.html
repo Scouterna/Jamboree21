@@ -41,6 +41,7 @@
 		<link rel=stylesheet href="lib/ve/src/ui/styles/inspectors/ve.ui.CommentInspector.css" class="stylesheet-ve">
 		<link rel=stylesheet href="lib/ve/src/ui/styles/inspectors/ve.ui.FragmentInspector.css" class="stylesheet-ve">
 		<link rel=stylesheet href="lib/ve/src/ui/styles/inspectors/ve.ui.LanguageInspector.css" class="stylesheet-ve">
+		<link rel=stylesheet href="lib/ve/src/ui/styles/ve.ui.Context.css" class="stylesheet-ve">
 		<link rel=stylesheet href="lib/ve/src/ui/styles/ve.ui.ContextItem.css" class="stylesheet-ve">
 		<link rel=stylesheet href="lib/ve/src/ui/styles/contextitems/ve.ui.LinearContextItem.css" class="stylesheet-ve">
 		<link rel=stylesheet href="lib/ve/src/ui/styles/contextitems/ve.ui.TableLineContextItem.css" class="stylesheet-ve">
@@ -144,8 +145,16 @@
 
 		<!-- visualEditor.core.init -->
 		<script src="lib/ve/src/init/ve.init.js"></script>
+		<script src="lib/ve/src/init/ve.init.SafeStorage.js"></script>
+		<script src="lib/ve/src/init/ve.init.ListStorage.js"></script>
 		<script src="lib/ve/src/init/ve.init.Platform.js"></script>
 		<script src="lib/ve/src/init/ve.init.Target.js"></script>
+
+		<!-- dompurify -->
+		<script src="lib/ve/lib/dompurify/purify.js"></script>
+
+		<!-- visualEditor.sanitize -->
+		<script src="lib/ve/src/ve.sanitize.js"></script>
 
 		<!-- visualEditor.core.utils.client -->
 		<script src="lib/ve/src/ve.utils.client.js"></script>
@@ -187,6 +196,7 @@
 		<script src="lib/ve/src/dm/ve.dm.TransactionProcessor.js"></script>
 		<script src="lib/ve/src/dm/ve.dm.Transaction.js"></script>
 		<script src="lib/ve/src/dm/ve.dm.TransactionBuilder.js"></script>
+		<script src="lib/ve/src/dm/ve.dm.TransactionSquasher.js"></script>
 		<script src="lib/ve/src/dm/ve.dm.Change.js"></script>
 		<script src="lib/ve/src/dm/ve.dm.TreeCursor.js"></script>
 		<script src="lib/ve/src/dm/ve.dm.TreeModifier.js"></script>
@@ -265,6 +275,7 @@
 		<script src="lib/ve/src/dm/annotations/ve.dm.UserInputAnnotation.js"></script>
 		<script src="lib/ve/src/dm/annotations/ve.dm.VariableAnnotation.js"></script>
 		<script src="lib/ve/src/dm/metaitems/ve.dm.AlienMetaItem.js"></script>
+		<script src="lib/ve/src/dm/metaitems/ve.dm.RemovableAlienMetaItem.js"></script>
 		<script src="lib/ve/src/dm/metaitems/ve.dm.CommentMetaItem.js"></script>
 		<script src="lib/ve/src/dm/nodes/ve.dm.CommentNode.js"></script>
 		<script src="lib/ve/src/dm/nodes/ve.dm.FakeCommentNode.js"></script>
@@ -336,6 +347,7 @@
 		<script src="lib/ve/src/ce/nodes/ve.ce.TableRowNode.js"></script>
 		<script src="lib/ve/src/ce/nodes/ve.ce.TableSectionNode.js"></script>
 		<script src="lib/ve/src/ce/nodes/ve.ce.TextNode.js"></script>
+		<script src="lib/ve/src/ce/nodes/ve.ce.UnrenderedNode.js"></script>
 		<script src="lib/ve/src/ce/nodes/ve.ce.ImageNode.js"></script>
 		<script src="lib/ve/src/ce/nodes/ve.ce.BlockImageNode.js"></script>
 		<script src="lib/ve/src/ce/nodes/ve.ce.BlockImageCaptionNode.js"></script>
@@ -412,6 +424,7 @@
 		<script src="lib/ve/src/ui/ve.ui.TabIndexScope.js"></script>
 		<script src="lib/ve/src/ui/windowmanagers/ve.ui.SurfaceWindowManager.js"></script>
 		<script src="lib/ve/src/ui/actions/ve.ui.AnnotationAction.js"></script>
+		<script src="lib/ve/src/ui/actions/ve.ui.BlockquoteAction.js"></script>
 		<script src="lib/ve/src/ui/actions/ve.ui.ContentAction.js"></script>
 		<script src="lib/ve/src/ui/actions/ve.ui.FormatAction.js"></script>
 		<script src="lib/ve/src/ui/actions/ve.ui.HistoryAction.js"></script>
@@ -492,14 +505,9 @@
 		<!-- visualEditor.diffing.standalone -->
 		<script src="lib/ve/src/ui/dialogs/ve.ui.DiffDialog.js"></script>
 
-		<!-- dompurify -->
-		<script src="lib/ve/lib/dompurify/purify.js"></script>
-
-		<!-- visualEditor.sanitize -->
-		<script src="lib/ve/src/ve.sanitize.js"></script>
-
 		<!-- visualEditor.standalone.build -->
 		<script src="lib/ve/src/init/sa/ve.init.sa.js"></script>
+		<script src="lib/ve/src/init/sa/ve.init.sa.SafeStorage.js"></script>
 		<script src="lib/ve/src/init/sa/ve.init.sa.Platform.js"></script>
 		<script src="lib/ve/src/init/sa/ve.init.sa.Target.js"></script>
 
