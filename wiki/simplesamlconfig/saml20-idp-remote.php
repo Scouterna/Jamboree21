@@ -1,3 +1,4 @@
+<?php
 $metadata['https://sts.windows.net/317a47ba-fd32-41b8-8ebe-310a1adc9863/'] = array (
   'entityid' => 'https://sts.windows.net/317a47ba-fd32-41b8-8ebe-310a1adc9863/',
   'contacts' => array (),
