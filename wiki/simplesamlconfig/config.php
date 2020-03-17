@@ -27,7 +27,7 @@ $config = [
      * external url, no matter where you come from (direct access or via the
      * reverse proxy).
      */
-    'baseurlpath' => 'simplesaml/',
+    'baseurlpath' => 'https://wiki.internal.jamboree.se.webservices.scouterna.net/simplesaml/',
 
     /*
      * The 'application' configuration array groups a set configuration options
