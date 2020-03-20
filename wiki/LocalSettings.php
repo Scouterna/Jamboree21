@@ -179,6 +179,7 @@ $wgMFDefaultSkinClass = 'SkinMinerva';
 
 # MORE DEBUGGING
 $wgDebugLogFile = "/var/log/mediawiki/debug-{$wgDBname}.log";
+
 # Configure user rights
 $wgGroupPermissions['*']['edit'] = false;
 $wgGroupPermissions['user']['edit'] = true;
