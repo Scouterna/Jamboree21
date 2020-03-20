@@ -1,0 +1,74 @@
+{
+	"name": "SimpleSAMLphp",
+	"version": "4.5",
+	"author": [
+		"[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:SimpleSAMLphp",
+	"descriptionmsg": "simplesamlphp-desc",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.31.0",
+		"extensions": {
+			"PluggableAuth": ">= 5.1"
+		}
+	},
+	"MessagesDirs": {
+		"SimpleSAMLphp": [
+			"i18n"
+		]
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\SimpleSAMLphp\\": "src/",
+		"MediaWiki\\Extension\\SimpleSAMLphp\\Tests\\": "tests/phpunit/"
+	},
+	"AutoloadClasses": {
+		"SimpleSAMLphp": "includes/SimpleSAMLphp.php"
+	},
+	"Hooks": {
+		"PluggableAuthPopulateGroups": [ "SimpleSAMLphp::populateGroups" ]
+	},
+	"config": {
+		"SimpleSAMLphp_UsernameAttribute": {
+			"value":  null
+		},
+		"SimpleSAMLphp_RealNameAttribute": {
+			"value":  null
+		},
+		"SimpleSAMLphp_EmailAttribute": {
+			"value":  null
+		},
+		"SimpleSAMLphp_GroupMap": {
+			"value":  []
+		},
+		"SimpleSAMLphp_GroupAttributeDelimiter": {
+			"value":  null,
+			"description": "If the SAML attribute for groups is not an array but a CSV string, this can be set to the appropriate delimiter (e.g. ',')"
+		},
+		"SimpleSAMLphp_SyncAllGroups_GroupAttributeName": {
+			"value":  "groups"
+		},
+		"SimpleSAMLphp_SyncAllGroups_LocallyManaged": {
+			"value":  [ "sysop" ]
+		},
+		"SimpleSAMLphp_SyncAllGroups_GroupNameModificationCallback": {
+			"value":  null
+		},
+		"SimpleSAMLphp_AttributeProcessorFactories": {
+			"value":  [
+				"MediaWiki\\Extension\\SimpleSAMLphp\\AttributeProcessor\\MapGroups::factory"
+			]
+		},
+		"SimpleSAMLphp_MandatoryUserInfoProviderFactories": {
+			"value":  {
+				"username": "MediaWiki\\Extension\\SimpleSAMLphp\\UserInfoProvider\\LowerCasedUsername::factory",
+				"realname": "MediaWiki\\Extension\\SimpleSAMLphp\\UserInfoProvider\\Realname::factory",
+				"email": "MediaWiki\\Extension\\SimpleSAMLphp\\UserInfoProvider\\Email::factory"
+			}
+		},
+		"PluggableAuth_Class": {
+			"value":  "SimpleSAMLphp"
+		}
+	},
+	"manifest_version": 2
+}

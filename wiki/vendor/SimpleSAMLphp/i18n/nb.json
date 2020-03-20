@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby"
+		]
+	},
+	"simplesamlphp-desc": "Gir autentisering med SimpleSAMLphp i forbindelse med PluggableAuth"
+}

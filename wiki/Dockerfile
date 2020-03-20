@@ -105,3 +105,5 @@ COPY simplesamlconfig/config.php simplesamlphp/config/config.php
 COPY simplesamlconfig/saml20-idp-remote.php simplesamlphp/metadata/saml20-idp-remote.php
 COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
 
+COPY vendor/PluggableAuth extensions/PluggableAuth
+COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp

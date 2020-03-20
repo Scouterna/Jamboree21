@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lokal Profil"
+		]
+	},
+	"simplesamlphp-desc": "Möjliggör autentisering med SimpleSAMLphp i förbindelse med PluggableAuth"
+}

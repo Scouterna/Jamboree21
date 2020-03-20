@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"ديفيد"
+		]
+	},
+	"simplesamlphp-desc": "يوفر مصادقة باستخدام SimpleSAMLphp بالتزامن مع PluggableAuth"
+}

@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"!Silent"
+		]
+	},
+	"simplesamlphp-desc": "Fornece uma autenticação usando o SimpleSAMLphp em conjunto com o PluggableAuth"
+}

@@ -1,0 +1,41 @@
+{
+	"name": "mediawiki/pluggable-auth",
+	"license": "MIT",
+	"type": "mediawiki-extension",
+	"homepage": "https://www.mediawiki.org/wiki/Extension:PluggableAuth",
+	"description": "An authentication framework for MediaWiki",
+	"keywords": [
+		"extension",
+		"wiki",
+		"mediawiki",
+		"authentication"
+	],
+	"authors": [
+		{
+			"name": "Cindy Cicalese",
+			"email": "cindom@gmail.com",
+			"role": "Contributor"
+		}
+	],
+	"require-dev": {
+		"jakub-onderka/php-parallel-lint": "1.0.0",
+		"jakub-onderka/php-console-highlighter": "0.3.2",
+		"mediawiki/minus-x": "0.3.1",
+		"mediawiki/mediawiki-codesniffer": "26.0.0",
+		"phpmd/phpmd": "~2.1"
+	},
+	"scripts": {
+		"phpunit": "php $MW_INSTALL_PATH/tests/phpunit/phpunit.php -c .phpunit.xml.dist",
+		"phpdbg": "phpdbg -qrr $MW_INSTALL_PATH/tests/phpunit/phpunit.php -c .phpunit.xml.dist",
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"phpmd includes text .phpmd.xml || :",
+			"phpcs -p -s"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		]
+	}
+}

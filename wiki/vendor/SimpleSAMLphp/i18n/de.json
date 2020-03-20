@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Metalhead64"
+		]
+	},
+	"simplesamlphp-desc": "Ermöglicht eine Authentifizierung mithilfe SimpleSAMLphp in Verbindung mit PluggableAuth"
+}
