@@ -1,0 +1,59 @@
+{
+	"name": "PluggableAuth",
+	"version": "5.7",
+	"author": [
+		"[https://www.mediawiki.org/wiki/User:Cindy.cicalese Cindy Cicalese]"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:PluggableAuth",
+	"descriptionmsg": "pluggableauth-desc",
+	"type": "other",
+	"license-name": "MIT",
+	"SpecialPages": {
+		"PluggableAuthLogin": "PluggableAuthLogin"
+	},
+	"MessagesDirs": {
+		"PluggableAuth": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"PluggableAuthAlias": "includes/PluggableAuth.alias.php"
+	},
+	"AutoloadClasses": {
+		"PluggableAuth": "includes/PluggableAuth.php",
+		"PluggableAuthHooks": "includes/PluggableAuthHooks.php",
+		"PluggableAuthPrimaryAuthenticationProvider": "includes/PluggableAuthPrimaryAuthenticationProvider.php",
+		"PluggableAuthBeginAuthenticationRequest": "includes/PluggableAuthBeginAuthenticationRequest.php",
+		"PluggableAuthContinueAuthenticationRequest": "includes/PluggableAuthContinueAuthenticationRequest.php",
+		"PluggableAuthLogin": "includes/PluggableAuthLogin.php"
+	},
+	"callback": "PluggableAuthHooks::onRegistration",
+	"Hooks": {
+		"TitleReadWhitelist": "PluggableAuthHooks::onTitleReadWhitelist",
+		"UserLogoutComplete": "PluggableAuthHooks::deauthenticate",
+		"AuthChangeFormFields": "PluggableAuthHooks::onAuthChangeFormFields",
+		"PersonalUrls": "PluggableAuthHooks::modifyLoginURLs",
+		"BeforeInitialize": "PluggableAuthHooks::doBeforeInitialize",
+		"LocalUserCreated": "PluggableAuthHooks::onLocalUserCreated"
+	},
+	"AuthManagerAutoConfig": {
+		"primaryauth": {
+			"PluggableAuthPrimaryAuthenticationProvider": {
+				"class": "PluggableAuthPrimaryAuthenticationProvider",
+				"sort": 0
+			}
+		}
+	},
+	"PluggableAuthLoginSpecialPages": [
+		"PluggableAuthLogin",
+		"Userlogin"
+	],
+	"config": {
+		"PluggableAuth_EnableAutoLogin": false,
+		"PluggableAuth_EnableLocalLogin": false,
+		"PluggableAuth_EnableLocalProperties": false,
+		"PluggableAuth_ButtonLabel": null,
+		"PluggableAuth_ExtraLoginFields": []
+	},
+	"manifest_version": 1
+}

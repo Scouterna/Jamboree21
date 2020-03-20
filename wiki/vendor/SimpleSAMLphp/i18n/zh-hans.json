@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Liuxinyu970226"
+		]
+	},
+	"simplesamlphp-desc": "提供使用SimpleSAMLphp与PluggableAuth结合的认证"
+}

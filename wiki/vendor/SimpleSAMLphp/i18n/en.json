@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cicalese"
+		]
+	},
+	"simplesamlphp-desc": "Provides authentication using SimpleSAMLphp in conjunction with PluggableAuth"
+}

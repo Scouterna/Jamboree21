@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Okras"
+		]
+	},
+	"simplesamlphp-desc": "Обеспечивает проверку подлинности с помощью SimpleSAMLphp в сочетании с PluggableAuth"
+}

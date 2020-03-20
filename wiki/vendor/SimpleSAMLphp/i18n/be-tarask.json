@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Red Winged Duck"
+		]
+	},
+	"simplesamlphp-desc": "Забясьпечвае аўтэнтыфікацыю з дапамогай SimpleSAMLphp у спалучэньні з PluggableAuth"
+}
