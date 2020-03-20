@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"simplesamlphp-desc": "提供使用 SimpleSAMLphp 與 PluggableAuth 結合的認證"
+}

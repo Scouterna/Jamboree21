@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dgstranz"
+		]
+	},
+	"simplesamlphp-desc": "Proporciona autentificación con SimpleSAMLphp conjuntamente con PluggableAuth"
+}

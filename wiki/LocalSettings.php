@@ -172,9 +172,38 @@ $wgVirtualRestConfig['modules']['parsoid'] = [
 # End of automatically generated settings.
 # Add more configuration options below.
 wfLoadExtension( 'MobileFrontend' );
-
+wfLoadExtension( 'PluggableAuth' );
+wfLoadExtension( 'SimpleSAMLphp' );
 wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
 
 # MORE DEBUGGING
 $wgDebugLogFile = "/var/log/mediawiki/debug-{$wgDBname}.log";
+
+# Configure user rights
+$wgGroupPermissions['*']['edit'] = false;
+$wgGroupPermissions['user']['edit'] = true;
+$wgGroupPermissions['*']['createaccount'] = true;
+$wgGroupPermissions['*']['autocreateaccount'] = true;
+
+# Config simplesamlphp
+
+$wgSimpleSAMLphp_InstallDir = 'simplesamlphp';
+$wgSimpleSAMLphp_AuthSourceId = 'default-sp';
+$wgSimpleSAMLphp_UsernameAttribute = [
+	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
+	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
+];
+$wgSimpleSAMLphp_EmailAttribute = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
+$wgSimpleSAMLphp_RealNameAttribute = [
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
+];
+
+# Config pluggableauth
+
+$wgPluggableAuth_EnableAutoLogin = false;
+$wgPluggableAuth_EnableLocalLogin = false;
+$wgPluggableAuth_EnableLocalProperties = true;
+$wgPluggableAuth_ButtonLabelMessage = 'Logga in';
+$wgPluggableAuth_Class = 'SimpleSAMLphp';

@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Elisardojm"
+		]
+	},
+	"simplesamlphp-desc": "Proporciona autentificación usando SimpleSAMLphp xunto con PluggableAuth"
+}
