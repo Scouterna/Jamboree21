@@ -33,7 +33,7 @@ $wgMetaNamespace = "Meta";
 $wgScriptPath = "";
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = "https://wiki.internal.jamboree.se.webservices.scouterna.net";
+$wgServer = getenv('MEDIAWIKI_BASE_URL');
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
@@ -47,8 +47,8 @@ $wgLogo = "https://mrmanner.eu/files/scout/Scoutsymbolen_rgb_wiki.png";
 $wgEnableEmail = false;
 $wgEnableUserEmail = true; # UPO
 
-$wgEmergencyContact = "apache@wiki.jamboree.se.staging.scouterna.net";
-$wgPasswordSender = "apache@wiki.jamboree.se.staging.scouterna.net";
+$wgEmergencyContact = getenv('MEDIAWIKI_EMAIL');
+$wgPasswordSender = getenv('MEDIAWIKI_EMAIL');
 
 $wgEnotifUserTalk = false; # UPO
 $wgEnotifWatchlist = false; # UPO
@@ -155,7 +155,7 @@ $wgDefaultUserOptions['visualeditor-editor'] = "visualeditor";
 $wgVisualEditorAllowLossySwitching=false;
 $wgVirtualRestConfig['modules']['parsoid'] = [
 	// URL to the Parsoid instance - use port 8142 if you use the Debian package - the parameter 'URL' was first used but is now deprecated (string)
-	'url' => 'https://wiki.internal.jamboree.se.webservices.scouterna.net/parsoid',
+	'url' => getenv('MEDIAWIKI_BASE_URL') . '/parsoid',
 	// Parsoid "domain" (string, optional) - MediaWiki >= 1.26
 	'domain' => 'jamboree21',
 	// Forward cookies in the case of private wikis (string or false, optional)
