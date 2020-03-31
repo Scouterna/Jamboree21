@@ -405,19 +405,19 @@ $config = [
      * Ensure that you have the required PDO database driver installed
      * for your connection string.
      */
-    'database.dsn' => 'mysql:host=localhost;dbname=saml',
+    'database.dsn' => 'mysql:host=' . getenv('MEDIAWIKI_DB_HOST') . ';dbname=' . getenv('MEDIAWIKI_DB_NAME'),
 
     /*
      * SQL database credentials
      */
-    'database.username' => 'simplesamlphp',
-    'database.password' => 'secret',
+    'database.username' => getenv('MEDIAWIKI_DB_USER'),
+    'database.password' => getenv('MEDIAWIKI_DB_PASSWORD'),
     'database.options' => [],
 
     /*
      * (Optional) Table prefix
      */
-    'database.prefix' => '',
+    'database.prefix' => 'simpleSAMLphp',
 
     /*
      * (Optional) Driver options
@@ -1143,7 +1143,11 @@ $config = [
      *
      * The default datastore is 'phpsession'.
      */
-    'store.type'                    => 'phpsession',
+    'store.type' => 'sql',
+    'store.sql.dsn' => 'mysql:host=' . getenv('MEDIAWIKI_DB_HOST') . ';dbname=' . getenv('MEDIAWIKI_DB_NAME'),
+    'store.sql.username' => getenv('MEDIAWIKI_DB_USER'),
+    'store.sql.password' => getenv('MEDIAWIKI_DB_PASSWORD'),
+    'store.sql.prefix' => 'simpleSAMLphp',
 
     /*
      * The DSN the sql datastore should connect to.
@@ -1151,18 +1155,19 @@ $config = [
      * See http://www.php.net/manual/en/pdo.drivers.php for the various
      * syntaxes.
      */
-    'store.sql.dsn'                 => 'sqlite:/path/to/sqlitedatabase.sq3',
+    // 'store.sql.dsn'                 => 'sqlite:/path/to/sqlitedatabase.sq3',
+
 
     /*
      * The username and password to use when connecting to the database.
      */
-    'store.sql.username' => null,
-    'store.sql.password' => null,
+    //'store.sql.username' => null,
+    //'store.sql.password' => null,
 
     /*
      * The prefix we should use on our tables.
      */
-    'store.sql.prefix' => 'SimpleSAMLphp',
+    //'store.sql.prefix' => 'SimpleSAMLphp',
 
     /*
      * The hostname and port of the Redis datastore instance.
