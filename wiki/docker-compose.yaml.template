@@ -58,6 +58,8 @@ services:
       MEDIAWIKI_EMAIL: "apache@wiki.jamboree.se.staging.scouterna.net"
       MEDIAWIKI_SECRET_KEY: "jambopeedia"
       MEDIAWIKI_UPGRADE_KEY: "jambopeedia"
+      SAML_APP_ID: "https://wiki.internal.jamboree.se.webservices.scouterna.net"
+      SAML_IDP: "https://scoutid.se/simplesaml/saml2/idp/metadata.php"
       TEST_BASE_URL: "http://localhost"
       TEST_USER_PASSWORD: "adminadmin"
       TEST_USER_USERNAME: "Admin"

@@ -29,6 +29,9 @@ RUN set -eux; \
 		mbstring \
 		mysqli \
 		opcache \
+		mysqli \
+		pdo \
+		pdo_mysql \
 	; \
 	\
 	pecl install apcu-5.1.18; \
