@@ -17,6 +17,9 @@ services:
         source: ./LocalSettings.php
         target: /var/www/html/LocalSettings.php
       - type: bind
+        source: ./logo.png
+        target: /var/www/html/logo.png
+      - type: bind
         source: ./vendor/MobileFrontend
         target: /var/www/html/extensions/MobileFrontend
       - type: bind

@@ -95,6 +95,7 @@ RUN set -eux; \
 # install extensions
 COPY vendor/VisualEditor extensions/VisualEditor
 COPY LocalSettings.php LocalSettings.php
+COPY logo.png logo.png
 COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/MinervaNeue skins/MinervaNeue
 COPY vendor/simplesamlphp-1.18.4 simplesamlphp
