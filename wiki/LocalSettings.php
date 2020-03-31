@@ -192,15 +192,9 @@ $wgGroupPermissions['*']['autocreateaccount'] = true;
 
 $wgSimpleSAMLphp_InstallDir = 'simplesamlphp';
 $wgSimpleSAMLphp_AuthSourceId = 'default-sp';
-$wgSimpleSAMLphp_UsernameAttribute = [
-	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
-	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
-];
-$wgSimpleSAMLphp_EmailAttribute = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
-$wgSimpleSAMLphp_RealNameAttribute = [
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
-];
+$wgSimpleSAMLphp_UsernameAttribute = 'firstlast';
+$wgSimpleSAMLphp_EmailAttribute = 'email';
+$wgSimpleSAMLphp_RealNameAttribute = 'displayName';
 
 # Config pluggableauth
 

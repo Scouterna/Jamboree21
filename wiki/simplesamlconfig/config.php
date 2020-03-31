@@ -27,7 +27,7 @@ $config = [
      * external url, no matter where you come from (direct access or via the
      * reverse proxy).
      */
-    'baseurlpath' => 'https://wiki.internal.jamboree.se.webservices.scouterna.net/simplesaml/',
+    'baseurlpath' => getenv('MEDIAWIKI_BASE_URL') . '/simplesaml/',
 
     /*
      * The 'application' configuration array groups a set configuration options
