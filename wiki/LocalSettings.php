@@ -172,8 +172,10 @@ $wgVirtualRestConfig['modules']['parsoid'] = [
 # End of automatically generated settings.
 # Add more configuration options below.
 wfLoadExtension( 'MobileFrontend' );
-wfLoadExtension( 'PluggableAuth' );
-wfLoadExtension( 'SimpleSAMLphp' );
+if(getenv('SAML_APP_ID')) {
+    wfLoadExtension( 'PluggableAuth' );
+    wfLoadExtension( 'SimpleSAMLphp' );
+}
 wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
 
