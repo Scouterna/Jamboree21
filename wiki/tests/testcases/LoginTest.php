@@ -52,6 +52,10 @@ class LoginTest extends TestCase
 
         /* test 2nd response headers, part 1: http code */
         $this->assertArrayHasKey('http_code', $meta, 'No 2nd HTTP-code');
+        if(getenv('SAML_APP_ID')) {
+            $this->assertStringStartsWith('302', $meta['http_code'], "Bad 2nd HTTP-code, expected 302, got: '{$meta['http_code']}'");
+            return;
+        }
         $this->assertStringStartsWith('2', $meta['http_code'], "Bad 2nd HTTP-code, expected 200, got: '{$meta['http_code']}'");
 
         $regexpLoginToken = '#<input name="wpLoginToken" type="hidden" value="(.*)"/>#';
