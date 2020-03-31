@@ -108,3 +108,8 @@ COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
 
 COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
+
+# Patch Media-wiki, set 403-code on permission errors
+COPY patches /tmp/patches
+RUN sed 's/\x0D$//g' -i /var/www/html/includes/OutputPage.php /tmp/patches/OutputPage-403.patch
+RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.patch

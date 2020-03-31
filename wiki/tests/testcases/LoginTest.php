@@ -40,8 +40,7 @@ class LoginTest extends TestCase
 
         /* test 1st response headers, part 1: http code */
         $this->assertArrayHasKey('http_code', $meta, 'No 1st HTTP-code');
-        // TODO: re-enable test when problem is solved
-        //$this->assertStringStartsWith('403', $meta['http_code'], "Bad 1st HTTP-code, expected 403, got: '{$meta['http_code']}'");
+        $this->assertStringStartsWith('403', $meta['http_code'], "Bad 1st HTTP-code, expected 403, got: '{$meta['http_code']}'");
 
         /* check so we not leaking data */
         $this->assertStringNotContainsString('Test, page exists ', $page, 'Page content visible for non authenticated');
@@ -71,7 +70,7 @@ class LoginTest extends TestCase
         curl_setopt($c, CURLOPT_POSTFIELDS, $postData);
         curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
         /** @noinspection UnusedFunctionResultInspection we are only interested in the meta-data */
-        $page = curl_exec($c);
+        curl_exec($c);
         $meta = curl_getinfo($c);
         curl_setopt($c, CURLOPT_POST, 0);
         curl_setopt($c, CURLOPT_POSTFIELDS, null);
@@ -79,8 +78,6 @@ class LoginTest extends TestCase
 
         /* test 3th response headers, part 1: http code */
         $this->assertArrayHasKey('http_code', $meta, 'No 3th HTTP-code');
-  //      echo $page, PHP_EOL;
-//        var_dump($meta);
         $this->assertStringStartsWith('2', $meta['http_code'], "Bad 3th HTTP-code, expected 200, got: '{$meta['http_code']}'");
 
         /* Get testpage again, this with an authenticated user */
