@@ -67,9 +67,15 @@ spec:
               key: saml_secret_salt
               name: saml-credentials
         - name: SAML_APP_ID
-          value: https://wiki.internal.jamboree.se.webservices.scouterna.net
+          valueFrom:
+            secretKeyRef:
+              key: saml_app_id
+              name: saml-credentials
         - name: SAML_IDP
-          value: https://scoutid.se/simplesaml/saml2/idp/metadata.php
+          valueFrom:
+            secretKeyRef:
+              key: saml_idp
+              name: saml-credentials
         envFrom:
         - configMapRef:
             name: mediawiki-env
