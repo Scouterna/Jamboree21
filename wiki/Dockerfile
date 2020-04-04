@@ -111,6 +111,7 @@ COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
 
 COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
+COPY vendor/Renameuser extensions/Renameuser
 
 # Patch Media-wiki, set 403-code on permission errors
 COPY patches /tmp/patches
