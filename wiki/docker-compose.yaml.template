@@ -1,0 +1,80 @@
+version: "3.5"
+#networks:
+#  docker_web:
+#    external: true
+
+services:
+  wiki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wiki:dev
+    volumes:
+      - type: bind
+        source: ./vendor/VisualEditor
+        target: /var/www/html/extensions/VisualEditor
+      - type: bind
+        source: ./LocalSettings.php
+        target: /var/www/html/LocalSettings.php
+      - type: bind
+        source: ./logo.png
+        target: /var/www/html/logo.png
+      - type: bind
+        source: ./vendor/MobileFrontend
+        target: /var/www/html/extensions/MobileFrontend
+      - type: bind
+        source: ./vendor/MinervaNeue
+        target: /var/www/html/skins/MinervaNeue
+      - type: bind
+        source: ./vendor/simplesamlphp-1.18.4
+        target: /var/www/html/simplesamlphp
+      - type: bind
+        source: ./simplesamlconfig/config.php
+        target: /var/www/html/simplesamlphp/config/config.php
+      - type: bind
+        source: ./simplesamlconfig/saml20-idp-remote.php
+        target: /var/www/html/simplesamlphp/metadata/saml20-idp-remote.php
+      - type: bind
+        source: ./simplesamlconfig/authsources.php
+        target: /var/www/html/simplesamlphp/config/authsources.php
+      - type: bind
+        source: ./vendor/PluggableAuth
+        target: /var/www/html/extensions/PluggableAuth
+      - type: bind
+        source: ./vendor/SimpleSAMLphp
+        target: /var/www/html/extensions/SimpleSAMLphp
+    ports: # Expose also works in windows and mac, shared network only works in linux
+    - "8080:80"
+#    networks:
+#      docker_web:
+#        ipv4_address: 192.168.10.119 # w = 119
+    environment:
+      MEDIAWIKI_BASE_URL: "http://localhost:8080"
+      MEDIAWIKI_DB_HOST: wikidb
+      MEDIAWIKI_DB_NAME: "jambopeedia"
+      MEDIAWIKI_DB_PASSWORD: "jambopeedia"
+      MEDIAWIKI_DB_TYPE: "mysql"
+      MEDIAWIKI_DB_USER: "jambopeedia"
+      MEDIAWIKI_EMAIL: "apache@wiki.jamboree.se.staging.scouterna.net"
+      MEDIAWIKI_SECRET_KEY: "jambopeedia"
+      MEDIAWIKI_UPGRADE_KEY: "jambopeedia"
+      SAML_APP_ID: "https://wiki.internal.jamboree.se.webservices.scouterna.net"
+      SAML_IDP: "https://scoutid.se/simplesaml/saml2/idp/metadata.php"
+      TEST_BASE_URL: "http://localhost"
+      TEST_USER_PASSWORD: "adminadmin"
+      TEST_USER_USERNAME: "Admin"
+
+  wikidb:
+    image: mariadb:10
+    environment:
+      MYSQL_DATABASE: "jambopeedia"
+      MYSQL_USER: "jambopeedia"
+      MYSQL_PASSWORD: "jambopeedia"
+      MYSQL_ROOT_PASSWORD: "jambopeedia"
+    volumes:
+      - type: bind
+        source: ./tests/jambopeedia.sql
+        target: /docker-entrypoint-initdb.d/scoutiddb.struct.sql
+#    networks:
+#      docker_web:
+#        ipv4_address: 192.168.10.7

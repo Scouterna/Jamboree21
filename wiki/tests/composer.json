@@ -1,0 +1,13 @@
+{
+    "name": "scouterna/jambopeedia-tests",
+    "description": "Testing environment for jambopeedia.",
+    "type": "project",
+    "minimum-stability": "dev",
+    "require": {
+      "ext-curl": "*",
+      "php": ">=7.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    }
+}

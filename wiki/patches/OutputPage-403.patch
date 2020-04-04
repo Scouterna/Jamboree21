@@ -1,0 +1,11 @@
+diff -Nupr a/OutputPage.php b/OutputPage.php
+--- a/OutputPage.php	2020-03-31 17:45:08.074223041 +0200
++++ b/OutputPage.php	2020-03-31 17:50:46.529391505 +0200
+@@ -2735,6 +2735,7 @@ class OutputPage extends ContextSource {
+ 			$this->prepareErrorPage( $this->msg( 'permissionserrors' ) );
+ 			$this->addWikiTextAsInterface( $this->formatPermissionsErrorMessage( $errors, $action ) );
+ 		}
++		$this->setStatusCode(403);
+ 	}
+ 
+ 	/**

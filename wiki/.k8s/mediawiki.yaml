@@ -27,6 +27,10 @@ spec:
     spec:
       containers:
       - env:
+        - name: MEDIAWIKI_BASE_URL
+          value: "https://wiki.internal.jamboree.se.webservices.scouterna.net"
+        - name: MEDIAWIKI_EMAIL
+          value: "apache@wiki.jamboree.se.staging.scouterna.net"
         - name: MEDIAWIKI_DB_NAME
           valueFrom:
             secretKeyRef:
@@ -61,7 +65,7 @@ spec:
           valueFrom:
             secretKeyRef:
               key: saml_secret_salt
-              name: saml-credentials 
+              name: saml-credentials
         - name: SAML_APP_ID
           valueFrom:
             secretKeyRef:
