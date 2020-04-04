@@ -150,6 +150,7 @@ wfLoadSkin( 'Vector' );
 wfLoadExtension( 'MultimediaViewer' );
 wfLoadExtension( 'PdfHandler' );
 wfLoadExtension( 'WikiEditor' );
+wfLoadExtension( 'Renameuser' );
 
 # Visual Editor
 wfLoadExtension( 'VisualEditor' );
