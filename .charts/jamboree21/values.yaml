@@ -1,0 +1,7 @@
+environment: local
+wiki:
+  localsecrets: false
+  baseurl: https://wiki.internal.jamboree.se.webservices.scouterna.net
+  image: 
+  storage:
+    enabled: true

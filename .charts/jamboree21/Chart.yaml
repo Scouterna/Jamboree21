@@ -1,0 +1,5 @@
+apiVersion: v2
+name: jamboree21
+description: Support systems for Jamboree21
+version: 1.0.0
+appVersion: 0.0.1

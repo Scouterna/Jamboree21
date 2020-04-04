@@ -1,0 +1,112 @@
+{{- if .Values.wiki.storage.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations: {}
+  name: wikiimages
+  namespace: jamboree21
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  {{ if .Values.wiki.storage.classname }}
+  storageClassName: {{ .Values.wiki.storage.classname | default "default" }}
+  {{ end }}
+{{ end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: mediawiki
+  namespace: jamboree21
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mediawiki
+  template:
+    metadata:
+      labels:
+        app: mediawiki
+    spec:
+      containers:
+      - env:
+        - name: MEDIAWIKI_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              key: postgres_db
+              name: db-credentials
+        - name: MEDIAWIKI_DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: postgres_user
+              name: db-credentials
+        - name: MEDIAWIKI_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgres_password
+              name: db-credentials
+        - name: MEDIAWIKI_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: mediawiki_secret_key
+              name: mediawiki-secrets
+        - name: MEDIAWIKI_UPGRADE_KEY
+          valueFrom:
+            secretKeyRef:
+              key: mediawiki_upgrade_key
+              name: mediawiki-secrets
+        - name: SAML_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: saml_admin_password
+              name: saml-credentials
+        - name: SAML_SECRET_SALT
+          valueFrom:
+            secretKeyRef:
+              key: saml_secret_salt
+              name: saml-credentials 
+        - name: SAML_APP_ID
+          valueFrom:
+            secretKeyRef:
+              key: saml_app_id
+              name: saml-credentials
+        - name: SAML_IDP
+          valueFrom:
+            secretKeyRef:
+              key: saml_idp
+              name: saml-credentials
+        envFrom:
+        - configMapRef:
+            name: mediawiki-env
+        image: {{ .Values.wiki.image | default "wiki:latest" }}
+        {{ if (eq "local" .Values.environment) }}
+        imagePullPolicy: Never
+        {{ else }}
+        imagePullPolicy: Always
+        {{ end }}
+        name: wiki
+        volumeMounts:
+        - mountPath: /var/www/html/images
+          name: images
+      volumes:
+      - name: images
+        persistentVolumeClaim:
+          claimName: wikiimages
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  name: mediawiki
+  namespace: jamboree21
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: mediawiki
