@@ -25,6 +25,9 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $wgSitename = "Jamboree21";
 $wgMetaNamespace = "Meta";
 
+# Allow DISPLAYTITLE to contain anything, default is to restrict it to only format-changes.
+$wgRestrictDisplayTitle = false;
+
 ## The URL base path to the directory containing the wiki;
 ## defaults for all runtime URL paths are based off of this.
 ## For more information on customizing the URLs
@@ -36,22 +39,22 @@ $wgUsePathInfo = true;
 $wgScriptExtension = ".php";
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = "https://wiki.internal.jamboree.se.webservices.scouterna.net";
+$wgServer = getenv('MEDIAWIKI_BASE_URL');
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
 
 ## The URL path to the logo.  Make sure you change this from the default,
 ## or else you'll overwrite your logo when you upgrade!
-$wgLogo = "https://mrmanner.eu/files/scout/Scoutsymbolen_rgb_wiki.png";
+$wgLogo = '/logo.png';
 
 ## UPO means: this is also a user preference option
 
 $wgEnableEmail = false;
 $wgEnableUserEmail = true; # UPO
 
-$wgEmergencyContact = "apache@wiki.jamboree.se.staging.scouterna.net";
-$wgPasswordSender = "apache@wiki.jamboree.se.staging.scouterna.net";
+$wgEmergencyContact = getenv('MEDIAWIKI_EMAIL');
+$wgPasswordSender = getenv('MEDIAWIKI_EMAIL');
 
 $wgEnotifUserTalk = false; # UPO
 $wgEnotifWatchlist = false; # UPO
@@ -158,7 +161,7 @@ $wgDefaultUserOptions['visualeditor-editor'] = "visualeditor";
 $wgVisualEditorAllowLossySwitching=false;
 $wgVirtualRestConfig['modules']['parsoid'] = [
 	// URL to the Parsoid instance - use port 8142 if you use the Debian package - the parameter 'URL' was first used but is now deprecated (string)
-	'url' => 'https://wiki.internal.jamboree.se.webservices.scouterna.net/parsoid',
+	'url' => getenv('MEDIAWIKI_BASE_URL') . '/parsoid',
 	// Parsoid "domain" (string, optional) - MediaWiki >= 1.26
 	'domain' => 'jamboree21',
 	// Forward cookies in the case of private wikis (string or false, optional)
@@ -175,8 +178,10 @@ $wgVirtualRestConfig['modules']['parsoid'] = [
 # End of automatically generated settings.
 # Add more configuration options below.
 wfLoadExtension( 'MobileFrontend' );
-wfLoadExtension( 'PluggableAuth' );
-wfLoadExtension( 'SimpleSAMLphp' );
+if(getenv('SAML_APP_ID')) {
+    wfLoadExtension( 'PluggableAuth' );
+    wfLoadExtension( 'SimpleSAMLphp' );
+}
 wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
 
@@ -193,15 +198,9 @@ $wgGroupPermissions['*']['autocreateaccount'] = true;
 
 $wgSimpleSAMLphp_InstallDir = 'simplesamlphp';
 $wgSimpleSAMLphp_AuthSourceId = 'default-sp';
-$wgSimpleSAMLphp_UsernameAttribute = [
-	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
-	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
-];
-$wgSimpleSAMLphp_EmailAttribute = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
-$wgSimpleSAMLphp_RealNameAttribute = [
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
-];
+$wgSimpleSAMLphp_UsernameAttribute = 'firstlast';
+$wgSimpleSAMLphp_EmailAttribute = 'email';
+$wgSimpleSAMLphp_RealNameAttribute = 'displayName';
 
 # Config pluggableauth
 

@@ -29,6 +29,9 @@ RUN set -eux; \
 		mbstring \
 		mysqli \
 		opcache \
+		mysqli \
+		pdo \
+		pdo_mysql \
 	; \
 	\
 	pecl install apcu-5.1.18; \
@@ -95,6 +98,7 @@ RUN set -eux; \
 # install extensions
 COPY vendor/VisualEditor extensions/VisualEditor
 COPY LocalSettings.php LocalSettings.php
+COPY logo.png logo.png
 COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/MinervaNeue skins/MinervaNeue
 COPY vendor/simplesamlphp-1.18.4 simplesamlphp
@@ -107,3 +111,8 @@ COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
 
 COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
+
+# Patch Media-wiki, set 403-code on permission errors
+COPY patches /tmp/patches
+RUN sed 's/\x0D$//g' -i /var/www/html/includes/OutputPage.php /tmp/patches/OutputPage-403.patch
+RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.patch
