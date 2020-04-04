@@ -195,12 +195,17 @@ $wgGroupPermissions['*']['createaccount'] = true;
 $wgGroupPermissions['*']['autocreateaccount'] = true;
 
 # Config simplesamlphp
-
 $wgSimpleSAMLphp_InstallDir = 'simplesamlphp';
 $wgSimpleSAMLphp_AuthSourceId = 'default-sp';
-$wgSimpleSAMLphp_UsernameAttribute = 'firstlast';
-$wgSimpleSAMLphp_EmailAttribute = 'email';
-$wgSimpleSAMLphp_RealNameAttribute = 'displayName';
+if(strpos(getenv('SAML_IDP'), 'https://scoutid.se') === 0) {
+    $wgSimpleSAMLphp_UsernameAttribute = 'firstlast';
+    $wgSimpleSAMLphp_EmailAttribute = 'email';
+    $wgSimpleSAMLphp_RealNameAttribute = 'displayName';
+} else {
+    $wgSimpleSAMLphp_UsernameAttribute = 'http://schemas.microsoft.com/identity/claims/displayname';
+    $wgSimpleSAMLphp_EmailAttribute = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
+    $wgSimpleSAMLphp_RealNameAttribute = 'http://schemas.microsoft.com/identity/claims/displayname';
+}
 
 # Config pluggableauth
 
