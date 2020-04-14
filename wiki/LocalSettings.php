@@ -187,7 +187,7 @@ wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
 
 # MORE DEBUGGING
-$wgDebugLogFile = "/var/log/mediawiki/debug-{$wgDBname}.log";
+$wgDebugLogFile = "/dev/stdout";
 
 # Configure user rights
 $wgGroupPermissions['*']['edit'] = false;
