@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16"
+		]
+	},
+	"mnss-desc": "Include suggerimenti da tutti i namespace di contenuti nella casella di ricerca, mostrando da quale namespace deriva ogni suggerimento"
+}

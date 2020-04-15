@@ -132,6 +132,13 @@ $wgWhitelistRead = array(
 $wgGroupPermissions['*']['edit'] = false;
 $wgGroupPermissions['*']['read'] = false;
 
+
+## Search more than just articles
+$wgNamespacesToBeSearchedDefault[NS_CATEGORY] = true;
+$wgContentNamespaces = [ NS_MAIN, NS_HELP, NS_PROJECT, NS_CATEGORY ];
+wfLoadExtension( 'MixedNamespaceSearchSuggestions' );
+
+
 ## Default skin: you can change the default skin. Use the internal symbolic
 ## names, ie 'vector', 'monobook':
 $wgDefaultSkin = "vector";
