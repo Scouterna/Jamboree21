@@ -135,7 +135,8 @@ $wgGroupPermissions['*']['read'] = false;
 
 ## Search more than just articles
 $wgNamespacesToBeSearchedDefault[NS_CATEGORY] = true;
-$wgContentNamespaces = [ NS_MAIN, NS_HELP, NS_PROJECT, NS_CATEGORY ];
+$wgNamespacesToBeSearchedDefault[NS_USER] = true;
+$wgContentNamespaces = [ NS_MAIN, NS_HELP, NS_PROJECT, NS_CATEGORY, NS_USER ];
 wfLoadExtension( 'MixedNamespaceSearchSuggestions' );
 
 
