@@ -1,0 +1,38 @@
+{
+	"name": "MixedNamespaceSearchSuggestions",
+	"version": "2017-11-08",
+	"author": "Niklas Laxström",
+	"url": "https://www.mediawiki.org/wiki/Extension:MixedNamespaceSearchSuggestions",
+	"descriptionmsg": "mnss-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.29.0"
+	},
+	"Hooks": {
+		"BeforePageDisplay": "MixedNamespaceSearchSuggestionsHooks::onBeforePageDisplay"
+	},
+	"MessagesDirs": {
+		"MNSS": [
+			"i18n"
+		]
+	},
+	"AutoloadClasses": {
+		"MixedNamespaceSearchSuggestionsHooks": "MixedNamespaceSearchSuggestionsHooks.php"
+	},
+	"ResourceModules": {
+		"ext.mnss.search": {
+			"styles": "resources/ext.mnss.search.less",
+			"scripts": "resources/ext.mnss.search.js",
+			"dependencies": [
+				"mediawiki.searchSuggest",
+				"mediawiki.Title"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "MixedNamespaceSearchSuggestions"
+	},
+	"manifest_version": 2
+}
