@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: facelist
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: facelist
+    spec:
+      containers:
+        image: %IMAGE%
+        imagePullPolicy: Always
+        name: facelist
+        volumeMounts:
+          - mountPath: "/"
+            name: facelist.yaml
+            readOnly: true
+      volumes:
+        - name: facelist.yaml
+          secret:
+            secretName: facelist-config
