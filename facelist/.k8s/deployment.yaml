@@ -16,9 +16,9 @@ spec:
           name: facelist
           volumeMounts:
             - mountPath: "/"
-              name: facelist.yaml
+              name: facelist-config
               readOnly: true
       volumes:
-        - name: facelist.yaml
+        - name: facelist-config
           secret:
             secretName: facelist-config
