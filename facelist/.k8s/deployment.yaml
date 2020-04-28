@@ -13,9 +13,11 @@ spec:
       containers:
         - image: %IMAGE%
           imagePullPolicy: Always
+          command: ["/facelist"]
+          args: ["--config=/etc/facelist/facelist.yaml"]
           name: facelist
           volumeMounts:
-            - mountPath: "/"
+            - mountPath: "/etc/facelist/"
               name: facelist-config
               readOnly: true
       volumes:
