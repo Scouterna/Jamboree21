@@ -1,0 +1,3 @@
+[submodule "facelist/facelist"]
+	path = facelist/facelist
+	url = https://github.com/zentabit/facelist.git
