@@ -10,6 +10,7 @@ jobs:
       vmImage: ubuntu-18.04
     steps:
       - checkout: self
+        submodules: true
         persistCredentials: true
       - template: check-update-status.step.yaml  
         parameters:
