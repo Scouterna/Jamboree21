@@ -1,6 +1,10 @@
 parameters:
-  serviceName: ''
-  subPath: ''
+  - name: serviceName
+    type: string
+    default: ''
+  - name: subPath
+    type: string
+    default: ''
 
 steps:
   - bash: |
@@ -17,7 +21,7 @@ steps:
     displayName: Push parsoid docker image
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - bash: |
-      ${{ format('sed -i .bak .k8s/parsoid.yaml \
+      ${{ format('sed -i .k8s/parsoid.yaml \
         -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     workingDirectory: ${{ parameters.subPath }}
