@@ -1,11 +1,12 @@
 parameters:
   serviceName: ''
+  subPath: ''
 
 steps:
   - bash: |
       ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
-    workingDirectory: wiki
-    displayName: Build mediawiki docker image
+    workingDirectory: ${{ parameter.subPath }}
+    displayName: Build parsoid docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - task: Docker@2
     inputs:
@@ -13,15 +14,15 @@ steps:
       repository: ${{ parameters.serviceName }}
       command: 'push'
       tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
-    displayName: Push mediawiki docker image
+    displayName: Push parsoid docker image
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - bash: |
-      ${{ format('sed -i .bak k8s/mediawiki.yaml \
+      ${{ format('sed -i .bak .k8s/parsoid.yaml \
         -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
-      ArtifactName: 'j21wiki-k8s'
+      ArtifactName: 'j21parsoid-k8s'
       publishLocation: 'Container'
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
