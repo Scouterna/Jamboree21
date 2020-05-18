@@ -19,6 +19,9 @@ metadata:
   namespace: jamboree21
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
   template:
     metadata:
       labels:
