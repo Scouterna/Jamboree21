@@ -20,6 +20,8 @@ steps:
       ${{ format('sed -i .bak .k8s/parsoid.yaml \
         -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    workingDirectory: ${{ parameters.subPath }}
+    displayName: Make kubernetes manifest from template
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
