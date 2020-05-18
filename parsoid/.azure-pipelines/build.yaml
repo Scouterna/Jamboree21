@@ -5,7 +5,7 @@ parameters:
 steps:
   - bash: |
       ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
-    workingDirectory: ${{ parameter.subPath }}
+    workingDirectory: ${{ parameters.subPath }}
     displayName: Build parsoid docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - task: Docker@2
