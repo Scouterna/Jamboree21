@@ -75,7 +75,7 @@ services:
         #defaultAPIProxyURI: 'http://proxy.example.org:8080'
 
         # Enable debug mode (prints extra debugging messages)
-        #debug: true
+        debug: true
 
         # Use the PHP preprocessor to expand templates via the MW API (default true)
         #usePHPPreProcessor: false
@@ -91,11 +91,11 @@ services:
         #allowCORS: 'some.domain.org'
 
         # Allow override of port/interface:
-        serverPort: 8000
+        #serverPort: 8000
         serverInterface: '0.0.0.0'
 
         # Enable linting of some wikitext errors to the log
-        #linting: true
+        linting: true
         #linter:
         #  sendAPI: false # Send lint errors to MW API instead of to the log
         #  apiSampling: 10 # Sampling rate (1 / 10)
