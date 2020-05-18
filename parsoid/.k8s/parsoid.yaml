@@ -12,7 +12,7 @@ spec:
         app: parsoid
     spec:
       containers:
-        - image: scouterna.azurecr.io/parsoid:nujavlar5
+        - image: %IMAGE%
           imagePullPolicy: Always
           name: parsoid
           securityContext:
