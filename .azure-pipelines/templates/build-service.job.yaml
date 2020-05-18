@@ -1,7 +1,13 @@
 parameters:
-  serviceName: ''
-  subPath: ''
-  stepsTemplate: ''
+  - name: serviceName
+    type: string
+    default: ''
+  - name: subPath
+    type: string
+    default: ''
+  - name: stepsTemplate
+    type: string
+    default: ''
 
 jobs:
   - job: ${{ format('build_{0}', parameters.serviceName) }}
@@ -19,7 +25,9 @@ jobs:
       - template:  ${{ format('{0}/{1}', variables.Build.SourcesDirectory, parameters.stepsTemplate) }}
         parameters:
           serviceName: ${{ parameters.serviceName }}
+          subPath: ${{ parameters.subPath }}
       - template: tag-build.step.yaml
         parameters:
           serviceName: ${{ parameters.serviceName }}
+          subPath: ${{ parameters.subPath }}
 
