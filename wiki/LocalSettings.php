@@ -227,7 +227,18 @@ $wgPluggableAuth_Class = 'SimpleSAMLphp';
 
 # Allow more file types
 $wgFileExtensions = array_merge( $wgFileExtensions,
-	array( 'doc', 'jpg',  'mpp', 'odg', 'odp', 'ods', 'odt', 'pdf', 'ppt', 
-	'tiff', 'xls', 'xlsx'
+	array( 
+		'doc', 
+		'jpg',  
+		'mpp', 
+		'odg', 
+		'odp', 
+		'ods', 
+		'odt', 
+		'pdf', 
+		'ppt', 
+		'tiff', 
+		'xls', 
+		'xlsx',
 	)
 );
