@@ -224,10 +224,10 @@ $wgPluggableAuth_EnableLocalProperties = true;
 $wgPluggableAuth_ButtonLabelMessage = 'Logga in';
 $wgPluggableAuth_Class = 'SimpleSAMLphp';
 
+
 # Allow more file types
 $wgFileExtensions = array_merge( $wgFileExtensions,
-    array( 'doc', 'xls', 'mpp', 'pdf', 'ppt', 'xlsx', 'jpg', 
-        'tiff', 'odt', 'odg', 'ods', 'odp'
-    )
+	array( 'doc', 'jpg',  'mpp', 'odg', 'odp', 'ods', 'odt', 'pdf', 'ppt', 
+	'tiff', 'xls', 'xlsx'
+	)
 );
-
