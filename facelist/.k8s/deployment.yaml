@@ -5,6 +5,9 @@ metadata:
   name: facelist
 spec:
   replicas: 2
+  selector:
+    matchLabels:
+      app: facelist
   template:
     metadata:
       labels:
@@ -18,7 +21,12 @@ spec:
             - mountPath: "/"
               name: facelist-config
               readOnly: true
+            - mountPath: /img
+              name: img
       volumes:
         - name: facelist-config
           secret:
             secretName: facelist-config
+        - name: img
+          persistentVolumeClaim:
+            claimName: img
