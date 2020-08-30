@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Esketti",
+			"McDutchie",
+			"JaapDeKleine",
+			"Siebrand",
+			"Mar(c)"
+		]
+	},
+	"auth_remoteuser-desc": "Meldt gebruikers automatisch aan met behulp van de omgevingsvariabele <code>REMOTE_USER</code>"
+}

@@ -104,6 +104,7 @@ COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/MinervaNeue skins/MinervaNeue
 COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSuggestions
 COPY vendor/simplesamlphp-1.18.4 simplesamlphp
+COPY vendor/Auth_remoteuser extensions/Auth_remoteuser
 
 # SimpleSAML setup
 RUN ln -sf simplesamlphp/www simplesaml
@@ -119,3 +120,5 @@ COPY vendor/Renameuser extensions/Renameuser
 COPY patches /tmp/patches
 RUN sed 's/\x0D$//g' -i /var/www/html/includes/OutputPage.php /tmp/patches/OutputPage-403.patch
 RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.patch
+
+RUN	chown -R www-data:www-data extensions skins cache images

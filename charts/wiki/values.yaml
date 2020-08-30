@@ -1,0 +1,7 @@
+---
+image: scouterna.azurecr.io/wiki
+storage:
+  data:
+    capacity: 10Gi
+  images:
+    capacity: 1Gi

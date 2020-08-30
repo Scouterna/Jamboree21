@@ -1,0 +1,126 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: mediawiki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mediawiki
+  template:
+    metadata:
+      labels:
+        app: mediawiki
+    spec:
+      containers:
+        - env:
+            - name: MEDIAWIKI_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_db
+                  name: db-credentials
+            - name: MEDIAWIKI_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_user
+                  name: db-credentials
+            - name: MEDIAWIKI_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_password
+                  name: db-credentials
+            - name: MEDIAWIKI_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: mediawiki_secret_key
+                  name: mediawiki-secrets
+            - name: MEDIAWIKI_UPGRADE_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: mediawiki_upgrade_key
+                  name: mediawiki-secrets
+            - name: SAML_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: saml_admin_password
+                  name: saml-credentials
+            - name: SAML_SECRET_SALT
+              valueFrom:
+                secretKeyRef:
+                  key: saml_secret_salt
+                  name: saml-credentials
+            - name: SAML_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  key: saml_app_id
+                  name: saml-credentials
+            - name: SAML_IDP
+              valueFrom:
+                secretKeyRef:
+                  key: saml_idp
+                  name: saml-credentials
+          envFrom:
+            - configMapRef:
+                name: mediawiki-env
+                image: {{ .Values.image | default "scouterna.azurecr.io/wiki" }}:{{ .Chart.AppVersion }}
+          imagePullPolicy: Always
+          name: wiki
+          volumeMounts:
+            - mountPath: /var/www/html/images
+              name: images
+      volumes:
+        - name: images
+          persistentVolumeClaim:
+            claimName: wikiimages
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_db
+                  name: db-credentials
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_user
+                  name: db-credentials
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_password
+                  name: db-credentials
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgres_password
+                  name: db-credentials
+          image: mariadb:10
+          imagePullPolicy: IfNotPresent
+          name: mariadb
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: wikidata
+      volumes:
+        - name: wikidata
+          persistentVolumeClaim:
+            claimName: wikidata
