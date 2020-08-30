@@ -1,8 +1,8 @@
 ---
 image: scouterna.azurecr.io/wiki
-domain: wiki.21.jamboree.se.develop.webservices.scouterna.net
+domain: wiki.internal.jamboree.se.webservices.scouterna.net
 storage:
   data:
-    capacity: 2Gi
+    capacity: 16Gi
   images:
     capacity: 1Gi

@@ -64,7 +64,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: mediawiki-env
-          image: {{ .Values.image }}
+                image: {{ .Values.image | default "scouterna.azurecr.io/wiki" }}:{{ .Chart.AppVersion }}
           imagePullPolicy: Always
           name: wiki
           volumeMounts:

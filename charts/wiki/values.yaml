@@ -1,5 +1,5 @@
-image: mediawiki:dev
-domain: wiki.internal.jamboree.se.staging.webservices.scouterna.net
+---
+image: scouterna.azurecr.io/wiki
 storage:
   data:
     capacity: 10Gi
