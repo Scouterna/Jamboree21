@@ -191,10 +191,8 @@ $wgVirtualRestConfig['modules']['parsoid'] = [
 # End of automatically generated settings.
 # Add more configuration options below.
 wfLoadExtension( 'MobileFrontend' );
-if(getenv('SAML_APP_ID')) {
-    wfLoadExtension( 'PluggableAuth' );
-    wfLoadExtension( 'SimpleSAMLphp' );
-}
+wfLoadExtension( 'Auth_remoteuser' );
+
 wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
 
@@ -204,30 +202,14 @@ $wgDebugLogFile = "/dev/stdout";
 # Configure user rights
 $wgGroupPermissions['*']['edit'] = false;
 $wgGroupPermissions['user']['edit'] = true;
-$wgGroupPermissions['*']['createaccount'] = true;
+$wgGroupPermissions['*']['createaccount'] = false;
 $wgGroupPermissions['*']['autocreateaccount'] = true;
 
-# Config simplesamlphp
-$wgSimpleSAMLphp_InstallDir = 'simplesamlphp';
-$wgSimpleSAMLphp_AuthSourceId = 'default-sp';
-if(strpos(getenv('SAML_IDP'), 'https://scoutid.se') === 0) {
-    $wgSimpleSAMLphp_UsernameAttribute = 'firstlast';
-    $wgSimpleSAMLphp_EmailAttribute = 'email';
-    $wgSimpleSAMLphp_RealNameAttribute = 'displayName';
-} else {
-    $wgSimpleSAMLphp_UsernameAttribute = 'http://schemas.microsoft.com/identity/claims/displayname';
-    $wgSimpleSAMLphp_EmailAttribute = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
-    $wgSimpleSAMLphp_RealNameAttribute = 'http://schemas.microsoft.com/identity/claims/displayname';
-}
-
-# Config pluggableauth
-
-$wgPluggableAuth_EnableAutoLogin = false;
-$wgPluggableAuth_EnableLocalLogin = false;
-$wgPluggableAuth_EnableLocalProperties = true;
-$wgPluggableAuth_ButtonLabelMessage = 'Logga in';
-$wgPluggableAuth_Class = 'SimpleSAMLphp';
-
+# Configure remote user
+$wgAuthRemoteuserUserName = [$_SERVER[ 'HTTP_X_OAUTH_NAME' ]];
+$wgAuthRemoteUserPrefsForced = [
+	'email' => $_SERVER[ 'HTTP_X_OAUTH_EMAIL' ]
+];
 
 # Allow more file types
 $wgFileExtensions = array_merge( $wgFileExtensions,
