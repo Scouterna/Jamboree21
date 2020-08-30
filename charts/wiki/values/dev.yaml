@@ -1,0 +1,8 @@
+---
+image: scouterna.azurecr.io/wiki:remoteauth-4
+domain: wiki.21.jamboree.se.develop.webservices.scouterna.net
+storage:
+  data:
+    capacity: 2Gi
+  images:
+    capacity: 1Gi

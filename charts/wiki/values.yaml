@@ -1,0 +1,7 @@
+image: mediawiki:dev
+domain: wiki.internal.jamboree.se.staging.webservices.scouterna.net
+storage:
+  data:
+    capacity: 10Gi
+  images:
+    capacity: 1Gi
