@@ -25,7 +25,7 @@ steps:
       command: package
       chartPath: ${{ format(charts/'{0}', parameters.serviceName) }}
       destination: $(Build.ArtifactStagingDirectory)
-      arguments: ['--app-version', '$(Build.SourceBranchName)-$(Build.SourceVersion)']
+      arguments: '--app-version $(Build.SourceBranchName)-$(Build.SourceVersion)'
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
