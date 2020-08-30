@@ -119,3 +119,5 @@ COPY vendor/Renameuser extensions/Renameuser
 COPY patches /tmp/patches
 RUN sed 's/\x0D$//g' -i /var/www/html/includes/OutputPage.php /tmp/patches/OutputPage-403.patch
 RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.patch
+
+RUN	chown -R www-data:www-data extensions skins cache images
