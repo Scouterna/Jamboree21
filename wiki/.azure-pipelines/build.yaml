@@ -23,7 +23,7 @@ steps:
     displayName: Helm package
     inputs:
       command: package
-      chartPath: ${{ format(charts/'{0}', parameters.serviceName) }}
+      chartPath: ${{ format('charts/{0}', parameters.serviceName) }}
       destination: $(Build.ArtifactStagingDirectory)
       arguments: '--app-version $(Build.SourceBranchName)-$(Build.SourceVersion)'
   - task: PublishBuildArtifacts@1
@@ -34,7 +34,7 @@ steps:
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: ${{ format(charts/'{0}/values/', parameters.serviceName) }}
+      PathtoPublish: ${{ format('charts/{0}/values/', parameters.serviceName) }}
       ArtifactName: 'j21wiki-chartvalues'
       publishLocation: 'Container'
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
