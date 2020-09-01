@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    plugins.konghq.com: office-oauth
+  name: mediawiki
+spec:
+  rules:
+  - host: {{ .Values.domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: parsoid
+          servicePort: 8142
+        path: /parsoid
+      - backend:
+          serviceName: mediawiki
+          servicePort: 80
+        path: /
+  tls:
+  - hosts:
+    - {{ .Values.domain }}
+    secretName: wiki-tls
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongIngress
+metadata:
+  name: mediawiki
+route:
+  strip_path: true

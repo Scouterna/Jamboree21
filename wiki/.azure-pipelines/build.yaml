@@ -1,6 +1,6 @@
+---
 parameters:
   serviceName: ''
-
 steps:
   - bash: |
       ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
@@ -15,15 +15,26 @@ steps:
       tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
     displayName: Push mediawiki docker image
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  - bash: |
-      ${{ format('sed -i .k8s/mediawiki.yaml \
-        -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
-    workingDirectory: wiki
-    displayName: Make kubernetes manifest from template
+  - task: HelmInstaller@1
+    displayName: Helm installer
+    inputs:
+      helmVersionToInstall: latest
+  - task: HelmDeploy@0
+    displayName: Helm package
+    inputs:
+      command: package
+      chartPath: ${{ format('charts/{0}', parameters.serviceName) }}
+      destination: $(Build.ArtifactStagingDirectory)
+      arguments: '--app-version $(Build.SourceBranchName)-$(Build.SourceVersion)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)
+      ArtifactName: 'j21wiki-chart'
+      publishLocation: 'Container'
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
-      ArtifactName: 'j21wiki-k8s'
+      PathtoPublish: ${{ format('charts/{0}/values/', parameters.serviceName) }}
+      ArtifactName: 'j21wiki-chartvalues'
       publishLocation: 'Container'
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
