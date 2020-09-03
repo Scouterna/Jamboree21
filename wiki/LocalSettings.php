@@ -210,6 +210,9 @@ $wgAuthRemoteuserUserName = [$_SERVER[ 'HTTP_X_OAUTH_NAME' ]];
 $wgAuthRemoteUserPrefsForced = [
 	'email' => $_SERVER[ 'HTTP_X_OAUTH_EMAIL' ]
 ];
+$wgAuthRemoteuserUserNameReplaceFilter = [
+	'^(.*)$'              => '\L$1'
+];
 
 # Allow more file types
 $wgFileExtensions = array_merge( $wgFileExtensions,
