@@ -14,7 +14,7 @@ steps:
       command: 'push'
       tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
     displayName: Push mediawiki docker image
-    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
   - task: HelmInstaller@1
     displayName: Helm installer
     inputs:
@@ -31,10 +31,10 @@ steps:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
       ArtifactName: 'j21wiki-chart'
       publishLocation: 'Container'
-    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('charts/{0}/values/', parameters.serviceName) }}
       ArtifactName: 'j21wiki-chartvalues'
       publishLocation: 'Container'
-    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
