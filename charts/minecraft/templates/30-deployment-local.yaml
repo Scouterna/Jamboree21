@@ -36,7 +36,7 @@ spec:
           - name: MOTD
             value: {{ .Values.minecraft.motd | default "helo" }}
           - name: ALLOW_FLIGHT
-            value: {{ .Values.minecraft.flight | "FALSE" }}
+            value: {{ .Values.minecraft.flight | default "FALSE" }}
         ports:
         - containerPort: 25565
           name: minecraft
