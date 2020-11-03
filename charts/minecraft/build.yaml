@@ -11,7 +11,7 @@ steps:
     displayName: Helm lint
     inputs:
       targetType: 'inline'
-      script: helm lint ${{ parameters.subPath }}
+      script: helm lint ${{ parameters.subPath }} --values ${{ parameters.subPath }}/values/production.yaml
   - task: Bash@3
     displayName: Helm upgrade
     inputs:
