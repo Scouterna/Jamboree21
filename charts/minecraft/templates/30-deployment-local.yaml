@@ -32,11 +32,11 @@ spec:
           - name:  EULA
             value: 'TRUE'
           - name: MODE
-            value: {{ .Values.minecraft.mode | default "survival" }}
+            value: {{ .Values.mode | default "survival" }}
           - name: MOTD
-            value: {{ .Values.minecraft.motd | default "helo" }}
+            value: {{ .Values.motd | default "helo" }}
           - name: ALLOW_FLIGHT
-            value: {{ .Values.minecraft.flight | "FALSE" }}
+            value: {{ .Values.flight | "FALSE" }}
         ports:
         - containerPort: 25565
           name: minecraft
