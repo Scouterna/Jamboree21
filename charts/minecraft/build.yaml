@@ -1,0 +1,20 @@
+---
+parameters:
+  serviceName: ''
+  subPath: ''
+steps:
+  - task: HelmInstaller@1
+    displayName: Helm installer
+    inputs:
+      helmVersionToInstall: latest
+  - task: Bash@3
+    displayName: Helm lint
+    inputs:
+      targetType: 'inline'
+      script: helm lint ${{ parameters.subPath }}
+  - task: Bash@3
+    displayName: Helm upgrade
+    inputs:
+      targetType: 'inline'
+      script: helm upgrade --install minecraft ${{ parameters.subPath }} --values ${{ parameters.subPath }}/values/production.yaml 
+
