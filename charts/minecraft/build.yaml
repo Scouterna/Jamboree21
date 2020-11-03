@@ -12,9 +12,16 @@ steps:
     inputs:
       targetType: 'inline'
       script: helm lint ${{ parameters.subPath }} --values ${{ parameters.subPath }}/values/production.yaml
-  - task: Bash@3
+  - task: HelmDeploy@0
     displayName: Helm upgrade
     inputs:
-      targetType: 'inline'
-      script: helm upgrade --install minecraft ${{ parameters.subPath }} --values ${{ parameters.subPath }}/values/production.yaml
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceConnection: 'minecraft'
+      namespace: 'minecraft'
+      command: upgrade
+      chartType: filepath
+      chartPath: charts/minecraft
+      releaseName: Minecraft
+      install: true
+      waitForExecution: false
     condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
