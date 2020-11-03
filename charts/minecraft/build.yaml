@@ -21,7 +21,7 @@ steps:
       command: upgrade
       chartType: filepath
       chartPath: charts/minecraft
-      releaseName: Minecraft
+      releaseName: minecraft
       install: true
       waitForExecution: false
     condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
