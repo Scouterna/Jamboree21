@@ -21,3 +21,8 @@ jobs:
       serviceName: facelist
       subPath: facelist
       stepsTemplate: facelist/.azure-pipelines/build.yaml
+  - template: .azure-pipelines/templates/build-service.job.yaml
+    parameters:
+      serviceName: minecraft
+      subPath: charts/minecraft
+      stepsTemplate: charts/minecraft/build.yaml
