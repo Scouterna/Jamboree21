@@ -1,6 +1,6 @@
 storageClass: azure-disk
 
 mode: "survival"
-flight: 'FALSE'
+flight: "FALSE"
 motd: "Välkommen till Jamboree22 Minecraft edition"
 
