@@ -4,3 +4,5 @@ mode: "survival"
 flight: "FALSE"
 motd: "Välkommen till Jamboree22 Minecraft edition"
 
+domain: minecraft.webservices.scouterna.net
+name: minecraft-server
