@@ -6,7 +6,7 @@ metadata:
   labels:
     app: minecraft-server
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - port: 25565
       targetPort: 25565
