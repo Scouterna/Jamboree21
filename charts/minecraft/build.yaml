@@ -23,5 +23,6 @@ steps:
       chartPath: charts/minecraft
       releaseName: minecraft
       install: true
+      valueFile: values/production.yaml
       waitForExecution: false
     condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
