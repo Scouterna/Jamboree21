@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"David1010",
+			"MIKHEIL"
+		]
+	},
+	"masseditregex-before": "მანამდე",
+	"masseditregex-after": "შემდეგ",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|ცვლილება|ცვლილება}}",
+	"masseditregex-page-not-exists": "$1 არ არსებობს",
+	"masseditregex-hint-headreplace": "ჩანაცვლება",
+	"masseditregex-exprnomatch": "„$1“ გამოხატვას არცერთი გვერდი არ შეესაბამება.",
+	"masseditregex-badregex": "არასწორი რეგულარული გამოხატვა:",
+	"masseditregex-editfailed": "რედაქტირების შეცდომა:",
+	"masseditregex-tooltip-execute": "ამ ცვლილების ყველა გვერდისათვის გამოყენება",
+	"right-masseditregex": "გვერდის შინაარსის შეცვლა, რეგულარული გამოხატვის საშუალებით",
+	"masseditregex-blocked": "თქვენი ანგარიში დაბლოკილია",
+	"masseditregex-js-clientside": "ბრაუზერში შესრულება",
+	"masseditregex-js-jobdone": "დასრულებულია"
+}

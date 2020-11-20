@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ильнар"
+		]
+	},
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|үзгәртү}}"
+}

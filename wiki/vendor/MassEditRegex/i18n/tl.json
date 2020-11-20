@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"AnakngAraw",
+			"Leeheonjin"
+		]
+	},
+	"action-masseditregex": "magsagawa ng isang buntunang pamamatnugot",
+	"masseditregex": "Maramihang pamamatnugot na ginagamitan ng pangkaraniwang mga pagsasaad",
+	"masseditregex-desc": "Gamitin ang pangkaraniwang mga pagsasaad sa [[Special:MassEditRegex|pagpapatnugot ng maraming mga pahina sa loob ng isang pagsasagawa]]",
+	"masseditregextext": "Magpasok ng isa o mahigit pang pangkaraniwang mga pagsasaad (isa bawat guhit) para sa pagtutugma, at isa o mahigit pang mga pagsasaad upang pampalit. Ang unang pagtutugma ng pagsasaad, kung matagumpay, ay papalitan ng unang pamalit na pagtutugma, at mga kasunod pa. Tingnan ang [http://php.net/manual/tl/function.preg-replace.php the PHP function preg_replace()] para sa mga detalye.",
+	"masseditregex-pagelisttxt": "Mga pahinang pamamatnugutan (huwag gamitin ang isang puwang na pampangalan: unlapi)",
+	"masseditregex-matchtxt": "Hanapin ang:",
+	"masseditregex-replacetxt": "Palitan ng:",
+	"masseditregex-executebtn": "Isakatuparan",
+	"masseditregex-err-nopages": "Dapat kang tumukoy ng kahit na isang pahinang babaguhin.",
+	"masseditregex-before": "Dati",
+	"masseditregex-after": "Pagkaraan",
+	"masseditregex-max-preview-diffs": "Nakahangga ang paunang-tingin sa unang $1 {{PLURAL:$1|pagtugma|mga pagtutugma}}.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|pagbabago|mga pagbabago}}",
+	"masseditregex-page-not-exists": "Hindi umiiral ang $1",
+	"masseditregex-num-articles-changed": "$1 napatnugot na {{PLURAL:$1|pahina|mga pahina}}",
+	"masseditregex-view-full-summary": "Tingnan ang buong buod ng pamamatnugot",
+	"masseditregex-hint-intro": "Narito ang ilang mga parunggit at mga halimbawa para sa pagsasagawa ng pangkaraniwang mga gawain:",
+	"masseditregex-hint-headmatch": "Itugma",
+	"masseditregex-hint-headreplace": "Palitan",
+	"masseditregex-hint-headeffect": "Epekto",
+	"masseditregex-hint-toappend": "Magkabit ng ilang mga teksto sa hulihan ng pahina - magaling para sa pagdaragdag ng mga pahina sa mga kategorya",
+	"masseditregex-hint-remove": "Tanggalin ang ilang mga teksto mula sa lahat ng mga pahinang nasa loob ng talaan",
+	"masseditregex-hint-removecat": "Tanggalin ang lahat ng mga kategorya mula sa isang pahina (tandaan ang pagtakas ng mga parisukat na panaklong sa loob ng wikikodigo.)\nHindi dapat matakasan ang kapalit na mga halaga.",
+	"masseditregex-listtype-intro": "Ito ay isang talaan ng:",
+	"masseditregex-listtype-pagenames": "Mga pangalan ng pahina (baguhin ang mga pahinang ito)",
+	"masseditregex-listtype-pagename-prefixes": "Mga unlapi ng pangalan ng pahina (baguhin ang mga pahina na may mga pangalan nagsisimula sa tekstong ganito)",
+	"masseditregex-listtype-categories": "Pangalan ng mga kategorya (baguhin ang bawat isang pahinang may ganitong mga kategorya)",
+	"masseditregex-listtype-backlinks": "Mga kawing-pabalik (baguhin ang mga pahinang umuugnay sa mga ito)",
+	"masseditregex-exprnomatch": "Ang pagsasaad na \"$1\" ay hindi tumugma sa anumang mga pahina.",
+	"masseditregex-badregex": "Hindi tanggap na regex:",
+	"masseditregex-editfailed": "Nabigo ang pagpatnugot:",
+	"masseditregex-tooltip-execute": "Gamitin ang mga pagbabagong ito sa bawat pahina",
+	"right-masseditregex": "Palitan ang mga nilalaman ng pahina na ginagamit ang pangkaraniwang mga pagpapahayag",
+	"masseditregex-js-jobdone": "Buo na",
+	"masseditregex-js-working": "Pino-proseso... ($1 natitira)"
+}

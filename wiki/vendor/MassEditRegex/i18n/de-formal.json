@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Imre",
+			"Kghbln",
+			"LWChris"
+		]
+	},
+	"masseditregextext": "Geben Sie einen oder mehrere reguläre Ausdrücke (einen pro Zeile) für die Suche sowie einen oder mehrere Ausdrücke (einen pro Zeile) für die Ersetzung im Fall eines Treffers an. Der erste Suchausdruck wird bei Übereinstimmung durch den ersten Ersatzausdruck ersetzt, und so weiter. Siehe hierzu auch die Dokumentation der [http://php.net/manual/de/function.preg-replace.php PHP-Funktion <code>preg_replace ()</code>] für weitere Einzelheiten.",
+	"masseditregex-err-nopages": "Sie müssen mindestens eine Seite angeben, die geändert werden soll.",
+	"masseditregex-noaccess": "Sie sind nicht berechtigt die Erweiterung MassEditRegex zu nutzen.",
+	"masseditregex-blocked": "Ihr Benutzerkonto ist gesperrt."
+}

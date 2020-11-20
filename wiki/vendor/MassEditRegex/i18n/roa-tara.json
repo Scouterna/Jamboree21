@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joetaras"
+		]
+	},
+	"masseditregex-matchtxt": "Cirche pe:",
+	"masseditregex-replacetxt": "Sostituisce cu:",
+	"masseditregex-executebtn": "Esegue",
+	"masseditregex-before": "Apprime",
+	"masseditregex-after": "Apprisse",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|cangiamende|cangiaminde}}",
+	"masseditregex-page-not-exists": "$1 non g'esiste",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|pàgene|pàggene}} cangiate",
+	"masseditregex-view-full-summary": "'Ndruche 'u riepiloghe comblete de le cangiaminde",
+	"masseditregex-hint-headmatch": "Combronde",
+	"masseditregex-hint-headreplace": "Sostituisce",
+	"masseditregex-hint-headeffect": "Effette",
+	"masseditregex-listtype-intro": "Quiste jè 'n'elenghe de:",
+	"masseditregex-badregex": "Regex invalide:",
+	"masseditregex-editfailed": "Cangiamende fallite:",
+	"masseditregex-js-jobdone": "Comblete",
+	"masseditregex-js-working": "Stoche a processe... (na mangane $1)",
+	"masseditregex-js-pagenotexist": "$1 non g'esiste."
+}

@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Als-Chlämens",
+			"Als-Holder"
+		]
+	},
+	"action-masseditregex": "e Sammelbearbeitig durefiere",
+	"masseditregex": "Greßeri Aazahl vu Syte glychzytig ändere iber reguläri Uusdruck.",
+	"masseditregex-desc": "Reguläri Uusdruck bruch go [[Special:MassEditRegex|vili Syte in eim Schritt bearbeite]]",
+	"masseditregextext": "Gib ein oder meh reguläri Uusdruck as Suechuusdruck yy (eine pro Zyylete) un ein oder meh Uusdruck as Ersatzuusdruck.\nDr erscht Suechuusdruck wird, wänn er gfunde wore isch, dur dr erscht Ersatzuusdruck ersetzt usw.\nLueg d [http://php.net/manual/en/function.preg-replace.php PHP-Funktion preg_replace()] fir Details.",
+	"masseditregex-pagelisttxt": "Syte, wu bearbeitet solle wäre:",
+	"masseditregex-matchtxt": "Suech no:",
+	"masseditregex-replacetxt": "Ersetze dur:",
+	"masseditregex-executebtn": "Uusfiere",
+	"masseditregex-err-nopages": "Du muesch zmindescht ei Syte aagee, wu gänderet soll wäre.",
+	"masseditregex-before": "Vorhär",
+	"masseditregex-after": "Nocher",
+	"masseditregex-max-preview-diffs": "D Vorschau isch uf {{PLURAL:$1|uf dr erscht Träffer|di erschte $1 Träffer}} yygschränkt wore",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|Aänderig|Anderige}}",
+	"masseditregex-page-not-exists": "$1 git s nit",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|Syte|Syte}} bearbeitet",
+	"masseditregex-view-full-summary": "Di ganz Zämmefassig aaluege",
+	"masseditregex-hint-intro": "Do het s e paar Hiwys un Byschpil, wie mer gängigi Ufgabe cha uusfiere:",
+	"masseditregex-hint-headmatch": "Träffer",
+	"masseditregex-hint-headreplace": "Ersetze",
+	"masseditregex-hint-headeffect": "Effäkt",
+	"masseditregex-hint-toappend": "Täxt am Änd vu dr Syte yyfiege - ideal go Syte ere Kategorie zuefiege",
+	"masseditregex-hint-remove": "Text us allene Syte in dr Lischt uuseneh",
+	"masseditregex-hint-removecat": "Alli Kategorie us ere Syte uuseneh (gib Acht uf d Richtig vu dr eckige Chlammere im Wikicode).\nBim Text, wu yygsetzt wird, isch d Richtig nit relevant.",
+	"masseditregex-listtype-intro": "Des isch e Lischt vu:",
+	"masseditregex-listtype-pagenames": "Sytenäme (die Syte bearbeite)",
+	"masseditregex-listtype-pagename-prefixes": "Sytenämepräfix (Syte bearbeite, wu mit däm Text aafange)",
+	"masseditregex-listtype-categories": "Kategoriinäme (e jedi Syte in däre Kategorii bearbeite)",
+	"masseditregex-listtype-backlinks": "Retur-Links (Syte bearbeite, wu uf die verwyse)",
+	"masseditregex-exprnomatch": "Fir dr Uusdruck „$1“ git s kei Träffer uf Syte.",
+	"masseditregex-badregex": "Nit giltige reguläre Uusdruck:",
+	"masseditregex-editfailed": "Bearbeitige sin fähl gschlaa:",
+	"masseditregex-tooltip-execute": "Die Änderige in jedere Syte vorneh",
+	"right-masseditregex": "Syteinhalt mit reguläre Ussdrugg ersetze"
+}

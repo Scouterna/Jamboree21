@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Borichèt",
+			"Dragonòt"
+		]
+	},
+	"action-masseditregex": "fà na modìfica a baron",
+	"masseditregex": "Modìfiche mùltiple an dovrand espression regolar",
+	"masseditregex-desc": "Dovré espression regolar për [[Special:MassEditRegex|modifiché vàire pàgine ant na sola operassion]]",
+	"masseditregextext": "Anseriss un-a o pi espression regolar (un-a për linia) për confront, e un-a o pi espression për rimpiassé minca confront bon.\nLa prima espression ëd confront, se bon-a, a sarà rimpiassà con la prima espression ëd rimpiass, e via parèj.\nVarda [http://php.net/manual/en/function.preg-replace.php la funsion PHP preg_replace()] për detaj.",
+	"masseditregex-pagelisttxt": "Pàgine da modifiché:",
+	"masseditregex-matchtxt": "Serca:",
+	"masseditregex-replacetxt": "Rimpiassa con:",
+	"masseditregex-executebtn": "Fà giré",
+	"masseditregex-err-nopages": "It deve spessifiché almanch na pàgina da cambié.",
+	"masseditregex-before": "Prima",
+	"masseditregex-after": "D'apress",
+	"masseditregex-max-preview-diffs": "La previsualisassion a l'é stàita limità {{PLURAL:$1|al $1-m confront|ai prim $1 confront}}.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|cangiament|cangiament}}",
+	"masseditregex-page-not-exists": "$1 a esist pa",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|pàgine|pàgine}} modificà",
+	"masseditregex-view-full-summary": "Varda l'antregh somari dle modìfiche",
+	"masseditregex-hint-intro": "Sì a-i son chèich idèje e esempi për fé ëd travaj comun:",
+	"masseditregex-hint-headmatch": "Midem",
+	"masseditregex-hint-headreplace": "Rimpiassa",
+	"masseditregex-hint-headeffect": "Efet",
+	"masseditregex-hint-toappend": "Pend dël test a la fin ëd la pàgina - bon për gionté pàgine a le categorìe",
+	"masseditregex-hint-remove": "Gava dël test da tute le pàgine ant la lista",
+	"masseditregex-hint-removecat": "Gava tute le categorìe da 'nt na pàgina (nòta ël truch ëd le paréntesi quadre ant ël còdes wiki.)\nIj valor ëd rimpiassadura a dovrìo nen esse trucà.",
+	"masseditregex-listtype-intro": "Costa-sì a l'é na lista ëd:",
+	"masseditregex-listtype-pagenames": "Nòm ëd le pàgine (modìfica ste pàgine-sì)",
+	"masseditregex-listtype-pagename-prefixes": "Prefiss dij nòm dle pàgine (modìfica pàgine con nòm ch'a ancamin-o con sto test-sì)",
+	"masseditregex-listtype-categories": "Nòm dle categorìe (modìfica minca pàgina an ste categorìe-sì)",
+	"masseditregex-listtype-backlinks": "Colegament andré (modìfica pàgine colegà mach a coste-sì)",
+	"masseditregex-exprnomatch": "L'espression \"$1\" a corispond pa a gnun-e pàgine.",
+	"masseditregex-badregex": "Regex pa bon-a:",
+	"masseditregex-editfailed": "Modìfica falìa:",
+	"masseditregex-tooltip-execute": "Fà sti cangiament-sì a minca pàgina",
+	"right-masseditregex": "Rampiassé ij contnù ëd la pàgina an dovrand d'espression regolar"
+}

@@ -105,6 +105,7 @@ COPY vendor/MinervaNeue skins/MinervaNeue
 COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSuggestions
 COPY vendor/simplesamlphp-1.18.4 simplesamlphp
 COPY vendor/Auth_remoteuser extensions/Auth_remoteuser
+COPY vendor/MassEditRegex extensions/MassEditRegex
 
 # SimpleSAML setup
 RUN ln -sf simplesamlphp/www simplesaml

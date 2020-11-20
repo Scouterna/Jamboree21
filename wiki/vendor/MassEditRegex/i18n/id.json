@@ -1,0 +1,39 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bennylin",
+			"IvanLanin"
+		]
+	},
+	"masseditregex": "Penyuntingan massal dengan menggunakan ekspresi reguler",
+	"masseditregex-desc": "Menggunakan ekspresi reguler untuk [[Special:MassEditRegex|menyunting banyak halaman sekaligus]]",
+	"masseditregextext": "Masukkan satu atau lebih ekspresi reguler (satu per baris) untuk dicocokkan, dan satu atau lebih ekspresi untuk mengganti setiap kecocokan.\nEkspresi kecocokan pertama, jika berhasil akan diganti dengan ekspresi penggantian pertama, dan seterusnya.\nLihat [http://php.net/manual/en/function.preg-replace.php fungsi preg_replace() PHP] untuk detailnya.",
+	"masseditregex-pagelisttxt": "Halaman untuk disunting:",
+	"masseditregex-matchtxt": "Cari:",
+	"masseditregex-replacetxt": "Ganti dengan:",
+	"masseditregex-executebtn": "Laksanakan",
+	"masseditregex-err-nopages": "Anda harus memberikan paling tidak satu halaman untuk diganti.",
+	"masseditregex-before": "Sebelum",
+	"masseditregex-after": "Setelah",
+	"masseditregex-max-preview-diffs": "Pratayang dibatasi untuk $1 {{PLURAL:$1|kecocokan|kecocokan}} pertama.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|perubahan|perubahan}}",
+	"masseditregex-page-not-exists": "$1 tidak ada",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|halaman|halaman}} disunting",
+	"masseditregex-view-full-summary": "Lihat ringkasan suntingan lengkap",
+	"masseditregex-hint-intro": "Berikut beberapa petunjuk dan contoh untuk menyelesaikan tugas umum:",
+	"masseditregex-hint-headmatch": "Kecocokan",
+	"masseditregex-hint-headreplace": "Penggantian",
+	"masseditregex-hint-headeffect": "Efek",
+	"masseditregex-hint-toappend": "Tambahkan beberapa teks ke akhir halaman - bagus untuk memasukkan halaman ke dalam kategori",
+	"masseditregex-hint-remove": "Hapus beberapa teks dari semua halaman dalam daftar",
+	"masseditregex-hint-removecat": "Hapus semua kategori dari suatu halaman (perhatikan penyertaan kurung siku dalam kode wiki.)\nNilai pengganti tidak boleh diloloskan.",
+	"masseditregex-listtype-intro": "Ini adalah daftar:",
+	"masseditregex-listtype-pagenames": "Nama halaman (sunting halaman ini)",
+	"masseditregex-listtype-pagename-prefixes": "Awalan nama halaman (sunting halaman dengan nama yang diawali teks ini)",
+	"masseditregex-listtype-categories": "Nama kategori (sunting tiap halaman dalam kategori ini)",
+	"masseditregex-listtype-backlinks": "Pranala balik (sunting halaman yang bertaut ke halaman-halaman ini)",
+	"masseditregex-exprnomatch": "Ekspresi \"$1\" tidak cocok dengan halaman apa pun.",
+	"masseditregex-badregex": "Regex tidak valid:",
+	"masseditregex-editfailed": "Penyuntingan gagal.",
+	"masseditregex-tooltip-execute": "Terapkan perubahan ini ke setiap halaman"
+}

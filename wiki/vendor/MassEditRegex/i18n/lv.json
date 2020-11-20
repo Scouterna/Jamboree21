@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Papuass",
+			"Silraks"
+		]
+	},
+	"masseditregex-editall": "Labot visas",
+	"masseditregex-noaccess": "Jums nav piekļuves tiesības MassEditRegex",
+	"masseditregex-js-clientside": "Izpildīt pārlūkā",
+	"masseditregex-js-jobdone": "Pabeigts",
+	"masseditregex-js-working": "Apstrādā... (atlicis $1)",
+	"masseditregex-js-pagenotexist": "$1 nepastāv."
+}

@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Vito Genovese"
+		]
+	},
+	"masseditregex-matchtxt": "Şunu ara:",
+	"masseditregex-replacetxt": "Şununla değiştir:",
+	"masseditregex-err-nopages": "Değiştirilecek en az bir sayfa belirtmelisiniz.",
+	"masseditregex-before": "Önce",
+	"masseditregex-after": "Sonra",
+	"masseditregex-view-full-summary": "Değişiklik özetinin tamamını gör",
+	"masseditregex-hint-headmatch": "Eşleşme",
+	"masseditregex-hint-headreplace": "Değiştir",
+	"masseditregex-hint-headeffect": "Etki",
+	"masseditregex-editfailed": "Değişiklik başarısız oldu:",
+	"masseditregex-tooltip-execute": "Bu değişiklikleri tüm sayfalara uygula"
+}

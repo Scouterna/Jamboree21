@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fohanno",
+			"Fulup",
+			"Y-M D"
+		]
+	},
+	"action-masseditregex": "ober ur c'hemm a-vras",
+	"masseditregex": "Kemmoù a-vras gant sikour eztaoladennoù poellel",
+	"masseditregex-desc": "Implijout an eztaoladennoù poellel evit [[Special:MassEditRegex|kemmañ un toullad pajennoù en un taol]]",
+	"masseditregextext": "Merkañ ur jedad poellek pe meur a hini (unan dre linenn) da glask hag ur jedad pe meur a hini da erlec'hiañ disoc'hoù pep hini gantañ.\nErlec'hiet e vo ar jedad kavet da gentañ gant ar jedad erlec'hiañ kentañ ha kement-all da-heul.\nGwelet [http://php.net/manual/en/function.preg-replace.php the PHP function preg_replace()] da c'houzout hiroc'h.",
+	"masseditregex-pagelisttxt": "Pajennoù da gemmañ :",
+	"masseditregex-matchtxt": "Klask :",
+	"masseditregex-replacetxt": "Erlec'hiañ gant :",
+	"masseditregex-executebtn": "Seveniñ",
+	"masseditregex-err-nopages": "Rankout a rit menegiñ ur bajenn da gemm d'an nebeutañ.",
+	"masseditregex-before": "A-raok",
+	"masseditregex-after": "Goude",
+	"masseditregex-max-preview-diffs": "Bevennet eo ar rakweladenn d'{{PLURAL:$1|an disoc'h kentañ|ar $1 disoc'h kentañ}}.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|kemm|kemm}}",
+	"masseditregex-page-not-exists": "N'eus ket eus $1",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|pennad|pennad}} kemmet",
+	"masseditregex-view-full-summary": "Gwelet diverrañ klok ar c'hemmoù",
+	"masseditregex-hint-intro": "Setu amañ titouroù ha skouerioù evit ober war-dro an trevelloù boaz :",
+	"masseditregex-hint-headmatch": "Klotadenn",
+	"masseditregex-hint-headreplace": "Erlec'hiañ",
+	"masseditregex-hint-headeffect": "Efed",
+	"masseditregex-hint-toappend": "Ensoc'hañ un tamm testenn e fin ar bajenn - efedus evit ouzhpennañ pajennoù e rummadoù",
+	"masseditregex-hint-remove": "Tennañ kuit un tamm destenn eus holl bajennoù ar roll",
+	"masseditregex-hint-removecat": "Lemel kuit an holl rummadoù zo en ur pennad (notit e vez lezet ar c'hrochedoù er-maez er chod wiki).\nN'haller ket lezel er-maez an talvoudennoù erlec'hiañ.",
+	"masseditregex-hint-renamelink": "Erlec'hiañ AAA gant BBB e testenn al liamm met pas el liamm : [[AAA|AAA]] a zeu da vezañ [[AAA|BBB]]",
+	"masseditregex-listtype-intro": "Setu ur roll :",
+	"masseditregex-listtype-pagenames": "Anv ar bajennoù (kemmañ ar bajennoù-se)",
+	"masseditregex-listtype-pagename-prefixes": "Rakger anvioù pajennoù (aozañ ar pajennoù a grog o anv gant an destenn-se)",
+	"masseditregex-listtype-categories": "Anv ar rummadoù (kemmañ pep pajenn a zo er rummadoù-se)",
+	"masseditregex-listtype-backlinks": "Pajennoù liammet (kemmañ ar pajennoù enno ul liamm davet houmañ)",
+	"masseditregex-exprnomatch": "N'eo bet kavet ar jedad \"$1\" e pajenn ebet.",
+	"masseditregex-badregex": "N'eo ket mat ar regex :",
+	"masseditregex-editfailed": "C'hwitet an aozañ :",
+	"masseditregex-tooltip-execute": "Arloañ ar c'hemmoù-se da bep pajenn",
+	"masseditregex-editall": "Kemmañ holl"
+}

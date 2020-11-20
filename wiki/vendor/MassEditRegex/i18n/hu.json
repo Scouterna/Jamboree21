@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dj",
+			"Glanthor Reviol"
+		]
+	},
+	"action-masseditregex": "tömeges szerkesztés végrehajtása",
+	"masseditregex": "Tömeges szerkesztés reguláris kifejezések használatával",
+	"masseditregex-desc": "Reguláris kifejezések használata [[Special:MassEditRegex|sok lap szerkesztéséhez egy művelettel]]",
+	"masseditregextext": "Adj meg egy vagy több reguláris kifejezést a kereséshez (soronként egyet), és egy vagy több kifejezést amire a találatokat ki szeretnéd cserélni.\nAz első találati-kifejezés (ha van találat) ki lesz cserélve az első csere-kifejezéssel, és így tovább.\nLásd [http://php.net/manual/en/function.preg-replace.php a PHP preg_replace() függvényét] további információkért.",
+	"masseditregex-pagelisttxt": "Szerkesztendő lapok:",
+	"masseditregex-matchtxt": "Keresendő szöveg:",
+	"masseditregex-replacetxt": "Csere erre:",
+	"masseditregex-executebtn": "Végrehajtás",
+	"masseditregex-err-nopages": "Meg kell adnod legalább egy megváltoztatandó lapot.",
+	"masseditregex-before": "Előtte",
+	"masseditregex-after": "Utána",
+	"masseditregex-max-preview-diffs": "Ez előnézet korlátozva van az első $1 találatra.",
+	"masseditregex-num-changes": "$1: $2 változtatás",
+	"masseditregex-page-not-exists": "$1 nem létezik",
+	"masseditregex-num-articles-changed": "$1 szerkesztett lap",
+	"masseditregex-view-full-summary": "Teljes szerkesztési összefoglaló megjelenítése",
+	"masseditregex-hint-intro": "Itt láthatsz pár ötletet és példát általános feladatok elvégzésére:",
+	"masseditregex-hint-headmatch": "Találat",
+	"masseditregex-hint-headreplace": "Csere",
+	"masseditregex-hint-headeffect": "Hatás",
+	"masseditregex-hint-toappend": "Szöveg hozzáfűzése a lap végéhez – jól használható lapok kategorizálásához",
+	"masseditregex-hint-remove": "Szövegrészek eltávolítása a listában található összes lapról",
+	"masseditregex-hint-removecat": "Az összes kategória eltávolítása egy lapról (figyelj a szögletes zárójelek feloldójelezésére a wikikódban).\nA csere értékeket nem kell feloldójellel ellátni.",
+	"masseditregex-listtype-intro": "A felsorolása ennek:",
+	"masseditregex-listtype-pagenames": "Lapok nevei (ezeket a lapokat szerkeszd)",
+	"masseditregex-listtype-pagename-prefixes": "Lapnév előtagok (lapok szerkesztése, amelyeknek a neve ezzel a szöveggel kezdődik)",
+	"masseditregex-listtype-categories": "Kategórianevek (minden lap szerkesztése a megadott kategóriákban)",
+	"masseditregex-listtype-backlinks": "Visszamutató hivatkozások (lapok szerkesztése, amelyek ezekre hivatkoznak)",
+	"masseditregex-exprnomatch": "A(z) „$1” kifejezés nem adott egy találatot sem.",
+	"masseditregex-badregex": "Érvénytelen reguláris kifejezés:",
+	"masseditregex-editfailed": "A szerkesztés sikertelen:",
+	"masseditregex-tooltip-execute": "Változtatások alkalmazása mindegyik lapra",
+	"right-masseditregex": "Lap tartalmának lecserélése reguláris kifejezés segítségével"
+}

@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Als-Holder",
+			"Purodha"
+		]
+	},
+	"action-masseditregex": "Sigge em Pöngel en einem Rötsch övver <i lang=\"en\">regular expressions</i> ändere",
+	"masseditregex": "Donn Sigge em Pöngel ändere, un dat övver <i lang=\"en\">regular expressions</i>.",
+	"masseditregex-desc": "Deiht Sigge [[Special:MassEditRegex|em Pöngel en einem Rötsch ändere]], un dat övver <i lang=\"en\">regular expressions</i>.",
+	"masseditregextext": "Jif ein <i lang=\"en\">regular expression</i> pro Reih en, esu vill wi nühdesch. Dohenger en desellve Reih schriif hen, woh jähje dat jetuusch wähde sull, wat op di <i lang=\"en\">regular expression</i> paß. De [http://de.php.net/manual/de/function.preg-replace.php Funxjuhn <code lang=\"en\">preg_replace()</code> en dä Projammeer_Schprohch <i lang=\"en\">PHP</i>] weed doför jebruch, un doh kam_mer och de Einzelheite janz jenou nohlässe.",
+	"masseditregex-pagelisttxt": "De Sigge zom Änndere:",
+	"masseditregex-matchtxt": "Söhk noh:",
+	"masseditregex-replacetxt": "Tuusch dat jäje:",
+	"masseditregex-executebtn": "Lohß Jonn!",
+	"masseditregex-err-nopages": "Winneschßdens ein Sigg för zem Ändere moß de ald aanjävve:",
+	"masseditregex-before": "Förher",
+	"masseditregex-after": "Hengerher",
+	"masseditregex-max-preview-diffs": "De Vör-Aanseesch es op  {{PLURAL:$1|dä eetste Träffer|de eetste $1 Träffer|nix}} bejränz.",
+	"masseditregex-num-changes": "$1: {{PLURAL:$2|ein Änderong|$2 Änderonge|kein Änderong}}",
+	"masseditregex-page-not-exists": "$1 jidd_et nit",
+	"masseditregex-num-articles-changed": "{{PLURAL:$1|Ein Sigg|$1 Sigge|Kein Sigg wood}} jeändert",
+	"masseditregex-view-full-summary": "De kumplätte Zosammefassung udder Quäll aanloore",
+	"masseditregex-hint-intro": "Hee sen e paa Henwieß un Beispöll, wi mer üblesche Aufjaabe jedonn kritt:",
+	"masseditregex-hint-headmatch": "Träffer",
+	"masseditregex-hint-headreplace": "Ußtuusche",
+	"masseditregex-hint-headeffect": "Wat eruß kütt",
+	"masseditregex-hint-toappend": "Donn e Täx_Schtök aam Ängk vun dä Sigg aanhange — wunderbaa för Sigge en Saachjroppe ze donn",
+	"masseditregex-hint-remove": "Donn e Schtök vum Täx vun alle Sigge en dä Leß fott nämme",
+	"masseditregex-hint-removecat": "Donn alle Enndrähsch för Saachjroppe us en Sigg eruß schmiiße — jev Aach op et <i lang=\"en\">Escaping</i> vun de äkijje Klammere em Wiki_Kood. Wat beim Tuusche för dä ahle Täx ennjesaz weed, darf mer ävver nit <i lang=\"en\">escape</i>.",
+	"masseditregex-hint-renamelink": "Donn AAA dorsch BBB em Täx vun enem Wikilengk äsäze, ävver nit em Zihl vun däm Lengk: [[AAA|AAA]] weet zoh [[AAA|BBB]]",
+	"masseditregex-listtype-intro": "Dat es en Leß vun:",
+	"masseditregex-listtype-pagenames": "Name vun Sigge för zem Ändere",
+	"masseditregex-listtype-pagename-prefixes": "Aanfäng vun Sigge ier Övverschreffte (Alsu donn di Sigge ändere, dänne ier Övverschreff met däm Täx heh aanfängk)",
+	"masseditregex-listtype-categories": "Saachjroppe_Nahme (Dunn all de Sigge en dä Saachjroppe ändere.)",
+	"masseditregex-listtype-backlinks": "Lengks retuur (Alsu dunn Sigge ändere, di ene Lengk op heh di Sigg han)",
+	"masseditregex-exprnomatch": "De <i lang=\"en\">regular expression</i> „$1“ hät keine Träfer, op keine vun dä Sigge.",
+	"masseditregex-badregex": "Dat es en onjöltejje <i lang=\"en\">regular expression</i>:",
+	"masseditregex-editfailed": "Dat Ändere is donevve jejange:",
+	"masseditregex-tooltip-execute": "Donn di Änderonge op jede Sigg maache",
+	"right-masseditregex": "Sigge övver <i lang=\"en\">regular expressions</i> ändere"
+}

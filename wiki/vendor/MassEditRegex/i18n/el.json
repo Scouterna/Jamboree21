@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Omnipaedista",
+			"ZaDiak"
+		]
+	},
+	"masseditregex": "Μαζική επεξεργασία με χρήση τακτικών εκφράσεων",
+	"masseditregex-matchtxt": "Αναζήτηση για:",
+	"masseditregex-replacetxt": "Αντικατάσταση με:",
+	"masseditregex-executebtn": "Εκτέλεση",
+	"masseditregex-before": "Πριν",
+	"masseditregex-after": "Μετά",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|αλλαγή|αλλαγές}}",
+	"masseditregex-page-not-exists": "$1 δεν υπάρχει",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|σελίδα|σελίδες}} επεξεργασμένες",
+	"masseditregex-hint-headreplace": "Αντικατάσταση",
+	"masseditregex-hint-headeffect": "Αποτέλεσμα",
+	"masseditregex-listtype-intro": "Αυτή είναι μια λίστα από:",
+	"masseditregex-editfailed": "Αποτυχία επεξεργασίας:"
+}
