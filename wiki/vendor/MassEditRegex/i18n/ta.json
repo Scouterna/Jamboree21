@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Shanmugamp7"
+		]
+	},
+	"action-masseditregex": "மொத்த தொகுப்பை செய்யவும்",
+	"masseditregex-pagelisttxt": "தொகுக்க வேண்டிய பக்கங்கள்:",
+	"masseditregex-matchtxt": "இதை தேடு:",
+	"masseditregex-replacetxt": "மாற்றவும்:",
+	"masseditregex-executebtn": "செயல்படுத்து",
+	"masseditregex-err-nopages": "மாற்ற ஒரு பக்கத்தையாவது நீங்கள் குறிப்பிட வேண்டும்.",
+	"masseditregex-before": "முன்",
+	"masseditregex-after": "பின்",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|மாற்றம்|மாற்றங்கள்}}",
+	"masseditregex-page-not-exists": "$1 இல்லை",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|பக்கம் |பக்கங்கள்}} தொகுக்கப்பட்டது",
+	"masseditregex-view-full-summary": "முழு தொகுப்புச் சுருக்கத்தைக் காண்",
+	"masseditregex-hint-headmatch": "பொருந்துவது",
+	"masseditregex-hint-headreplace": "மாற்றுக",
+	"masseditregex-hint-headeffect": "விளைவு",
+	"masseditregex-hint-toappend": "உரையை பக்கத்தின் இறுதியில் சேர் - பக்கங்களைப் பகுப்பில் சேர்ப்பதற்கு நல்லது",
+	"masseditregex-hint-remove": "பட்டியலில் உள்ள அனைத்து பக்கங்களில் இருந்தும் சிறிது உரையை நீக்கு",
+	"masseditregex-listtype-pagenames": "பக்கப் பெயர்கள் (இந்தப் பக்கங்களைத் தொகு)",
+	"masseditregex-listtype-pagename-prefixes": "முன்னொட்டுடன் கூடிய பக்கங்கள் (இந்த உரையுடன் தொடங்கும் பெயர்களைக் கொண்ட பக்கங்களைத் தொகு)",
+	"masseditregex-listtype-categories": "பகுப்பு பெயர்கள் (இந்த பகுப்புகளில் உள்ள ஒவ்வொரு பக்கத்தையும் தொகுக்கவும்)"
+}

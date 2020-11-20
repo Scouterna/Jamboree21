@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Աշոտ1997"
+		]
+	},
+	"masseditregex-noaccess": "Դուք MassEditRegex-ը օգտագործելու իրավունք չունեք",
+	"masseditregex-blocked": "Ձեր արգելափակված եք",
+	"masseditregex-js-pagenotexist": "$1՝ գոյություն չունի"
+}

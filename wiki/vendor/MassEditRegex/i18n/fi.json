@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beluga",
+			"Crt",
+			"Str4nd"
+		]
+	},
+	"masseditregex-matchtxt": "Etsi seuraavaa:",
+	"masseditregex-replacetxt": "Korvaa seuraavalla:",
+	"masseditregex-executebtn": "Suorita",
+	"masseditregex-before": "Ennen",
+	"masseditregex-after": "Jälkeen",
+	"masseditregex-view-full-summary": "Näytä koko muokkausyhteenveto",
+	"masseditregex-hint-headmatch": "Osuma",
+	"masseditregex-hint-headreplace": "Korvaa",
+	"masseditregex-editfailed": "Muokkaus epäonnistui:",
+	"masseditregex-tooltip-execute": "Käytä näitä muutoksia joka sivuun"
+}

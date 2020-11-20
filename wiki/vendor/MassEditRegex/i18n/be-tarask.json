@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"EugeneZelenko",
+			"Jim-by",
+			"Wizardist"
+		]
+	},
+	"action-masseditregex": "выкананьне масавага рэдагаваньня",
+	"masseditregex": "Масавае рэдагаваньне з выкарыстаньнем рэгулярных выразаў",
+	"masseditregex-desc": "Выкарыстаньне рэгулярных выразаў для [[Special:MassEditRegex|рэдагаваньня некалькіх старонак за адно дзеяньне]]",
+	"masseditregextext": "Увядзіце адзін альбо некалькі рэгулярных выразаў (адзін на радок) для пошуку супадзеньняў, і адзін альбо некалькі выразаў для замены кожнага супадзеньня.\nПершы пасьпяховае супадзеньне з выразам будзе замененае на першы выраз для замены і гэтак далей. Глядзіце падрабязнасьці пра функцыю [http://php.net/manual/en/function.preg-replace.php PHP preg_replace()].",
+	"masseditregex-pagelisttxt": "Старонкі для рэдагаваньня:",
+	"masseditregex-matchtxt": "Пошук:",
+	"masseditregex-replacetxt": "Замяніць на:",
+	"masseditregex-executebtn": "Выканаць",
+	"masseditregex-err-nopages": "Вам неабходна пазначыць хаця б адну старонку для рэдагаваньня.",
+	"masseditregex-before": "Перад",
+	"masseditregex-after": "Пасьля",
+	"masseditregex-max-preview-diffs": "Папярэдні прагляд абмежаваны $1 {{PLURAL:$1|першым супадзеньнем|першымі супадзеньнямі|першымі супадзеньнямі}}.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|зьмена|зьмены|зьменаў}}",
+	"masseditregex-page-not-exists": "$1 не існуе",
+	"masseditregex-num-articles-changed": "{{PLURAL:$1|адрэдагаваная|адрэдагаваныя|адрэдагаваныя}} $1 {{PLURAL:$1|старонка|старонкі|старонак}}",
+	"masseditregex-view-full-summary": "Паказаць поўнае апісаньне зьменаў",
+	"masseditregex-hint-intro": "Тут пададзеныя некалькі падказак і прыкладаў для выкананьня агульных заданьняў:",
+	"masseditregex-hint-headmatch": "Супадзеньне",
+	"masseditregex-hint-headreplace": "Замена",
+	"masseditregex-hint-headeffect": "Вынік",
+	"masseditregex-hint-toappend": "Далучыць нейкі тэкст да канца старонкі —- выдатна пасуе для даданьня катэгорыяў у старонкі",
+	"masseditregex-hint-remove": "Выдаліць некаторы тэкст з усіх старонак у сьпісе",
+	"masseditregex-hint-removecat": "Выдаліць усе катэгорыі са старонкі (заўважце, што выдаляюцца толькі квадратныя дужкі з вікі-коду.)\nЗначэньні да замяшчэньня не павінны быць уключаныя ў двукосьсі альбо апострафы.",
+	"masseditregex-listtype-intro": "Гэта сьпіс:",
+	"masseditregex-listtype-pagenames": "Назвы старонак (рэдагаваць гэтыя старонкі)",
+	"masseditregex-listtype-pagename-prefixes": "Прэфіксы назваў старонак (рэдагаваць старонкі, назвы якіх пачынаюцца з гэтага тэксту)",
+	"masseditregex-listtype-categories": "Назвы катэгорыяў (рэдагаваць кожную старонку ў гэтых катэгорыях)",
+	"masseditregex-listtype-backlinks": "Адваротныя спасылкі (рэдагаваць старонкі, якія спасылаюцца на гэтую)",
+	"masseditregex-exprnomatch": "Выраз «$1» не адпавядае ні адной старонцы.",
+	"masseditregex-badregex": "Няслушны рэгулярны выраз:",
+	"masseditregex-editfailed": "Рэдагаваньне не атрымалася:",
+	"masseditregex-tooltip-execute": "Прыняць гэтыя зьмены для кожнай старонкі",
+	"right-masseditregex": "замена зьместу старонак з дапамогай рэгулярных выразаў"
+}

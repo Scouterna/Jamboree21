@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Michawiki"
+		]
+	},
+	"action-masseditregex": "masowe wobdźěłanje přewjesć",
+	"masseditregex": "Masowe wobdźěłanje z pomocu regularnych wurazow",
+	"masseditregex-desc": "Regularne wurazy za [[Special:MassEditRegex|wobdźěłowanje wjele stronow w jednej operaciji]] wužiwać",
+	"masseditregextext": "Zapodaj jedyn regularny wuraz abo wjace regularnych wurazow (jedyn na linku) za pytanje a jedyn wuraz abo wjace wurazow, přez kotryž ma so kóždy wuslědk narunać.\nPrěni pytanski wuraz budźe, jeli namakany, so přez prěni narunanski wuraz narunować atd.\nHlej [http://php.net/manual/de/function.preg-replace.php the PHP function preg_replace()] za podrobnosće.",
+	"masseditregex-pagelisttxt": "Strony, kotrež maja so wobdźěłać:",
+	"masseditregex-matchtxt": "Pytać za:",
+	"masseditregex-replacetxt": "Narunać přez:",
+	"masseditregex-executebtn": "Wuwjesć",
+	"masseditregex-err-nopages": "Dyrbiš znajmjeńša jednu stronu podać, kotraž ma so změnić.",
+	"masseditregex-before": "Prjedy",
+	"masseditregex-after": "Po tym",
+	"masseditregex-max-preview-diffs": "Přehlad je na {{PLURAL:$1|prěnju wotpowědnik|prěnjej $1 wotpowědnikaj|prěnje $1 wotpowědniki|prěnich $1 wotpowědnikow}} wobmjezowany.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|změna|změnje|změny|změnow}}",
+	"masseditregex-page-not-exists": "$1 njeeksistuje",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|nastawk wobdźěłany|nastawkaj wobdźěłanej|nastawki wobdźěłane|nastawkow wobdźěłanych}}",
+	"masseditregex-view-full-summary": "Dospołne wobdźěłowanske zjeće pokazać",
+	"masseditregex-hint-intro": "Tu su někotre pokiwy a přikłady za přewjedźenje powšitkownych nadawkow:",
+	"masseditregex-hint-headmatch": "Wotpowědnik",
+	"masseditregex-hint-headreplace": "Narunać",
+	"masseditregex-hint-headeffect": "Efekt",
+	"masseditregex-hint-toappend": "Tekst ke kóncej nastawka připowěsnyć - jara dobre za přidawanje stronow kategorijam",
+	"masseditregex-hint-remove": "Tekst ze wšěch stronow w lisćinje wotstronić",
+	"masseditregex-hint-removecat": "Wšě kategorije ze strony wotstronić (dźiwaj na maskěrowanje róžkatych spinkow we wikikodźe.) Narunanske hódnoty njeměli so maskěrować.",
+	"masseditregex-hint-renamelink": "Wuměnja AAA přez BBB we wotkazowym teksće, ale nic we wotkazowym cilu: [[AAA|AAA]] budźe [[AAA|BBB]]",
+	"masseditregex-listtype-intro": "To je lisćina wot:",
+	"masseditregex-listtype-pagenames": "Mjena stronow (tute strony wobdźěłać)",
+	"masseditregex-listtype-pagename-prefixes": "Prefiksy mjenow stronow (strony wobdźěłać, kotrychž mjena so z tutym tekstom započinaja)",
+	"masseditregex-listtype-categories": "Kategorijowe mjena (kóždu stronu znutřka tutych kategorijow wobdźěłać)",
+	"masseditregex-listtype-backlinks": "Wróćowotkazy (strony wobdźěłać, kotrež na tute wotkazuja)",
+	"masseditregex-exprnomatch": "Wuraz \"$1\" njehodźi so na žane strony.",
+	"masseditregex-badregex": "Njepłaćiwy regularny wuraz:",
+	"masseditregex-editfailed": "Wobdźěłanje je so njeporadźiło:",
+	"masseditregex-tooltip-execute": "Tute změny na kóždu stronu nałožić",
+	"masseditregex-editall": "Wšě wobdźěłać",
+	"right-masseditregex": "Wobsah strony z pomocu regularnych wurazow wuměnić"
+}

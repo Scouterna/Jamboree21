@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Derbeth",
+			"Michawiki"
+		]
+	},
+	"action-masseditregex": "masowe wobźěłanje pśewjasć",
+	"masseditregex": "Masowe wobźěłanje z pomocu regularnych wurazow",
+	"masseditregex-desc": "Regularne wuraze wužywaś, aby se [[Special:MassEditRegex|wjele bokow w jadnej opberaciji wobźěłało]]",
+	"masseditregextext": "Zapódaj jaden regularny wuraz abo wěcej regularnych wurazow (jaden na smužku) za pytanje a jaden wuraz abo wěcej wurazow, kótarež maju kuždy wótpowědnik wuměniś.\nPrědny pytański wuraz buźo se, jolic namakany, pśez prědny wuměneński wuraz wuměniś atd.\nGlědaj [http://php.net/manual/de/function.preg-replace.php the PHP function preg_replace()] za drobnostki.",
+	"masseditregex-pagelisttxt": "Boki, kótarež maju se wobźěłaś:",
+	"masseditregex-matchtxt": "Pytaś za:",
+	"masseditregex-replacetxt": "Wuměniś pśez:",
+	"masseditregex-executebtn": "Wuwjasć",
+	"masseditregex-err-nopages": "Musyš nanejmjenjej jaden bok pódaś, kótaryž ma se změniś.",
+	"masseditregex-before": "Do togo",
+	"masseditregex-after": "Pótom",
+	"masseditregex-max-preview-diffs": "Pśeglěd jo na {{PLURAL:$1|prědny wótpowědnik|prědnej $1 wótpowědnika|prědne $1 wótpowědniki|prědnych $1 wótpowědnikow}} wobgranicowany.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|změna|změnje|změny|změnow}}",
+	"masseditregex-page-not-exists": "$1 njeeksistěrujo",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|bok wobźěłany|boka wobźěłanej|boki wobźěłane|bokow wobźěłanych}}",
+	"masseditregex-view-full-summary": "Połne wobźěłowańske zespominanje se woglědaś",
+	"masseditregex-hint-intro": "How su někotare pokazki a pśikłady za pśewjeźenje powšyknych nadawkow:",
+	"masseditregex-hint-headmatch": "Wótpowědnik",
+	"masseditregex-hint-headreplace": "Wuměniś",
+	"masseditregex-hint-headeffect": "Efekt",
+	"masseditregex-hint-toappend": "Tekst ku kóńcoju boka pśipowjesyś - dobre za pśidawanje bokow kategorijam",
+	"masseditregex-hint-remove": "Tekst ze wšyknych w lisćinje wótpóraś",
+	"masseditregex-hint-removecat": "Wšykne kategorije z boka wótpóraś (źiwaj na maskěrowanje rožkatych spinkow we wikikoźe.) Wuměnjeńske gódnoty njeby se měli maskěrowaś.",
+	"masseditregex-hint-renamelink": "Wuměnja AAA pśez BBB we wótkazowem teksće, ale nic we wótkazowem celu: [[AAA|AAA]] buźo [[AAA|BBB]]",
+	"masseditregex-listtype-intro": "To jo lisćina wót:",
+	"masseditregex-listtype-pagenames": "Mjenja bokow (toś te boki wobźěłaś)",
+	"masseditregex-listtype-pagename-prefixes": "Prefikse mjenjow bokow (boki wobźěłaś, kótarychž mjenja zachopiju se toś tym tekstom)",
+	"masseditregex-listtype-categories": "Kategorijowe mjenja (kuždy bok w toś tych kategorijach wobźěłaś)",
+	"masseditregex-listtype-backlinks": "Slědkwótkaze (boki wobźěłaś, kótarež na tos te wótkazuju)",
+	"masseditregex-exprnomatch": "Wuraz \"$1\" njegóźi se na žedne boki.",
+	"masseditregex-badregex": "Njepłaśiwy regularny wuraz:",
+	"masseditregex-editfailed": "Wobźěłanje njejo se raźiło:",
+	"masseditregex-tooltip-execute": "Toś te změny na kuždy bok nałožyś",
+	"masseditregex-editall": "Wšykne wobźěłaś",
+	"right-masseditregex": "Wopśimjeśe boka z pomocu regularnych wurazow wuměniś"
+}

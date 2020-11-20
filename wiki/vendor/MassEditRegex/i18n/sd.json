@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mehtab ahmed",
+			"Indus Asia"
+		]
+	},
+	"masseditregex": "عام اظھار استعمال ڪندي جھجھي سنوار",
+	"masseditregex-extensionname": "عام اظھار وايہ جھجھي سنوار",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|بدلاءُ|بدلاءَ}}",
+	"masseditregex-hint-remove": "فھرست ۾ سڀني صفحن مان ڪجھ متن ھٽايو",
+	"masseditregex-listtype-intro": "ھيءَ فھرست آھي:"
+}

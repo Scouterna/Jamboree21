@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Caliburn"
+		]
+	},
+	"masseditregex-js-jobdone": "Complete",
+	"masseditregex-js-pagenotexist": "$1 does not exist."
+}

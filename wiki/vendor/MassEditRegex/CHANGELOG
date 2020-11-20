@@ -1,0 +1,95 @@
+## MassEditRegex
+
+MassEditRegex is a MediaWiki extension allowing to use regular expressions for
+editing mulitple pages at once.
+
+This file documents the development changes.
+
+
+### Version 8.3.0
+
+Released on 2017-07-19
+
+Compatible with MediaWiki 1.23 and later
+
+- Removed I18n php shim
+- Provide translations done by the community of translatewiki.net
+
+
+### Version 8.2.0
+
+Released on 2016-12-08
+
+Compatible with MediaWiki 1.17 and later
+
+- Replace deprecated skin's commentBlock function with Linker::commentBlock
+- Provide translations done by the community of translatewiki.net
+
+
+### Versiom 8.1.1
+
+Released on 2016-10-17
+
+Compatible with MediaWiki 1.17 to MediaWiki 1.27
+
+- Fix undefined $htmlDiff
+- Provide translations done by the community of translatewiki.net
+
+
+### Version 8.1.0
+
+Released on 2016-06-14
+
+- Hide action tab for users without the "masseditregex" permission
+- Add position to the resource loader module
+- Replace deprecated setText() call
+- Provide translations done by the community of translatewiki.net
+- Extend file documentation
+- Provide CHANGELOG file
+
+
+### Version 8.0.3
+
+Released on 2016-03-11
+
+- Define doesWrites() for SpecialPage classes
+- Replace depreciated wfMsg* calls / take 2
+- Replace makeKnownLinkObj()
+- Replace OutputPage::blockedPage()
+- Replace use User::getSkin()
+- Internal I18n tweaks
+- Provide translations done by the community of translatewiki.net
+
+
+### Version 8.0.2
+
+Released on 2015-08-15
+
+- Migrate to consistently use the __DIR__ constant
+- Switch links to use https
+- Provide translations done by the community of translatewiki.net
+
+
+### Version 8.0.1
+
+Released on 2015-08-12
+
+- Add namemsg and license-name the $wgExtensionCredits
+- Add COPYING file containing the extension's license
+- Change extension's name to adhere with MW jargon
+- Make extension's name translatable
+- Add rawcontinue parameter to query
+- Replace deprecated $wgSpecialPageGroups
+- Provide translations done by the community of translatewiki.net
+
+
+### Version 8.0.0
+
+Released on 2015-02-08
+
+Compatible with MediaWiki 1.17 and later as well as PHP 5.3 and later
+
+- Add support for execution to be done on client side
+- Internal code cleanup
+- Replace depreciated wfMsg* calls / take 1
+- Provide translations done by the community of translatewiki.net
