@@ -192,6 +192,7 @@ $wgVirtualRestConfig['modules']['parsoid'] = [
 # Add more configuration options below.
 wfLoadExtension( 'MobileFrontend' );
 wfLoadExtension( 'Auth_remoteuser' );
+require_once "$IP/extensions/MassEditRegex/MassEditRegex.php";
 
 wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
