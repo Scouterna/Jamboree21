@@ -192,7 +192,11 @@ $wgVirtualRestConfig['modules']['parsoid'] = [
 # Add more configuration options below.
 wfLoadExtension( 'MobileFrontend' );
 wfLoadExtension( 'Auth_remoteuser' );
+
+# install masseditregex
 require_once "$IP/extensions/MassEditRegex/MassEditRegex.php";
+$wgGroupPermissions['masseditregexeditor']['masseditregex'] = true;
+$wgGroupPermissions['sysop']['masseditregex'] = true;
 
 wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
