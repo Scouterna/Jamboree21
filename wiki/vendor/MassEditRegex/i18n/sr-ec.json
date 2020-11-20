@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Rancher",
+			"Жељко Тодоровић",
+			"Михајло Анђелковић",
+			"Obsuser",
+			"BadDog"
+		]
+	},
+	"masseditregex-pagelisttxt": "Стране за измену:",
+	"masseditregex-matchtxt": "Претражи:",
+	"masseditregex-replacetxt": "Замени са:",
+	"masseditregex-executebtn": "Изврши",
+	"masseditregex-err-nopages": "Морате навести најмање једну страну за измену.",
+	"masseditregex-before": "Пре",
+	"masseditregex-after": "После",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$1|измена|измене|измена}}",
+	"masseditregex-page-not-exists": "$1 не постоји",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|страна|стране|страна}} измењено",
+	"masseditregex-view-full-summary": "Погледај цео опис измене",
+	"masseditregex-hint-headmatch": "Поклапање",
+	"masseditregex-hint-headreplace": "Замени",
+	"masseditregex-hint-headeffect": "Ефекат",
+	"masseditregex-listtype-intro": "Ово је списак од:",
+	"masseditregex-listtype-pagenames": "Називи страница (уредите ове странице)",
+	"masseditregex-exprnomatch": "Израз \"$1\" се не налази ни на једној страни.",
+	"masseditregex-badregex": "Неважећи regex:",
+	"masseditregex-editfailed": "Измена није снимљена:",
+	"masseditregex-tooltip-execute": "Примени ове промене на сваку страну"
+}

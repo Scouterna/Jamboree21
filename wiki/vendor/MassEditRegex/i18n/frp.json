@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"ChrisPtDe"
+		]
+	},
+	"masseditregex-matchtxt": "Rechèrchiér :",
+	"masseditregex-replacetxt": "Remplaciér avouéc :",
+	"masseditregex-executebtn": "Ègzécutar",
+	"masseditregex-before": "Devant",
+	"masseditregex-after": "Aprés",
+	"masseditregex-num-changes": "$1 : $2 changement{{PLURAL:$2||s}}",
+	"masseditregex-page-not-exists": "$1 ègziste pas",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|pâge changiê|pâges changiês}}",
+	"masseditregex-hint-headmatch": "Corrèspondance",
+	"masseditregex-hint-headreplace": "Remplaciér",
+	"masseditregex-hint-headeffect": "Èfèt",
+	"masseditregex-listtype-intro": "Vê-que una lista de :",
+	"masseditregex-listtype-pagenames": "Nom de les pâges (changiér cetes pâges)",
+	"masseditregex-badregex": "Èxprèssion racionèla fôssa :",
+	"masseditregex-editfailed": "Èrror pendent l’èdicion :"
+}

@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robin Owain"
+		]
+	},
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|newid|newid}}"
+}

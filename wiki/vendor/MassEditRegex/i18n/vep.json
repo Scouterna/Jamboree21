@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Игорь Бродский"
+		]
+	},
+	"masseditregex-matchtxt": "Ectä:",
+	"masseditregex-executebtn": "Tehta",
+	"masseditregex-before": "Edel",
+	"masseditregex-after": "Jäl'ges",
+	"masseditregex-hint-headeffect": "Effekt"
+}

@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adam-Yourist"
+		]
+	},
+	"masseditregex-matchtxt": "Лаха:",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|хувцам}}"
+}

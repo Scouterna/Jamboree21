@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Anakmalaysia"
+		]
+	},
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|perubahan}}",
+	"masseditregex-noaccess": "Anda tiada akses ke MassEditRegex",
+	"masseditregex-norevisions": "Tiada semakan untuk disunting",
+	"masseditregex-blocked": "Akaun pengguna anda disekat",
+	"masseditregex-readonlydb": "Pangkalan data boleh dibaca sahaja",
+	"masseditregex-js-clientside": "Laksanakan dalam pelayar web",
+	"masseditregex-js-jobdone": "Selesai",
+	"masseditregex-js-working": "Memproses... (tinggal $1)",
+	"masseditregex-js-pagenotexist": "$1 tidak wujud."
+}

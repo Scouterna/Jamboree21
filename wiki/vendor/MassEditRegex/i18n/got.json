@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gothicspeaker"
+		]
+	},
+	"masseditregex-noaccess": "𐌽𐌹 𐌼𐌰𐌲𐍄 𐌲𐌰𐌲𐌲𐌰𐌽 𐌰𐍄 MassEditRegex",
+	"masseditregex-blocked": "𐍂𐌰𐌷𐌽𐌴𐌹𐌽𐍃 𐌸𐌴𐌹𐌽𐌰 𐌻𐌿𐌺𐌰𐌽𐌰",
+	"masseditregex-readonlydb": "𐌼𐌰𐌲𐍄 𐌸𐌰𐍄𐌰𐌹𐌽𐌴𐌹 𐌺𐌿𐌽𐌽𐌰𐌽 𐌲𐌹𐌱𐌰𐌲𐌰𐍃𐌰𐍄𐌴𐌹𐌽𐍃",
+	"masseditregex-js-clientside": "𐍄𐌰𐌿𐌴𐌹 𐌹𐌽 𐌱𐍂𐌰𐍅𐍃𐌰𐌹𐍂.",
+	"masseditregex-js-jobdone": "𐌼𐌰𐌽𐍅𐌹𐌸",
+	"masseditregex-js-pagenotexist": "$1 𐌽𐌹𐍃𐍄.",
+	"masseditregex-js-mwapi-api-error": "𐌰𐌹𐍂𐌶𐌴𐌹: 𐌼𐌴𐌳𐌾𐌰𐍅𐌹𐌺𐌹 𐌰𐍀𐌹 𐌲𐌰𐍆 𐌰𐌹𐍂𐌶𐌴𐌹 $1: $2"
+}

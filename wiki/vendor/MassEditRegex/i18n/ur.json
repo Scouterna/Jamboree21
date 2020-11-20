@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"පසිඳු කාවින්ද",
+			"BukhariSaeed"
+		]
+	},
+	"masseditregex-executebtn": "پتھروں سے",
+	"masseditregex-err-nopages": "آپ کو تبدیل کرنے کے لئے کم از کم ایک صفحے کی وضاحت کرنا ہوگا.",
+	"masseditregex-before": "اس سے پہلے",
+	"masseditregex-after": "کے بعد",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|تبدیلی|تبدیلیاں}}",
+	"masseditregex-hint-headmatch": "میچ",
+	"masseditregex-hint-headreplace": "کو تبدیل",
+	"masseditregex-editfailed": "ترمیم کریں ناکام ہوگئی:",
+	"masseditregex-tooltip-execute": "ہر صفحے میں ان تبدیلیوں کا اطلاق",
+	"right-masseditregex": "صفحہ کے مشمولات باقاعدہ اظہار کا استعمال کرتے ہوئے تبدیل"
+}

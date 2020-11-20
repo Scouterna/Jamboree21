@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"පසිඳු කාවින්ද"
+		]
+	},
+	"masseditregex-before": "පෙර",
+	"masseditregex-after": "පසු",
+	"masseditregex-hint-headmatch": "ගළපන්න",
+	"masseditregex-hint-headreplace": "ප්‍රතිස්ථාපනය"
+}

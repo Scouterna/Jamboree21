@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Naudefj"
+		]
+	},
+	"masseditregex": "Wysig baie bladsye met behulp van gereelde uitdrukkings",
+	"masseditregex-pagelisttxt": "Bladsye om te wysig:",
+	"masseditregex-matchtxt": "Soek vir:",
+	"masseditregex-replacetxt": "Vervang met:",
+	"masseditregex-executebtn": "Uitvoer",
+	"masseditregex-err-nopages": "U moet ten minste een bladsy spesifiseer om te verander.",
+	"masseditregex-before": "Voor",
+	"masseditregex-after": "Na",
+	"masseditregex-max-preview-diffs": "Voorskou is beperk tot die eerste $1 {{PLURAL:$1|ooreenkoms|ooreenkomste}}.",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|wysiging|wysigings}}",
+	"masseditregex-page-not-exists": "$1 bestaan nie",
+	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|bladsy|bladsye}} gewysig",
+	"masseditregex-view-full-summary": "Sien samevatting van wysigings",
+	"masseditregex-hint-intro": "Hier is 'n paar wenke en voorbeelde vir die uitvoer van algemene take:",
+	"masseditregex-hint-headmatch": "Seleksie",
+	"masseditregex-hint-headreplace": "Vervang",
+	"masseditregex-hint-headeffect": "Effek",
+	"masseditregex-hint-remove": "Verwyder teks uit al die bladsye in die lys"
+}
