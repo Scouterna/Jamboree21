@@ -24,10 +24,9 @@ spec:
       - name: minecraft-server
         image: itzg/minecraft-server:latest
         resources:
-          limits:
-            memory: 2Gi
           requests:
-            memory: 1.5Gi
+            cpu: 1600m
+            memory: 4500Mi
         env:
           - name:  EULA
             value: 'TRUE'
@@ -37,6 +36,10 @@ spec:
             value: {{ .Values.motd | default "helo" }}
           - name: ALLOW_FLIGHT
             value: "FALSE"
+          - name: MAX_PLAYERS
+            value: 100
+          - name: MEMORY
+            value: 4400m
         ports:
         - containerPort: 25565
           name: minecraft
