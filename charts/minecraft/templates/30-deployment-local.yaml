@@ -37,7 +37,7 @@ spec:
           - name: ALLOW_FLIGHT
             value: "FALSE"
           - name: MAX_PLAYERS
-            value: 100
+            value: "100"
           - name: MEMORY
             value: 4400m
         ports:
