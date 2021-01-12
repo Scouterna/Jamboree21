@@ -26,8 +26,3 @@ jobs:
       serviceName: minecraft
       subPath: charts/minecraft
       stepsTemplate: charts/minecraft/build.yaml
-  - template: .azure-pipelines/templates/build-service.job.yaml
-    parameters:
-      serviceName: aboutmedl
-      subPath: facelist
-      stepsTemplate: facelist/.azure-pipelines/builddwn.yaml
