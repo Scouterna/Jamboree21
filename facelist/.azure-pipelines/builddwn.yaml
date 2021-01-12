@@ -6,7 +6,7 @@ steps:
       ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     workingDirectory: facelist/facelist/aboutme-dl
     displayName: Build facelist downloader docker image
-    condition: and(succeeded(), eq(variables.updated, 'true'))
+    condition: succeeded()
   - task: Docker@2
     inputs:
       containerRegistry: 'acr'
@@ -20,10 +20,10 @@ steps:
         -e s@%DOWNLOADER_IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     workingDirectory: facelist/facelist/aboutme-dl
     displayName: Make kubernetes manifest from template
-    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
       ArtifactName: 'aboutmedl-k8s'
       publishLocation: 'Container'
-    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
