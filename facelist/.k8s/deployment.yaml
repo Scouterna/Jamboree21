@@ -25,6 +25,8 @@ spec:
               readOnly: true
             - mountPath: /img
               name: img
+            - mountPath: /aboutme-data
+              name: aboutme-data
       volumes:
         - name: facelist-config
           secret:
@@ -32,3 +34,6 @@ spec:
         - name: img
           persistentVolumeClaim:
             claimName: img
+        - name: aboutme-data
+          persistentVolumeClaim:
+            claimName: aboutme-data
