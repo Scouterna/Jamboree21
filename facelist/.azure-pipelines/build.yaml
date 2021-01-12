@@ -37,7 +37,7 @@ steps:
   - bash: |
       ${{ format('sed -i.bak .k8s/cronjob.yaml \
         -e s@%DOWNLOADER_IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
-    workingDirectory: facelist/facelist/aboutme-dl
+    workingDirectory: facelist
     displayName: Make kubernetes manifest from template
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - bash: |
