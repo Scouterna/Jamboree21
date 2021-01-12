@@ -24,6 +24,6 @@ steps:
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
-      ArtifactName: 'j21facelist-k8s'
+      ArtifactName: 'aboutmedl-k8s'
       publishLocation: 'Container'
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
