@@ -28,6 +28,6 @@ jobs:
       stepsTemplate: charts/minecraft/build.yaml
   - template: .azure-pipelines/templates/build-service.job.yaml
     parameters:
-      serviceName: aboutme-dl
+      serviceName: aboutmedl
       subPath: facelist/aboutme-dl
       stepsTemplate: facelist/.azure-pipelines/builddwn.yaml
