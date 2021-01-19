@@ -23,7 +23,7 @@ spec:
           - name: download-aboutme
             image: %DOWNLOADER_IMAGE%
             imagePullPolicy: IfNotPresent
-            volumemounts:
+            volumeMounts:
               - mountPath: /aboutme-data
                 name: aboutme-data
           restartPolicy: OnFailure
