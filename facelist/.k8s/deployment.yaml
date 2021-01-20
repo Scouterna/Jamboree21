@@ -25,7 +25,7 @@ spec:
               readOnly: true
             - mountPath: /img
               name: img
-            - mountPath: /aboutme-data
+            - mountPath: /data
               name: aboutme-data
       volumes:
         - name: facelist-config

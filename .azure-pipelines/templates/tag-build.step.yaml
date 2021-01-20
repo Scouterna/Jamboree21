@@ -7,6 +7,6 @@ steps:
       git tag "$tag"
       git push --tags
     displayName: ${{ format('Tag Build {0} of {1}', variables.Build.BuildId, parameters.serviceName) }}
-    condition: and(succeeded(), eq(variables.updated, 'true'))
+    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     env:
       SERVICE: ${{ parameters.serviceName }} 
