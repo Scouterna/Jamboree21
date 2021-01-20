@@ -33,15 +33,17 @@ steps:
     displayName: Push aboutme facelist docker image
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-  - bash: "sed -i .k8s/cronjob.yaml -e s@%DOWNLOADER_IMAGE%@scouterna.azurecr.io/${{ parameters.serviceName }}-dl:$(Build.SourceBranchName)-$(Build.SourceVersion)@"
-    workingDirectory: facelist
+  - task: ShellScript@2
+    inputs:
+      scriptPath: facelist/.azure-pipelines/container-image-tags.sh
+      cwd: facelist
+    env:
+      K8SDIR: .k8s
+      SERVICE: ${{ parameters.serviceName }}
+      BRANCH: $(Build.SourceBranchName)
+      VERSION: $(Build.SourceVersion)
     displayName: Make kubernetes manifest from template
     condition: and(succeeded(), eq(variables.updated, 'true'))
-
-  - bash: "sed -i .k8s/cronjob.yaml -e s@%IMAGE%@scouterna.azurecr.io/${{ parameters.serviceName }}:$(Build.SourceBranchName)-$(Build.SourceVersion)@"
-    workingDirectory: facelist
-    displayName: Make kubernetes manifest from template
-    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - task: PublishBuildArtifacts@1
     inputs:
