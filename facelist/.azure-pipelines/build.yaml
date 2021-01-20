@@ -36,7 +36,7 @@ steps:
   - bash: "sed -i .k8s/cronjob.yaml -e s@%DOWNLOADER_IMAGE%@scouterna.azurecr.io/${{ parameters.serviceName }}-dl:$(Build.SourceBranchName)-$(Build.SourceVersion)@"
     workingDirectory: facelist
     displayName: Make kubernetes manifest from template
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables.updated, 'true'))
 
   - bash: "sed -i .k8s/cronjob.yaml -e s@%IMAGE%@scouterna.azurecr.io/${{ parameters.serviceName }}:$(Build.SourceBranchName)-$(Build.SourceVersion)@"
     workingDirectory: facelist
@@ -48,4 +48,4 @@ steps:
       PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
       ArtifactName: 'j21facelist-k8s'
       publishLocation: 'Container'
-    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), eq(variables.updated, 'true'))
