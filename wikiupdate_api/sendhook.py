@@ -5,10 +5,10 @@ header = {
     "Content-Type":"application/json",
 }
 
-uri = os.environ("hook_url")
+uri = os.environ["hook_url"]
 
 def sendhook():
-    j = json.loads(requests.get("http://localhost:5001/?d=1", headers={"secret": os.environ("wikiupdate_api_secret")}).text)
+    j = json.loads(requests.get("http://localhost:5001/?d=1", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
 
     out = {
         "@type": "MessageCard",

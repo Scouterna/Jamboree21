@@ -7,7 +7,7 @@ app = Flask(__name__)
 # for deployment in azure-k8s
 settings = {
     "mw-url": "http:/mediawiki",
-    "apisecret": os.environ("wikiupdate_api_secret"),
+    "apisecret": os.environ["wikiupdate_api_secret"],
     "cookie": ""
 }
 
