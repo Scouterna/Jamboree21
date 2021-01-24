@@ -18,11 +18,6 @@ spec:
           imagePullPolicy: Always
           name: wikiupdate_api
         - env:
-          - name: mw-url
-                valueFrom:
-                  secretKeyRef:
-                    key: mw-url
-                    name: wikiupdate_settings
           - name: wikiupdate_api_secret
                 valueFrom:
                   secretKeyRef:

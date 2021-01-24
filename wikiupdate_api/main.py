@@ -6,7 +6,7 @@ from flask import Flask,request, abort
 app = Flask(__name__)
 # for deployment in azure-k8s
 settings = {
-    "mw-url": os.environ("mw-url"),
+    "mw-url": "http:/mediawiki",
     "apisecret": os.environ("wikiupdate_api_secret"),
     "cookie": ""
 }
