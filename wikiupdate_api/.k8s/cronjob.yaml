@@ -1,0 +1,33 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: download-aboutme
+spec:
+  schedule: "0 */8 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - env:
+            - name: o365-user
+                valueFrom:
+                  secretKeyRef:
+                    key: o365-user
+                    name: o365-credentials
+            - name: o365-passwd
+                valueFrom:
+                  secretKeyRef:
+                    key: o365-passwd
+                    name: o365-credentials
+          - name: download-aboutme
+            image: %DOWNLOADER_IMAGE%
+            imagePullPolicy: IfNotPresent
+            volumemounts:
+              - mountPath: /aboutme-data
+                name: aboutme-data
+          restartPolicy: OnFailure
+          volumes:
+            - name: aboutme-data
+              persistentVolumeClaim:
+                claimName: aboutme-data

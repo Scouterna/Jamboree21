@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: wikiupdate_api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wikiupdate_api
+  template:
+    metadata:
+      labels:
+        app: wikiupdate_api
+    spec:
+      containers:
+        - image: %IMAGE%
+          imagePullPolicy: Always
+          name: wikiupdate_api
+        - env:
+          - name: mw-url
+                valueFrom:
+                  secretKeyRef:
+                    key: mw-url
+                    name: wikiupdate_settings
+          - name: wikiupdate_api_secret
+                valueFrom:
+                  secretKeyRef:
+                    key: wikiupdate_api_secret
+                    name: wikiupdate_settings
