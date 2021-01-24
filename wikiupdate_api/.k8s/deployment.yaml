@@ -2,22 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations: {}
-  name: wikiupdate_api
+  name: wikiupdate-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: wikiupdate_api
+      app: wikiupdate-api
   template:
     metadata:
       labels:
-        app: wikiupdate_api
+        app: wikiupdate-api
     spec:
       containers:
         - name: api
           image: %IMAGE%
           imagePullPolicy: Always
-          name: wikiupdate_api
+          name: wikiupdate-api
           env:
           - name: wikiupdate_api_secret
             valueFrom:
