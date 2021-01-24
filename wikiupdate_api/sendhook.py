@@ -8,7 +8,7 @@ header = {
 uri = os.environ("hook_url")
 
 def sendhook():
-    j = json.loads(requests.get("http://localhost:5000/?d=1", headers={"secret": "supersecretkey"}).text)
+    j = json.loads(requests.get("http://localhost:5001/?d=1", headers={"secret": "supersecretkey"}).text)
 
     out = {
         "@type": "MessageCard",
