@@ -14,7 +14,8 @@ spec:
         app: wikiupdate_api
     spec:
       containers:
-        - image: %IMAGE%
+        - name: api
+          image: %IMAGE%
           imagePullPolicy: Always
           name: wikiupdate_api
         - env:
