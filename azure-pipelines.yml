@@ -28,11 +28,6 @@ jobs:
       stepsTemplate: charts/minecraft/build.yaml
   - template: .azure-pipelines/templates/build-service.job.yaml
     parameters:
-      serviceName: aboutmedl
-      subPath: facelist/aboutme-dl
-      stepsTemplate: facelist/.azure-pipelines/builddwn.yaml
-  - template: .azure-pipelines/templates/build-service.job.yaml
-    parameters:
       serviceName: wikiupdate_api
       subPath: wikiupdate_api
       stepsTemplate: wikiupdate_api/.azure-pipelines/build.yaml
