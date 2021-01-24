@@ -4,7 +4,7 @@ parameters:
 steps:
   - bash: |
       ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
-    workingDirectory: .
+    workingDirectory: wikiupdate_api
     displayName: Build wikiupdate_api docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
   - task: Docker@2
@@ -18,7 +18,7 @@ steps:
   - bash: |
       ${{ format('sed -i.bak .k8s/deployment.yaml \
         -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
-    workingDirectory: .
+    workingDirectory: wikiupdate_api
     displayName: Make kubernetes manifest from template
     condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   - task: PublishBuildArtifacts@1
