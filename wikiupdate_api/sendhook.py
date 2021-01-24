@@ -5,7 +5,7 @@ header = {
     "Content-Type":"application/json",
 }
 
-uri = os.environ["hook_url"]
+uri = os.environ["webhook_url"]
 
 def sendhook():
     j = json.loads(requests.get("http://localhost:5000/?d=1", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
