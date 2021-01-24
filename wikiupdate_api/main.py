@@ -20,7 +20,7 @@ url = settings["mw-url"] + "/api.php"
 
 headers = {
     "Host": "wiki.internal.jamboree.se.webservices.scouterna.net",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0",
+    "User-Agent": "Scouterna/J22wikibot",
     "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
     "Connection": "keep-alive",
     "Cookie": settings["cookie"]
@@ -40,7 +40,7 @@ def index():
     print(request.url)
     try:
         if request.headers["secret"] != settings["apisecret"]:
-            abort(400)
+            abort(401)
             return "No can dosville"
     except KeyError:
             abort(401)
