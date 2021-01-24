@@ -11,19 +11,19 @@ spec:
           containers:
           - env:
             - name: o365-user
-                valueFrom:
-                  secretKeyRef:
-                    key: o365-user
-                    name: o365-credentials
+              valueFrom:
+                secretKeyRef:
+                  key: o365-user
+                  name: o365-credentials
             - name: o365-passwd
-                valueFrom:
-                  secretKeyRef:
-                    key: o365-passwd
-                    name: o365-credentials
+              valueFrom:
+                secretKeyRef:
+                  key: o365-passwd
+                  name: o365-credentials
           - name: download-aboutme
             image: %DOWNLOADER_IMAGE%
             imagePullPolicy: IfNotPresent
-            volumemounts:
+            volumeMounts:
               - mountPath: /aboutme-data
                 name: aboutme-data
           restartPolicy: OnFailure
