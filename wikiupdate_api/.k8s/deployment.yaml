@@ -28,3 +28,8 @@ spec:
                   secretKeyRef:
                     key: wikiupdate_api_secret
                     name: wikiupdate_settings
+          - name: webhook_url
+                valueFrom:
+                  secretKeyRef:
+                    key: hook_url
+                    name: wikiupdate_settings

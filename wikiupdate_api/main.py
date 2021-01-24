@@ -1,4 +1,6 @@
 import requests, feedparser, json, os
+from threading import Thread
+import sendhook
 from flask import Flask,request, abort
 
 app = Flask(__name__)
@@ -64,3 +66,5 @@ def index():
 
 if __name__ == '__main__':
     app.run()
+    thread = Thread(target = sendhook.main())
+    thread.start()
