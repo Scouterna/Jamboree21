@@ -1,0 +1,29 @@
+parameters:
+  serviceName: ''
+
+steps:
+  - bash: |
+      ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
+    workingDirectory: wikiupdate_api
+    displayName: Build wikiupdate_api docker image
+    condition: and(succeeded(), eq(variables.updated, 'true'))
+  - task: Docker@2
+    inputs:
+      containerRegistry: 'acr'
+      repository: ${{ parameters.serviceName }}
+      command: 'push'
+      tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
+    displayName: Push wikiupdate_api docker image
+    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  - bash: |
+      ${{ format('sed -i.bak .k8s/deployment.yaml \
+        -e s@%IMAGE%@scouterna.azurecr.io/{0}:{1}-{2}@', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
+    workingDirectory: wikiupdate_api
+    displayName: Make kubernetes manifest from template
+    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: ${{ format('{0}/.k8s', parameters.serviceName) }}
+      ArtifactName: 'j22wikiupdate_api-k8s'
+      publishLocation: 'Container'
+    condition: and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
