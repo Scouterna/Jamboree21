@@ -36,3 +36,4 @@ jobs:
       serviceName: wikiupdate_api
       subPath: wikiupdate_api
       stepsTemplate: wikiupdate_api/.azure-pipelines/build.yaml
+
