@@ -65,6 +65,6 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run()
     thread = Thread(target = sendhook.main())
     thread.start()
+    app.run()
