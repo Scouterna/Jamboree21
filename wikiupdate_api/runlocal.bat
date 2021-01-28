@@ -1,0 +1,2 @@
+set webhook_url=https://scouterna.webhook.office.com/webhookb2/e57b2ac2-02a3-4b6b-9c6b-947d3edde373@317a47ba-fd32-41b8-8ebe-310a1adc9863/IncomingWebhook/afedd32062b34857a8ddb6af5423e416/1e0f7ae4-2e2a-4601-8c43-bfc31e1af970
+set wikiupdate_api_secret=superhemligt
