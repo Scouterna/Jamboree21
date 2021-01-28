@@ -46,6 +46,7 @@ def main():
         try:
             schedule.run_pending()
         except ConnectionRefusedError:
+            print("Conn refused, trying in 60s")
             continue
         
         time.sleep(1)
