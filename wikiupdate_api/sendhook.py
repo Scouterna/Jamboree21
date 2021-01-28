@@ -41,8 +41,7 @@ def sendhook():
 
 def main():
     print("Hello from thread!")
-    #schedule.every().day.at("12:00").do(sendhook)
-    schedule.every(60).seconds.do(sendhook)
+    schedule.every().day.at("12:00").do(sendhook)
     while True:
         try:
             schedule.run_pending()
