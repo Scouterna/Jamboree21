@@ -8,6 +8,7 @@ header = {
 uri = os.environ["webhook_url"]
 
 def sendhook():
+
     j = json.loads(requests.get("http://localhost:5000/?d=1", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
 
     out = {
@@ -42,5 +43,9 @@ def main():
     #schedule.every().day.at("12:00").do(sendhook)
     schedule.every(60).seconds.do(sendhook)
     while True:
-        schedule.run_pending()
+        try:
+            schedule.run_pending()
+        except ConnectionRefusedError:
+            continue
+        
         time.sleep(1)
