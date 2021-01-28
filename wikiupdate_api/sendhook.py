@@ -8,7 +8,7 @@ header = {
 uri = os.environ["webhook_url"]
 
 def sendhook():
-
+    print("Welcome to sendhook")
     j = json.loads(requests.get("http://localhost:5000/?d=1", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
 
     out = {
@@ -40,12 +40,13 @@ def sendhook():
     print(r.text)
 
 def main():
+    print("Hello from thread!")
     #schedule.every().day.at("12:00").do(sendhook)
     schedule.every(60).seconds.do(sendhook)
     while True:
         try:
             schedule.run_pending()
-        except ConnectionRefusedError:
+        except requests.exceptions.ConnectionError:
             print("Conn refused, trying in 60s")
             continue
         

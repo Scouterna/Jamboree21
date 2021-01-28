@@ -6,7 +6,7 @@ from flask import Flask,request, abort
 app = Flask(__name__)
 # for deployment in azure-k8s
 settings = {
-    "mw-url": "http:/mediawiki",
+    "mw-url": "http://mediawiki",
     "apisecret": os.environ["wikiupdate_api_secret"],
     "cookie": ""
 }
@@ -65,6 +65,9 @@ def index():
 
 
 if __name__ == '__main__':
-    thread = Thread(target = sendhook.main())
+    print("Starting thread...")
+    thread = Thread(target = sendhook.main)
     thread.start()
+    print("Starting webserver!")
     app.run()
+    
