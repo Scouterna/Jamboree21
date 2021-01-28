@@ -19,11 +19,13 @@ settings = {
 url = settings["mw-url"] + "/api.php"
 
 headers = {
-    "Host": "wiki.internal.jamboree.se.webservices.scouterna.net",
+    "Host": "mediawiki",
     "User-Agent": "Scouterna/J22wikibot",
     "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
     "Connection": "keep-alive",
-    "Cookie": settings["cookie"]
+    "Cookie": settings["cookie"],
+    "X-Oauth-Name":"Bot",
+    "X-Oauth-Email":"bot@mrmanner.eu"
 }
 
 @app.route('/', methods=['GET'])
