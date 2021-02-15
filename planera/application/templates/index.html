@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet"> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planera {{ jmb_name }}</title>
+    <style>
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        #grid-col {
+            display: grid;
+            grid-template-columns: 30% auto;
+            grid-template-rows: auto;
+            grid-column-gap: 10px;
+            grid-row-gap: 30px;
+        }
+
+        div.cell {
+            background: #feffc4;
+            border: 1px solid #aaa;
+            padding: 10px;
+        }
+        
+        #daysleft {
+            font-size: x-large;
+        }
+
+        #nowtime {
+            font-size: x-large;
+        }
+        #linkgrid {
+            display: grid;
+            grid-template-columns: repeat(4,100px);
+            grid-template-rows: 100px;
+            grid-column-gap: 10px;
+
+            
+        }
+
+        .links {
+            background-image:url("https://thinkadnet.com/wp-content/uploads/2020/07/microsoftTeamslogo.jpg");
+            background-size: contain;
+            border: 1px solid #aaa;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="grid-col">
+        <div class="cell">
+            <h1>Välkommen till {{ jmb_name }}</h1>
+            <p id="nowtime">{{ now }}</p>
+            <p id="daysleft">{{ daysleft }} dagar kvar till {{ jmb_name }}.</p>
+        </div>
+        <div class="cell">
+            <h2>Kalender</h2>
+        </div>
+        <div class="cell">
+            <h2>Snabba länkar</h2>
+            <div id="linkgrid">
+                <a href="http://teams.microsoft.com">
+                    <div class="links">Wikin</div>
+                </a>
+                
+                <div class="links">Teams</div>
+                <div class="links">Facelist</div>
+                <div class="links">Reachmee</div>
+            </div>
+        </div>
+        <div class="cell">
+            <h2>Nytt på wikin</h2>
+        </div>
+        <div class="cell">
+            <h2>Ny i {{ jmb_name }}?</h2>
+        </div>
+    </div>
+</body>
+</html>
