@@ -20,7 +20,7 @@
         }
 
         div.cell {
-            background: #feffc4;
+            background: white;
             border: 1px solid #aaa;
             padding: 10px;
         }
@@ -37,15 +37,45 @@
             grid-template-columns: repeat(4,100px);
             grid-template-rows: 100px;
             grid-column-gap: 10px;
+        }
 
-            
+        #wiki {
+        } 
+
+        #facelist {
+            font-size: 400%;
+        }
+
+        #reachmee {
+
         }
 
         .links {
-            background-image:url("https://thinkadnet.com/wp-content/uploads/2020/07/microsoftTeamslogo.jpg");
             background-size: contain;
             border: 1px solid #aaa;
             padding: 10px;
+        }
+
+        table, td, th {
+            border: 1px black solid;
+            border-collapse: collapse;
+            
+        }
+
+        table {
+            border-spacing: 5px;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #eee;
+        }
+
+        th, td {
+            padding: 15px;
         }
     </style>
 </head>
@@ -62,20 +92,35 @@
         <div class="cell">
             <h2>Snabba länkar</h2>
             <div id="linkgrid">
-                <a href="http://teams.microsoft.com">
-                    <div class="links">Wikin</div>
-                </a>
                 
-                <div class="links">Teams</div>
-                <div class="links">Facelist</div>
-                <div class="links">Reachmee</div>
+                    <div class="links" id="wiki">
+                        <a href="http://teams.microsoft.com" style="">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/99/Svenska_Scoutr%C3%A5det.svg/1200px-Svenska_Scoutr%C3%A5det.svg.png" alt="" style="max-width: 100%;">
+                        </a>
+                    </div>
+                
+                
+                <div class="links" id="teams"><a href="https://teams.microsoft.com">
+                    <img src="https://thinkadnet.com/wp-content/uploads/2020/07/microsoftTeamslogo.jpg" alt="" style="max-width: 100%;">
+                </a></div>
+                <div class="links" id="facelist"><a href="https://facelist.webservices.scouterna.net">
+                    <div>FL</div>
+                </a></div>
+                <div class="links" id="reachmee"><a href="https://reachmee.com">
+                    <img src="https://external-content.duckduckgo.com/ip3/site201.reachmee.com.ico" alt="" style="width: 100%;">
+                </a></div>
             </div>
         </div>
         <div class="cell">
             <h2>Nytt på wikin</h2>
+            {{ wikilatest|safe }}
         </div>
         <div class="cell">
             <h2>Ny i {{ jmb_name }}?</h2>
+            <p>
+                Börja med att läsa <a href="https://wiki.internal.jamboree.se.webservices.scouterna.net/Kategori:Ny_i_Jamboree22">här</a> och besök <a href="https://teams.microsoft.com">Teams</a> för att läsa välkomstbrevet.
+                Har du några tekniska problem med att komma in på Teams, kan du kontakta Team Teams <a href="mailto:johan.manner@scouterna.se">per mejl</a>.
+            </p>
         </div>
     </div>
 </body>
