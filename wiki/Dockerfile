@@ -119,6 +119,7 @@ COPY logo.png logo.png
 
 # install extensions
 COPY vendor/Auth_remoteuser extensions/Auth_remoteuser
+COPY vendor/CategoryTree extensions/CategoryTree
 COPY vendor/MassEditRegex extensions/MassEditRegex
 COPY vendor/MinervaNeue skins/MinervaNeue
 COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSuggestions
