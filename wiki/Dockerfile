@@ -114,27 +114,27 @@ RUN set -eux; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
 	rm -rf /var/lib/apt/lists/*
 
-
-# install extensions
-COPY vendor/VisualEditor extensions/VisualEditor
 COPY LocalSettings.php LocalSettings.php
 COPY logo.png logo.png
-COPY vendor/MobileFrontend extensions/MobileFrontend
-COPY vendor/MinervaNeue skins/MinervaNeue
-COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSuggestions
-COPY vendor/simplesamlphp-1.18.4 simplesamlphp
+
+# install extensions
 COPY vendor/Auth_remoteuser extensions/Auth_remoteuser
 COPY vendor/MassEditRegex extensions/MassEditRegex
+COPY vendor/MinervaNeue skins/MinervaNeue
+COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSuggestions
+COPY vendor/MobileFrontend extensions/MobileFrontend
+COPY vendor/PluggableAuth extensions/PluggableAuth
+COPY vendor/Renameuser extensions/Renameuser
+COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
+COPY vendor/VisualEditor extensions/VisualEditor
 
 # SimpleSAML setup
+COPY vendor/simplesamlphp-1.18.4 simplesamlphp
 RUN ln -sf simplesamlphp/www simplesaml
 COPY simplesamlconfig/config.php simplesamlphp/config/config.php
 COPY simplesamlconfig/saml20-idp-remote.php simplesamlphp/metadata/saml20-idp-remote.php
 COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
 
-COPY vendor/PluggableAuth extensions/PluggableAuth
-COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
-COPY vendor/Renameuser extensions/Renameuser
 
 # Patch Media-wiki, set 403-code on permission errors
 COPY patches /tmp/patches
