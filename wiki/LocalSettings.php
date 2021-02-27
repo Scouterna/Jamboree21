@@ -26,7 +26,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 ## Uncomment this to disable output compression
 # $wgDisableOutputCompression = true;
 
-$wgSitename = "Jamboree21";
+$wgSitename = "Jamboree22";
 $wgMetaNamespace = "Meta";
 
 # Allow DISPLAYTITLE to contain anything, default is to restrict it to only format-changes.
