@@ -6,13 +6,14 @@ use MediaWiki\MediaWikiServices;
  * The mobile version of the watchlist editing page.
  */
 class SpecialMobileEditWatchlist extends SpecialEditWatchlist {
-	/** @var string $offsetTitle The name of the title to begin listing the watchlist from */
+	/** @var string The name of the title to begin listing the watchlist from */
 	protected $offsetTitle;
 
 	public function __construct() {
 		$req = $this->getRequest();
 		$this->offsetTitle = $req->getVal( 'from', '' );
-		parent::__construct();
+		$watchStoreItem = MediaWikiServices::getInstance()->getWatchedItemStore();
+		parent::__construct( $watchStoreItem );
 	}
 
 	/**
@@ -45,7 +46,7 @@ class SpecialMobileEditWatchlist extends SpecialEditWatchlist {
 				'mobile-frontend-last-modified-date',
 				$this->getLanguage()->userDate( $timestamp, $user ),
 				$this->getLanguage()->userTime( $timestamp, $user )
-			)->parse();
+			)->text();
 			$edit = $mp->getLatestEdit();
 			$dataAttrs = [
 				'data-timestamp' => $edit['timestamp'],
@@ -140,7 +141,7 @@ class SpecialMobileEditWatchlist extends SpecialEditWatchlist {
 	 * Identify the next page to be shown
 	 *
 	 * @param array $pages
-	 * @return string|boolean representing title of next page to show or
+	 * @return string|bool representing title of next page to show or
 	 *  false if there isn't another page to show.
 	 */
 	private function getNextPage( $pages ) {
@@ -178,17 +179,16 @@ class SpecialMobileEditWatchlist extends SpecialEditWatchlist {
 
 		// Begin rendering of watchlist.
 		$watchlist = [ $ns => $allPages ];
-		Hooks::run( 'SpecialMobileEditWatchlist::images', [
-				$this->getContext(),
-				&$watchlist,
-				&$images
-			]
+		$services = MediaWikiServices::getInstance();
+		$services->getHookContainer()->run(
+			'SpecialMobileEditWatchlist::images',
+			[ $this->getContext(), &$watchlist, &$images ]
 		);
 
 		// create list of pages
 		$mobilePages = new MobileCollection();
 		$pageKeys = array_keys( $watchlist[$ns] );
-		$repoGroup = MediaWikiServices::getInstance()->getRepoGroup();
+		$repoGroup = $services->getRepoGroup();
 		foreach ( $pageKeys as $dbkey ) {
 			if ( isset( $images[$ns][$dbkey] ) ) {
 				$page = new MobilePage(
@@ -211,7 +211,7 @@ class SpecialMobileEditWatchlist extends SpecialEditWatchlist {
 			$qs = [ 'from' => $from ];
 			$html .= Html::element( 'a',
 				[
-					'class' => MobileUI::anchorClass( 'progressive', 'more' ),
+					'class' => MobileUI::anchorClass( 'progressive', 'mw-mf-watchlist-more' ),
 					'href' => SpecialPage::getTitleFor( 'EditWatchlist' )->getLocalURL( $qs ),
 				],
 				$this->msg( 'mobile-frontend-watchlist-more' )->text() );
@@ -234,11 +234,12 @@ class SpecialMobileEditWatchlist extends SpecialEditWatchlist {
 	 * @return string html representation of collection in watchlist view
 	 */
 	protected function getViewHtml( MobileCollection $collection ) {
-		$html = '<ul class="watchlist content-unstyled page-list thumbs page-summary-list">';
+		$html = Html::openElement( 'ul', [ 'class' => 'content-unstyled page-list thumbs'
+			. ' page-summary-list mw-mf-watchlist-page-list' ] );
 		foreach ( $collection as $mobilePage ) {
 			$html .= $this->getLineHtml( $mobilePage );
 		}
-		$html .= '</ul>';
+		$html .= Html::closeElement( 'ul' );
 		return $html;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 
-use MobileFrontend\ContentProviders\MwApiContentProvider;
 use MediaWiki\Http\HttpRequestFactory;
+use MobileFrontend\ContentProviders\MwApiContentProvider;
 
 /**
  * @group MobileFrontend
@@ -77,12 +77,10 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 	private function mockOutputPage( Title $title ) {
 		$mockOutputPage = $this->getMockBuilder( OutputPage::class )
 			->disableOriginalConstructor()
-			->setMethods( [ 'getTitle', 'getPrefixedDBkey' ] )
+			->onlyMethods( [ 'getTitle' ] )
 			->getMock();
 		$mockOutputPage->method( 'getTitle' )
 			->willReturn( $title );
-		$mockOutputPage->method( 'getPrefixedDBkey' )
-			->willReturn( $title->getPrefixedDBkey() );
 
 		return $mockOutputPage;
 	}
@@ -111,7 +109,7 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 	public function testGetHtmlWithNoTitle() {
 		$mockOutputPage = $this->getMockBuilder( OutputPage::class )
 			->disableOriginalConstructor()
-			->setMethods( [ 'getTitle' ] )
+			->onlyMethods( [ 'getTitle' ] )
 			->getMock();
 		$mockOutputPage->method( 'getTitle' )
 			->willReturn( null );
@@ -164,7 +162,8 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 	public function testGetHtmlWithCorrectResponse() {
 		$rawResponse = '{"parse": {"title": "MobileFrontend", "pageid": 2, "revid": 123, ' .
 			'"text": "Some text", "langlinks": [{"lang": "test", "title": "MF"}], "modules": ["site", ' .
-			'"test", "test1"], "modulescripts": [], "modulestyles": ["test", "test1", "test2"], ' .
+			'"test", "test1"], "modulescripts": [], ' .
+			'"modulestyles": ["test", "test1", "test2", "skins.random"], ' .
 			'"properties": {"noexternallanglinks": "test", "noeditsection": "", "notoc": "", ' .
 			'"wikibase_item": "QXXX", "wikibase-shortdesc": "No desc"}}}';
 
@@ -177,9 +176,8 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 		// methods of the output page mock.
 		$mockOutputPage = $this->getMockBuilder( OutputPage::class )
 			->disableOriginalConstructor()
-			->setMethods( [
+			->onlyMethods( [
 					'getTitle',
-					'getPrefixedDBkey',
 					'addModules',
 					'addModuleStyles',
 					'addJsConfigVars'
@@ -188,8 +186,6 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 		$title = Title::newFromText( 'Test Title' );
 		$mockOutputPage->method( 'getTitle' )
 			->willReturn( $title );
-		$mockOutputPage->method( 'getPrefixedDBkey' )
-			->willReturn( $title->getPrefixedDBkey() );
 		$mockOutputPage->expects( $this->atLeastOnce() )
 			->method( 'addModules' )
 			->with( [ "site", "test", "test1" ] );
@@ -210,7 +206,7 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 		$this->assertSame( 'Some text', $actual );
 
 		// Also, this should be in sync with the $rawResponse above (langlinks)
-		$this->assertArraySubset( [ ':test:MF' ], $mockOutputPage->getLanguageLinks() );
+		$this->assertContains( ':test:MF', $mockOutputPage->getLanguageLinks() );
 		$this->assertSame( 'No desc', $mockOutputPage->getProperty( 'wgMFDescription' ) );
 	}
 }

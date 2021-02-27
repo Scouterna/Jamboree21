@@ -3,21 +3,17 @@
 		"authors": [
 			"Chaduvari",
 			"Jprmvnvijay5",
+			"Kiranmayee",
 			"Ravichandra",
 			"Veeven",
 			"Wellwisher",
-			"రహ్మానుద్దీన్",
-			"Kiranmayee"
+			"రహ్మానుద్దీన్"
 		]
 	},
 	"mobile-frontend-changeslist-nocomment": "సవరణ సారాంశం లేదు",
 	"mobile-frontend-clear-search": "తుడిచివేయి",
 	"mobile-frontend-copyright": "అదనంగా సూచించని పక్షంలో పాఠ్యం $1 క్రింద లభ్యం",
 	"mobile-frontend-diffview-title": "మార్పులు",
-	"mobile-frontend-donate-image-nouploads": "ఎక్కింపులు లేవు.",
-	"mobile-frontend-donate-image-title": "ఎక్కింపులు",
-	"mobile-frontend-donate-image-title-username": "$1 ఎక్కింపులు",
-	"mobile-frontend-donate-image-title-you": "మీ ఎక్కింపులు",
 	"mobile-frontend-editor-anonwarning": "<strong>హెచ్చరిక:</strong> మీరు లాగినవలేదు. మీరు ఏమైనా మార్పులు చేస్తే మీ ఐపీ చిరునామా బహిరంగంగా అందరికీ కనిపిస్తుంది. మీరు <strong>లాగిన్ ఐనా</strong> లేక <strong>ఖాతా సృష్టించుకున్నా</strong> మీ మార్పులు మీ పేరుతో ఉండటమే కాకుండా, మరెన్నో సదుపాయాలుంటాయి.",
 	"mobile-frontend-editor-cancel": "రద్దుచేయి",
 	"mobile-frontend-editor-continue": "తదుపరి",
@@ -43,8 +39,6 @@
 	"mobile-frontend-nearby-info-description": "మీ చుట్టూ ఉన్న స్థలాల గురించి వికీపీడియాలో ఉన్న వ్యాసాలను చదవవచ్చు",
 	"mobile-frontend-news-items": "వార్తల్లో",
 	"mobile-frontend-overlay-close": "మూసివేయి",
-	"mobile-frontend-photo-upload-invalid-user": "వాడుకరి \"$1\" నమోదుకాలేదు.",
-	"mobile-frontend-photo-upload-user-count-over-limit": "500+ ఎక్కింపులు",
 	"mobile-frontend-privacy-link-text": "గోప్యత",
 	"mobile-frontend-save-settings": "భద్రపరచు",
 	"mobile-frontend-settings-beta": "{{SITENAME}} బీటా",
@@ -60,7 +54,6 @@
 	"mobile-frontend-watchlist-more": "మరిన్ని",
 	"tag-mobile_edit": "చరవాణి సవరింపు",
 	"tag-mobile_edit-description": "మొబైలు (వెబ్ లేదా యాప్) నుండి చేసిన దిద్దుబాటు",
-	"tag-mobile_web_edit": "చరవాణి ద్వారా ఎబ్ సవరింపు",
-	"mobile-frontend-loading-message": "వస్తోంది…",
-	"mobile-frontend-panel-ok": "సరే"
+	"tag-mobile_web_edit": "చరవాణి జాల సవరింపు",
+	"mobile-frontend-loading-message": "వస్తోంది…"
 }

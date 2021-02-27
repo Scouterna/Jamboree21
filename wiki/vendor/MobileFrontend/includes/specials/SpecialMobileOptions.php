@@ -7,7 +7,7 @@ use MobileFrontend\Features\IFeature;
  * Adds a special page with mobile specific preferences
  */
 class SpecialMobileOptions extends MobileSpecialPage {
-	/** @var boolean $hasDesktopVersion Whether this special page has a desktop version or not */
+	/** @var bool Whether this special page has a desktop version or not */
 	protected $hasDesktopVersion = true;
 
 	/**
@@ -88,7 +88,7 @@ class SpecialMobileOptions extends MobileSpecialPage {
 						'input' => $amcToggle,
 						'label' => new OOUI\HtmlSnippet(
 							Html::openElement( 'div' ) .
-							Html::rawElement( 'strong', [ 'class' => 'indicator-circle' ],
+							Html::rawElement( 'strong', [],
 								$this->msg( 'mobile-frontend-mobile-option-amc' )->parse() ) .
 							Html::rawElement( 'div', [ 'class' => 'option-description' ],
 								$this->msg( 'mobile-frontend-mobile-option-amc-experiment-description' )->parse()
@@ -139,7 +139,7 @@ class SpecialMobileOptions extends MobileSpecialPage {
 		if ( $this->getRequest()->getCheck( 'success' ) ) {
 			$out->wrapWikiMsg(
 				MobileUI::contentElement(
-					Html::successBox( $this->msg( 'savedprefs' ) )
+					Html::successBox( $this->msg( 'savedprefs' )->parse() )
 				)
 			);
 		}
@@ -266,8 +266,8 @@ class SpecialMobileOptions extends MobileSpecialPage {
 		if ( $returnTo !== '' ) {
 			$title = Title::newFromText( $returnTo );
 
-			if ( !is_null( $title ) ) {
-				return $title->getFullURL();
+			if ( $title !== null ) {
+				return $title->getFullURL( $request->getText( 'returntoquery' ) );
 			}
 		}
 
@@ -308,7 +308,7 @@ class SpecialMobileOptions extends MobileSpecialPage {
 		if ( $user->isLoggedIn() && !$user->matchEditToken( $request->getVal( 'token' ) ) ) {
 			$errorText = __METHOD__ . '(): token mismatch';
 			wfDebugLog( 'mobile', $errorText );
-			$output->addHTML( '<div class="error">'
+			$output->addHTML( '<div class="errorbox">'
 				. $this->msg( "mobile-frontend-save-error" )->parse()
 				. '</div>'
 			);

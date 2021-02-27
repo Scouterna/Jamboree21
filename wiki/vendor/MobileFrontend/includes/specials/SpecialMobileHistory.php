@@ -8,17 +8,17 @@ use Wikimedia\Rdbms\IResultWrapper;
  * Mobile formatted history of of a page
  */
 class SpecialMobileHistory extends MobileSpecialPageFeed {
-	/** @var boolean $hasDesktopVersion Whether the mobile special page has a desktop special page */
+	/** @var bool Whether the mobile special page has a desktop special page */
 	protected $hasDesktopVersion = true;
 	const LIMIT = 50;
 	const DB_REVISIONS_TABLE = 'revision';
-	/** @var string|null $offset timestamp to offset results from */
+	/** @var string|null Timestamp to offset results from */
 	protected $offset;
 
-	/** @var string $specialPageName name of the special page */
+	/** @var string */
 	protected $specialPageName = 'History';
 
-	/** @var Title|null $title Null if no title passed */
+	/** @var Title|null Null if no title passed */
 	protected $title;
 
 	/** @var string a message key for the error message heading that should be shown on a 404 */
@@ -91,10 +91,12 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 	 * @return bool True, if SpecialMobileHistory can be used, false otherwise
 	 */
 	public static function shouldUseSpecialHistory( Title $title, User $user ) {
-		$contentHandler = ContentHandler::getForTitle( $title );
+		$services = MediaWikiServices::getInstance();
+		$contentHandler = $services->getContentHandlerFactory()->getContentHandler(
+			$title->getContentModel()
+		);
 		$actionOverrides = $contentHandler->getActionOverrides();
-		$featureManager = \MediaWiki\MediaWikiServices::getInstance()
-			->getService( 'MobileFrontend.FeaturesManager' );
+		$featureManager = $services->getService( 'MobileFrontend.FeaturesManager' );
 
 		// if history is overwritten, assume, that SpecialMobileHistory can't handle them
 		if ( isset( $actionOverrides['history'] ) ) {
@@ -121,7 +123,7 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 			"mobile.placeholder.images",
 			'mobile.pagesummary.styles',
 		] );
-		$this->offset = $this->getRequest()->getVal( 'offset', false );
+		$this->offset = $this->getRequest()->getVal( 'offset' );
 
 		if ( $par ) {
 			// enter article history view
@@ -166,7 +168,7 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 
 		$options['LIMIT'] = self::LIMIT + 1;
 
-		$revQuery = Revision::getQueryInfo();
+		$revQuery = MediaWikiServices::getInstance()->getRevisionStore()->getQueryInfo();
 
 		$res = $dbr->select(
 			$revQuery['tables'], $revQuery['fields'], $conds, __METHOD__, $options, $revQuery['joins']
@@ -181,10 +183,10 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 	 * changed bytes
 	 * name of editor
 	 * comment of edit
-	 * @param Revision $rev Revision id of the row wants to show
-	 * @param Revision|null $prev Revision id of previous Revision to display the difference
+	 * @param RevisionRecord $rev Revision of the row to show
+	 * @param ?RevisionRecord $prev Revision of previous Revision to display the difference
 	 */
-	protected function showRow( Revision $rev, $prev ) {
+	private function showRow( RevisionRecord $rev, ?RevisionRecord $prev ) {
 		$unhide = $this->getRequest()->getBool( 'unhide' );
 		$user = $this->getUser();
 		$username = $this->getUsernameText( $rev, $user, $unhide );
@@ -194,11 +196,20 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 		$this->renderListHeaderWhereNeeded( $this->getLanguage()->userDate( $ts, $this->getUser() ) );
 		$ts = new MWTimestamp( $ts );
 
-		$canSeeText = $rev->userCan( RevisionRecord::DELETED_TEXT, $user );
-		if ( $canSeeText && $prev && $prev->userCan( RevisionRecord::DELETED_TEXT, $user ) ) {
+		$canSeeText = RevisionRecord::userCanBitfield(
+			$rev->getVisibility(),
+			RevisionRecord::DELETED_TEXT,
+			$user
+		);
+		if ( $canSeeText && $prev && RevisionRecord::userCanBitfield(
+			$prev->getVisibility(),
+			RevisionRecord::DELETED_TEXT,
+			$user
+		) ) {
 			$diffLink = SpecialPage::getTitleFor( 'MobileDiff', $rev->getId() )->getLocalURL();
-		} elseif ( $canSeeText && $rev->getTitle() !== null ) {
-			$diffLink = $rev->getTitle()->getLocalURL( [ 'oldid' => $rev->getId() ] );
+		} elseif ( $canSeeText ) {
+			$diffLink = Title::newFromLinkTarget( $rev->getPageAsLinkTarget() )
+				->getLocalURL( [ 'oldid' => $rev->getId() ] );
 		} else {
 			$diffLink = false;
 		}
@@ -207,15 +218,23 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 		if ( $this->title ) {
 			$title = null;
 		} else {
-			$title = $rev->getTitle();
+			$title = Title::newFromLinkTarget( $rev->getPageAsLinkTarget() );
 		}
 		$bytes = $rev->getSize();
 		if ( $prev ) {
 			$bytes -= $prev->getSize();
 		}
 		$isMinor = $rev->isMinor();
+
+		$revUser = $rev->getUser( RevisionRecord::FOR_THIS_USER, $user );
+		if ( $revUser ) {
+			$revIsAnon = !( $revUser->isRegistered() );
+		} else {
+			// Default to anonymous if unknown
+			$revIsAnon = true;
+		}
 		$this->renderFeedItemHtml( $ts, $diffLink, $username, $comment, $title,
-			$rev->getUser( RevisionRecord::FOR_THIS_USER, $user ) === 0, $bytes, $isMinor );
+			$revIsAnon, $bytes, $isMinor );
 	}
 
 	/**
@@ -231,7 +250,7 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 						'offset' => $ts,
 					]
 				),
-			'class' => 'more',
+			'class' => 'mw-mf-watchlist-more',
 		];
 		return Html::element(
 			'a', $attrs, $this->msg( 'pager-older-n' )->numParams( self::LIMIT )->text()
@@ -248,9 +267,10 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 		$numRows = $res->numRows();
 		$rev1 = $rev2 = null;
 		$out = $this->getOutput();
+		$revFactory = MediaWikiServices::getInstance()->getRevisionFactory();
 		if ( $numRows > 0 ) {
 			foreach ( $res as $row ) {
-				$rev1 = new Revision( $row );
+				$rev1 = $revFactory->newRevisionFromRow( $row );
 				if ( $rev2 ) {
 					$this->showRow( $rev2, $rev1 );
 				}
@@ -269,7 +289,7 @@ class SpecialMobileHistory extends MobileSpecialPageFeed {
 			// Edge case.
 			// I suspect this is here because revisions may exist but may have been hidden.
 			$out->addHTML(
-				Html::warningBox( $this->msg( 'mobile-frontend-history-no-results' ) ) );
+				Html::warningBox( $this->msg( 'mobile-frontend-history-no-results' )->parse() ) );
 		}
 	}
 

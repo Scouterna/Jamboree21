@@ -2,8 +2,8 @@
 
 namespace MobileFrontend\AMC;
 
-use \User;
-use \Config;
+use Config;
+use User;
 
 final class Outreach {
 	/**
@@ -12,7 +12,7 @@ final class Outreach {
 	const CONFIG_NAME = 'MFAmcOutreach';
 
 	/**
-	 * Config name used to set the mininum number of edits a user must make before
+	 * Config name used to set the minimum number of edits a user must make before
 	 * they will be eligible for AMC Outreach
 	 */
 	const MIN_EDIT_COUNT_CONFIG_NAME = 'MFAmcOutreachMinEditCount';

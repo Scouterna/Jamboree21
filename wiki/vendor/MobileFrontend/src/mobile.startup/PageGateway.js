@@ -1,7 +1,6 @@
 var util = require( './util.js' ),
 	Section = require( './Section' ),
 	sectionTemplate = Section.prototype.template,
-	Page = require( './Page' ),
 	actionParams = require( './actionParams' ),
 	cache = {};
 
@@ -9,6 +8,7 @@ var util = require( './util.js' ),
  * Add child to listOfSections if the level of child is the same as the last
  * child of listOfSections, otherwise add it to the children of the last
  * section of listOfSections. If listOfSections is empty, just add child to it.
+ *
  * @private
  * @param {Array} listOfSections - Array of section ids
  * @param {Object} child - Section to be added to listOfSections
@@ -32,6 +32,7 @@ function assignToParent( listOfSections, child ) {
 
 /**
  * Order sections hierarchically
+ *
  * @private
  * @param {Array} sections Array of section objects created from response HTML
  * @return {Array} Ordered array of sections
@@ -51,9 +52,6 @@ function transformSections( sections ) {
 	// if the first section level is not equal to collapseLevel, this first
 	// section will not have a parent and will be appended to the result.
 	sections.forEach( function ( section ) {
-		if ( section.line !== undefined ) {
-			section.line = section.line.replace( /<\/?a\b[^>]*>/g, '' );
-		}
 		section.subsections = [];
 
 		if (
@@ -86,6 +84,7 @@ function transformSections( sections ) {
 
 /**
  * API for providing Page data
+ *
  * @class PageGateway
  * @param {mw.Api} api
  */
@@ -95,127 +94,8 @@ function PageGateway( api ) {
 
 PageGateway.prototype = {
 	/**
-	 * Retrieve the sections of a page
-	 * @memberof PageGateway
-	 * @instance
-	 * @param {string} title the title of the page to retrieve sections for
-	 * @return {JQuery.Promise}
-	 */
-	getSections: function ( title ) {
-		var promise = util.Deferred();
-		this.getPage( title ).then( function ( pageData ) {
-			var page = new Page( pageData );
-			promise.resolve( page.getSections() );
-		}, function ( resp ) {
-			// If the API returns the error code 'missingtitle', that means the
-			// talk page doesn't exist yet.
-			if ( resp === 'missingtitle' ) {
-				promise.resolve( [] );
-			} else {
-				promise.reject();
-			}
-		} );
-		return promise.promise();
-	},
-	/**
-	 * Retrieve a page from the api
-	 * @memberof PageGateway
-	 * @instance
-	 * @param {string} title the title of the page to be retrieved
-	 * @param {string} [endpoint] an alternative api url to retrieve the page from
-	 * @param {boolean} [leadOnly] When set only the lead section content is returned
-	 * @return {jQuery.Deferred} with parameter page data that can be passed to a Page view
-	 */
-	getPage: function ( title, endpoint, leadOnly ) {
-		var timestamp,
-			d = util.Deferred(),
-			params = endpoint ? {
-				url: endpoint,
-				dataType: 'jsonp'
-			} : {},
-			protection = {
-				edit: [ '*' ]
-			};
-
-		util.extend( params,
-			actionParams( {
-				action: 'mobileview',
-				page: title,
-				variant: mw.config.get( 'wgPageContentLanguage' ),
-				redirect: 'yes',
-				prop: 'id|sections|text|lastmodified|lastmodifiedby|languagecount|hasvariants|protection|displaytitle|revision',
-				noheadings: 'yes',
-				sectionprop: 'level|line|anchor',
-				sections: leadOnly ? 0 : 'all'
-			} )
-		);
-
-		if ( !cache[title] ) {
-			cache[title] = this.api.get( params ).then( function ( resp ) {
-				var sections, lastModified, resolveObj, mv;
-
-				if ( resp.error ) {
-					return d.reject( resp.error );
-				} else if ( !resp.mobileview.sections ) {
-					return d.reject( 'No sections' );
-				} else {
-					mv = resp.mobileview;
-					sections = transformSections( mv.sections );
-					// Assume the timestamp is in the form TS_ISO_8601
-					// and we don't care about old browsers
-					// change to seconds to be consistent with PHP
-					timestamp = new Date( mv.lastmodified ).getTime() / 1000;
-					lastModified = mv.lastmodifiedby;
-
-					// FIXME: [API] the API sometimes returns an object and sometimes an array
-					// There are various quirks with the format of protection level
-					// as returned by api.
-					// Also it is usually incomplete - if something is missing this means
-					// that it has no protection level.
-					// When an array this means there is no protection level set.
-					// To keep the data type consistent either use the predefined
-					// protection level,
-					// or extend it with what is returned by API.
-					protection = Array.isArray( mv.protection ) ?
-						protection :
-						util.extend( protection, mv.protection );
-
-					resolveObj = {
-						title: title,
-						id: mv.id,
-						revId: mv.revId,
-						protection: protection,
-						lead: sections[0].text,
-						sections: sections.slice( 1 ),
-						isMainPage: mv.mainpage !== undefined,
-						historyUrl: mw.util.getUrl( title, {
-							action: 'history'
-						} ),
-						lastModifiedTimestamp: timestamp,
-						languageCount: mv.languagecount,
-						hasVariants: mv.hasvariants !== undefined,
-						displayTitle: mv.displaytitle
-					};
-					// Add non-anonymous user information
-					if ( lastModified ) {
-						util.extend( resolveObj, {
-							lastModifiedUserName: lastModified.name,
-							lastModifiedUserGender: lastModified.gender
-						} );
-					}
-					// FIXME: Return a Page class here
-					return resolveObj;
-				}
-			}, function ( msg ) {
-				return d.reject( msg );
-			} );
-		}
-
-		return cache[title];
-	},
-
-	/**
 	 * Invalidate the internal cache for a given page
+	 *
 	 * @memberof PageGateway
 	 * @instance
 	 * @param {string} title the title of the page who's cache you want to invalidate
@@ -226,6 +106,7 @@ PageGateway.prototype = {
 
 	/**
 	 * Gets language variant list for a page; helper function for getPageLanguages()
+	 *
 	 * @memberof PageGateway
 	 * @instance
 	 * @private
@@ -267,6 +148,7 @@ PageGateway.prototype = {
 
 	/**
 	 * Retrieve available languages for a given title
+	 *
 	 * @memberof PageGateway
 	 * @instance
 	 * @param {string} title the title of the page languages should be retrieved for
@@ -303,6 +185,7 @@ PageGateway.prototype = {
 
 	/**
 	 * Extract sections from headings in $el
+	 *
 	 * @memberof PageGateway
 	 * @instance
 	 * @private
@@ -334,6 +217,7 @@ PageGateway.prototype = {
 
 	/**
 	 * Order sections hierarchically
+	 *
 	 * @memberof PageGateway
 	 * @instance
 	 * @param {jQuery.Object} $el object from which sections are extracted

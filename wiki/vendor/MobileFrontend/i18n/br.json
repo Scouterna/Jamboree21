@@ -3,9 +3,9 @@
 		"authors": [
 			"Fohanno",
 			"Fulup",
-			"Y-M D",
 			"Gwenn-Ael",
-			"Pymouss"
+			"Pymouss",
+			"Y-M D"
 		]
 	},
 	"mobile-frontend-account-create-captcha-placeholder": "Skrivit ar c'hod kadarnaat",
@@ -19,7 +19,6 @@
 	"mobile-frontend-diffview-bytesnochange": "Kemm ebet er vent",
 	"mobile-frontend-diffview-bytesremoved": "$1 {{PLURAL:$1|okted}} lamet",
 	"mobile-frontend-diffview-title": "Kemmoù",
-	"mobile-frontend-donate-image-title": "Reiñ ur skeudenn",
 	"mobile-frontend-edit-login-action": "Kevreañ evit aozañ.",
 	"mobile-frontend-editor-cancel": "Nullañ",
 	"mobile-frontend-editor-captcha-try-again": "Kod direizh, esaeit en-dro.",
@@ -62,9 +61,7 @@
 	"mobile-frontend-settings-beta": "Beta",
 	"mobile-frontend-talk-add-overlay-content-placeholder": "E petra emaoc'h o soñjal ?",
 	"mobile-frontend-talk-add-overlay-submit": "Ouzhpennañ ur gaozeadenn",
-	"mobile-frontend-talk-overlay-header": "Kaozeal",
 	"mobile-frontend-talk-reply": "Respont",
-	"mobile-frontend-talk-reply-success": "Enrollet eo bet ho respont evel ma oa dleet er bajenn gaozeal.",
 	"mobile-frontend-terms-text": "Termenoù implijout",
 	"mobile-frontend-view": "Gwel evit an hezoug",
 	"mobile-frontend-view-desktop": "Burev",
@@ -81,5 +78,6 @@
 	"mobile-frontend-watchlist-more": "muioc'h",
 	"nearby": "Pajennoù tost deoc'h",
 	"tag-mobile_edit": "Kemmañ gant an hezoug",
-	"tag-mobile_web_edit": "Kemmañ dre ar web hezoug"
+	"tag-mobile_web_edit": "Kemmañ dre ar web hezoug",
+	"mobile-frontend-console-recruit": "Gouzout hiroc'h war ar mod m'eo bet savet hol lec'hienn hezoug @ https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:MobileFrontend"
 }

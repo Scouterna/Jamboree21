@@ -9,6 +9,7 @@ var EditorOverlayBase = require( './EditorOverlayBase' ),
 
 /**
  * Overlay for VisualEditor view
+ *
  * @class VisualEditorOverlay
  * @extends EditorOverlayBase
  *
@@ -56,7 +57,8 @@ function VisualEditorOverlay( options ) {
 
 	this.target = ve.init.mw.targetFactory.create( 'article', this, {
 		$element: this.$el,
-		section: this.options.sectionId
+		// string or null, but not undefined
+		section: this.options.sectionId || null
 	} );
 	this.target.once( 'surfaceReady', function () {
 		surfaceReady.resolve();
@@ -101,6 +103,7 @@ mfExtend( VisualEditorOverlay, EditorOverlayBase, {
 	editor: 'visualeditor',
 	/**
 	 * Destroy the existing VisualEditor target.
+	 *
 	 * @memberof VisualEditorOverlay
 	 * @instance
 	 */
@@ -153,7 +156,7 @@ mfExtend( VisualEditorOverlay, EditorOverlayBase, {
 	 * caused by the presence of hatnote templates (both only shown in edit mode).
 	 */
 	scrollToLeadParagraph: function () {
-		var editLead, editLeadView, readLead, offset,
+		var editLead, editLeadView, readLead, offset, initialCursorOffset,
 			currentPageHTMLParser = this.options.currentPageHTMLParser,
 			fakeScroll = this.options.fakeScroll,
 			$window = $( window ),
@@ -161,7 +164,7 @@ mfExtend( VisualEditorOverlay, EditorOverlayBase, {
 			surface = this.target.getSurface(),
 			mode = surface.getMode();
 
-		if ( ( section === null || section === 0 ) && mode === 'visual' ) {
+		if ( ( section === null || section === '0' ) && mode === 'visual' ) {
 			editLead = identifyLeadParagraph( surface.getView().$attachedRootNode );
 			if ( currentPageHTMLParser.getLeadSectionElement() ) {
 				readLead = identifyLeadParagraph( currentPageHTMLParser.getLeadSectionElement() );
@@ -169,14 +172,18 @@ mfExtend( VisualEditorOverlay, EditorOverlayBase, {
 
 			if ( editLead && readLead ) {
 				offset = $( editLead ).offset().top - ( $( readLead ).offset().top - fakeScroll );
-				$window.scrollTop( $window.scrollTop() + offset );
 				// Set a model range to match
 				editLeadView = $( editLead ).data( 'view' );
 				if ( editLeadView ) {
 					surface.getModel().setLinearSelection(
 						new ve.Range( editLeadView.getModel().getRange().start )
 					);
+					initialCursorOffset =
+						surface.getView().getSelection().getSelectionBoundingRect().top;
+					// Ensure the surface is tall enough to scroll the cursor into view
+					surface.$element.css( 'min-height', $window.height() + initialCursorOffset - surface.padding.top );
 				}
+				$window.scrollTop( offset );
 			}
 		}
 	},
@@ -216,6 +223,7 @@ mfExtend( VisualEditorOverlay, EditorOverlayBase, {
 	},
 	/**
 	 * Reveal the editing interface.
+	 *
 	 * @memberof VisualEditorOverlay
 	 * @instance
 	 */
@@ -224,6 +232,7 @@ mfExtend( VisualEditorOverlay, EditorOverlayBase, {
 	},
 	/**
 	 * Loads an {SourceEditorOverlay} and replaces the existing {VisualEditorOverlay}
+	 *
 	 * @memberof VisualEditorOverlay
 	 * @instance
 	 * @param {jQuery.Promise} [dataPromise] Optional promise for loading content

@@ -1,7 +1,7 @@
 <?php
 
-use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Revision\RevisionStore;
 
 /**
  * @group MobileFrontend
@@ -26,7 +26,7 @@ class MobilePageTest extends MediaWikiTestCase {
 	private function mockFileFactory( $height ) {
 		$file = $this->getMockBuilder( 'File' )
 			->disableOriginalConstructor()
-			->setMethods( [ 'getUrl', 'getHeight', 'getWidth', 'transform' ] )
+			->onlyMethods( [ 'getUrl', 'getHeight', 'getWidth', 'transform' ] )
 			->getMock();
 
 		$file->method( 'getUrl' )
@@ -74,7 +74,7 @@ class MobilePageTest extends MediaWikiTestCase {
 		if ( $testUser ) {
 			$userId = $testUser->getUser()->getId();
 
-			$userIdentity = $this->getMock( \MediaWiki\User\UserIdentity::class );
+			$userIdentity = $this->createMock( \MediaWiki\User\UserIdentity::class );
 
 			$userIdentity->expects( $this->any() )
 				->method( 'getId' )
@@ -89,7 +89,7 @@ class MobilePageTest extends MediaWikiTestCase {
 		// mock when getRevisionByTitle() method is called.
 		$revisionStoreMock = $this->getMockBuilder( RevisionStore::class )
 			->disableOriginalConstructor()
-			->setMethods( [ 'getRevisionByTitle' ] )
+			->onlyMethods( [ 'getRevisionByTitle' ] )
 			->getMock();
 
 		$revisionStoreMock->expects( $this->once() )
@@ -107,7 +107,7 @@ class MobilePageTest extends MediaWikiTestCase {
 	private function mockRevisionStoreWithTitleReturnNullRevision( $title ) {
 		$mock = $this->getMockBuilder( RevisionStore::class )
 			->disableOriginalConstructor()
-			->setMethods( [ 'getRevisionByTitle' ] )
+			->onlyMethods( [ 'getRevisionByTitle' ] )
 			->getMock();
 
 		$mock->expects( $this->once() )
@@ -192,7 +192,7 @@ class MobilePageTest extends MediaWikiTestCase {
 		$this->setService( 'RevisionStore', $revMock );
 		$actual = $mobilePage->getLatestEdit();
 
-		$this->assertInternalType( 'array', $actual );
+		$this->assertIsArray( $actual );
 		$this->assertArrayHasKey( 'timestamp', $actual );
 		$this->assertArrayHasKey( 'name', $actual );
 		$this->assertArrayHasKey( 'gender', $actual );
@@ -212,7 +212,7 @@ class MobilePageTest extends MediaWikiTestCase {
 		$this->setService( 'RevisionStore', $revMock );
 		$actual = $mobilePage->getLatestEdit();
 
-		$this->assertInternalType( 'array', $actual );
+		$this->assertIsArray( $actual );
 		$this->assertArrayHasKey( 'timestamp', $actual );
 		$this->assertArrayHasKey( 'name', $actual );
 		$this->assertArrayHasKey( 'gender', $actual );
@@ -325,9 +325,9 @@ class MobilePageTest extends MediaWikiTestCase {
 	 * @dataProvider getSmallThumbnailHtmlWithNoThumbDataProvider
 	 */
 	public function testGetSmallThumbnailHtmlWithNoThumb( $useBackgroundImage, $expected ) {
-		$thumb = $this->getMockBuilder( 'File' )
+		$thumb = $this->getMockBuilder( File::class )
 			->disableOriginalConstructor()
-			->setMethods( [ 'transform' ] )
+			->onlyMethods( [ 'transform' ] )
 			->getMock();
 
 		$thumb->method( 'transform' )

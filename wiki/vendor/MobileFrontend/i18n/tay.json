@@ -20,8 +20,6 @@
 	"mobile-frontend-diffview-anonymous": "Inqing lalu’ nqu squliq cyux mbing",
 	"mobile-frontend-diffview-bytesnochange": "Ungat pinsbahan na kinkrahu’ niya’",
 	"mobile-frontend-diffview-title": "Ssbah",
-	"mobile-frontend-donate-image-nouploads": "Ungat quw pnawsa’.",
-	"mobile-frontend-donate-image-title-you": "Isu’ quw ppawsa’ sa kktan",
 	"mobile-frontend-editor-anon": "Sinr’zyut squw ini’ kzyup na’",
 	"mobile-frontend-editor-cancel": "Laxan",
 	"mobile-frontend-editor-continue": "Suruw niya’ lga",
@@ -40,7 +38,6 @@
 	"mobile-frontend-languages-structured-overlay-all-languages-header": "Kwara’ kay’",
 	"mobile-frontend-languages-structured-overlay-search-input-placeholder": "Hkangi’qutux  kay’",
 	"mobile-frontend-main-menu": "Spzyang biru’ binzyagan",
-	"mobile-frontend-main-menu-page-title": "Pglaing pzyangay sa wangcan",
 	"mobile-frontend-main-menu-settings-heading": "Ssi’",
 	"mobile-frontend-media-license-link": "Biru’ na gaga’ na snwayal sa ggalan kinbaq zayzyuwaw",
 	"mobile-frontend-missing-image": "Pinzga’",
@@ -56,7 +53,6 @@
 	"mobile-frontend-settings-beta": "Tlamiy",
 	"mobile-frontend-talk-add-overlay-subject-placeholder": "Spzyang balay spkayal",
 	"mobile-frontend-talk-add-overlay-submit": "Misan tnwang na spkayal",
-	"mobile-frontend-talk-overlay-header": "Mpkal",
 	"mobile-frontend-talk-reply": "Paysyuk",
 	"mobile-frontend-terms-text": "gaga’ na awsa’ mbing",
 	"mobile-frontend-view": "Ringwa’ rsrasun",
@@ -74,7 +70,5 @@
 	"mobile-frontend-user-page-create-owner-page-link-label": "Ps’rux sa rwan su’ nanak",
 	"tag-mobile_edit": "Ssr’zyut miru’ rinwa’ rsrasun",
 	"tag-mobile_web_edit": "Ani kahul sa ringwa’ rsrasun gmyah sa wangye’ na ringwa’ rsrasun, ruw sr’zyut miru’ kya la",
-	"mobile-frontend-loading-message": "Lpgun...",
-	"mobile-frontend-panel-ok": "Wal balay",
-	"mobile-frontend-panel-cancel": "Nway kya, mhway su’!"
+	"mobile-frontend-loading-message": "Lpgun..."
 }

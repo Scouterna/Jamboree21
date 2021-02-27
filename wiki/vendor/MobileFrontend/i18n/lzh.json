@@ -1,20 +1,18 @@
 {
 	"@metadata": {
 		"authors": [
-			"StephDC",
-			"LNDDYL",
+			"Itsmine",
 			"Jason924tw",
+			"LNDDYL",
 			"SolidBlock",
+			"StephDC",
 			"Suchichi02",
-			"逆襲的天邪鬼",
-			"Itsmine"
+			"逆襲的天邪鬼"
 		]
 	},
 	"mobile-frontend-copyright": "若無側註，諸文皆奉$1以行。",
 	"mobile-frontend-diffview-editcount": "<div>$1</div>{{PLURAL:$1|edit|纂}}",
 	"mobile-frontend-diffview-title": "易",
-	"mobile-frontend-donate-image-login-action": "登簿享爾媒體。",
-	"mobile-frontend-donate-image-title": "貢獻品物",
 	"mobile-frontend-edit-login-action": "登簿以纂。",
 	"mobile-frontend-edit-signup-action": "增簿以纂。",
 	"mobile-frontend-editor-editing": "方纂",
@@ -45,7 +43,6 @@
 	"mobile-frontend-search-no-results": "無本題之頁。",
 	"mobile-frontend-settings-beta": "試灶",
 	"mobile-frontend-talk-add-overlay-submit": "增議",
-	"mobile-frontend-talk-overlay-header": "議",
 	"mobile-frontend-talk-reply": "答",
 	"mobile-frontend-terms-text": "取用須知",
 	"mobile-frontend-view": "掌中書卷",

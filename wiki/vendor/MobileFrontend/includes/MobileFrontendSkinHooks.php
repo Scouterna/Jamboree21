@@ -6,9 +6,10 @@ class MobileFrontendSkinHooks {
 	/**
 	 * Make it possible to open sections while JavaScript is still loading.
 	 *
+	 * @param string|null $nonce CSP nonce or null if feature is disabled
 	 * @return string The JavaScript code to add event handlers to the skin
 	 */
-	public static function interimTogglingSupport() {
+	public static function interimTogglingSupport( $nonce ) {
 		$js = <<<JAVASCRIPT
 function mfTempOpenSection( id ) {
 	var block = document.getElementById( "mf-section-" + id );
@@ -21,7 +22,8 @@ function mfTempOpenSection( id ) {
 }
 JAVASCRIPT;
 		return Html::inlineScript(
-			ResourceLoader::filter( 'minify-js', $js )
+			ResourceLoader::filter( 'minify-js', $js ),
+			$nonce
 		);
 	}
 
@@ -120,7 +122,8 @@ JAVASCRIPT;
 	 * @return array Associative array containing the license text and link
 	 */
 	public static function getLicense( $context, array $attribs = [] ) {
-		$config = MediaWikiServices::getInstance()->getService( 'MobileFrontend.Config' );
+		$services = MediaWikiServices::getInstance();
+		$config = $services->getService( 'MobileFrontend.Config' );
 		$rightsPage = $config->get( 'RightsPage' );
 		$rightsUrl = $config->get( 'RightsUrl' );
 		$rightsText = $config->get( 'RightsText' );
@@ -149,7 +152,7 @@ JAVASCRIPT;
 			}
 			if ( $rightsPage ) {
 				$title = Title::newFromText( $rightsPage );
-				$linkRenderer = MediaWikiServices::getInstance()->getLinkRenderer();
+				$linkRenderer = $services->getLinkRenderer();
 				$link = $linkRenderer->makeKnownLink( $title, new HtmlArmor( $rightsText ), $attribs );
 			} elseif ( $rightsUrl ) {
 				$link = Linker::makeExternalLink( $rightsUrl, $rightsText, true, '', $attribs );
@@ -162,7 +165,8 @@ JAVASCRIPT;
 
 		// Allow other extensions (for example, WikimediaMessages) to override
 		$msg = 'mobile-frontend-copyright';
-		Hooks::run( 'MobileLicenseLink', [ &$link, $context, $attribs, &$msg ] );
+		$hookContainer = $services->getHookContainer();
+		$hookContainer->run( 'MobileLicenseLink', [ &$link, $context, $attribs, &$msg ] );
 
 		return [
 			'msg' => $msg,
@@ -172,70 +176,17 @@ JAVASCRIPT;
 	}
 
 	/**
-	 * Prepares the footer for the skins serving the desktop and mobile sites.
 	 * @param Skin $skin
-	 * @param QuickTemplate $tpl
-	 */
-	public static function prepareFooter( Skin $skin, QuickTemplate $tpl ) {
-		$title = $skin->getTitle();
-		$req = $skin->getRequest();
-		$context = MediaWikiServices::getInstance()->getService( 'MobileFrontend.Context' );
-
-		// Certain pages might be blacklisted and not have a mobile equivalent.
-		if ( !$context->isBlacklistedPage() ) {
-			if ( $context->shouldDisplayMobileView() ) {
-				self::mobileFooter( $skin, $tpl, $context, $title, $req );
-			} else {
-				self::desktopFooter( $skin, $tpl, $context, $title, $req );
-			}
-		}
-	}
-
-	/**
-	 * Appends a mobile view link to the desktop footer
-	 * @param Skin $skin
-	 * @param QuickTemplate $tpl
 	 * @param MobileContext $context
-	 * @param Title $title Page title
-	 * @param WebRequest $req
+	 * @return string representing the desktop link.
 	 */
-	public static function desktopFooter( Skin $skin, QuickTemplate $tpl, MobileContext $context,
-		Title $title, WebRequest $req
-	) {
-		$footerlinks = $tpl->data['footerlinks'];
-		$args = $req->getQueryValues();
-		// avoid title being set twice
-		unset( $args['title'], $args['useformat'] );
-		$args['mobileaction'] = 'toggle_view_mobile';
-
-		$mobileViewUrl = $title->getFullURL( $args );
-		$mobileViewUrl = $context->getMobileUrl( $mobileViewUrl );
-
-		$link = Html::element( 'a',
-			[ 'href' => $mobileViewUrl, 'class' => 'noprint stopMobileRedirectToggle' ],
-			$context->msg( 'mobile-frontend-view' )->text()
-		);
-		$tpl->set( 'mobileview', $link );
-		$footerlinks['places'][] = 'mobileview';
-		$tpl->set( 'footerlinks', $footerlinks );
-	}
-
-	/**
-	 * Prepares links used in the mobile footer
-	 * @param Skin $skin
-	 * @param QuickTemplate $tpl
-	 * @param MobileContext $context
-	 * @param Title $title Page title
-	 * @param WebRequest $req
-	 * @return QuickTemplate
-	 */
-	protected static function mobileFooter( Skin $skin, QuickTemplate $tpl, MobileContext $context,
-		Title $title, WebRequest $req
-	) {
+	public static function getDesktopViewLink( Skin $skin, MobileContext $context ) {
 		$url = $skin->getOutput()->getProperty( 'desktopUrl' );
+		$req = $skin->getRequest();
 		if ( $url ) {
 			$url = wfAppendQuery( $url, 'mobileaction=toggle_view_desktop' );
 		} else {
+			$title = $skin->getTitle();
 			$url = $title->getLocalURL(
 				$req->appendQueryValue( 'mobileaction', 'toggle_view_desktop' )
 			);
@@ -243,35 +194,43 @@ JAVASCRIPT;
 		$desktopUrl = $context->getDesktopUrl( wfExpandUrl( $url, PROTO_RELATIVE ) );
 
 		$desktop = $context->msg( 'mobile-frontend-view-desktop' )->text();
-		$desktopToggler = Html::element( 'a',
+		return Html::element( 'a',
 			[ 'id' => 'mw-mf-display-toggle', 'href' => $desktopUrl ], $desktop );
+	}
 
-		// Generate the licensing text displayed in the footer of each page.
-		// See Skin::getCopyright for desktop equivalent.
+	/**
+	 * @param Skin $skin
+	 * @param MobileContext $context
+	 * @return string representing the mobile link.
+	 */
+	public static function getMobileViewLink( Skin $skin, MobileContext $context ) {
+		$req = $skin->getRequest();
+		$args = $req->getQueryValues();
+		// avoid title being set twice
+		unset( $args['title'], $args['useformat'] );
+		$args['mobileaction'] = 'toggle_view_mobile';
+		$title = $skin->getTitle();
+		$mobileViewUrl = $title->getFullURL( $args );
+		$mobileViewUrl = $context->getMobileUrl( $mobileViewUrl );
+
+		return Html::element( 'a',
+			[ 'href' => $mobileViewUrl, 'class' => 'noprint stopMobileRedirectToggle' ],
+			$context->msg( 'mobile-frontend-view' )->text()
+		);
+	}
+
+	/**
+	 * Generate the licensing text displayed in the footer of each page.
+	 * See Skin::getCopyright for desktop equivalent.
+	 * @param Skin $skin
+	 * @return string
+	 */
+	public static function getLicenseText( $skin ) {
 		$license = self::getLicense( 'footer' );
 		if ( isset( $license['link'] ) && $license['link'] ) {
-			$licenseText = $skin->msg( $license['msg'] )->rawParams( $license['link'] )->text();
+			return $skin->msg( $license['msg'] )->rawParams( $license['link'] )->text();
 		} else {
-			$licenseText = '';
+			return '';
 		}
-
-		// Enable extensions to add links to footer in Mobile view, too - bug 66350
-		Hooks::run( 'MobileSiteOutputPageBeforeExec', [ &$skin, &$tpl ] );
-
-		$tpl->set( 'desktop-toggle', $desktopToggler );
-		$tpl->set( 'mobile-license', $licenseText );
-		$tpl->set( 'privacy', $skin->footerLink( 'mobile-frontend-privacy-link-text', 'privacypage' ) );
-		$tpl->set( 'terms-use', self::getTermsLink( $skin ) );
-
-		$places = [
-			'terms-use',
-			'privacy',
-			'desktop-toggle'
-		];
-		$footerlinks = [
-			'places' => $places,
-		];
-		$tpl->set( 'footerlinks', $footerlinks );
-		return $tpl;
 	}
 }

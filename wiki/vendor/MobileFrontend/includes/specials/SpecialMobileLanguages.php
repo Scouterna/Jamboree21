@@ -1,10 +1,12 @@
 <?php
 
+use MediaWiki\MediaWikiServices;
+
 /**
  * Provides a list of languages available for a page
  */
 class SpecialMobileLanguages extends MobileSpecialPage {
-	/** @var Title $title Saves the title object to get languages for */
+	/** @var Title Saves the title object to get languages for */
 	private $title;
 
 	public function __construct() {
@@ -50,7 +52,8 @@ class SpecialMobileLanguages extends MobileSpecialPage {
 
 		if ( isset( $page['langlinks'] ) ) {
 			// Set the name of each language based on the system list of language names
-			$languageMap = Language::fetchLanguageNames();
+			$languageMap = MediaWikiServices::getInstance()->getLanguageNameUtils()
+				->getLanguageNames();
 			$languages = $page['langlinks'];
 			foreach ( $page['langlinks'] as $index => $langObject ) {
 				if ( !$this->isLanguageObjectValid( $languageMap, $langObject ) ) {

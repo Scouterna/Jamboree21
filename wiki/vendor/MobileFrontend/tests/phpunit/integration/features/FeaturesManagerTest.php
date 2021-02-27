@@ -12,7 +12,7 @@ use MobileFrontend\Features\UserModes;
 class FeaturesManagerTest extends MediaWikiTestCase {
 
 	private function getTestMode( $modeName, $isEnabled = true ) {
-		$modeMock = $this->getMock( \MobileFrontend\Features\IUserMode::class );
+		$modeMock = $this->createMock( \MobileFrontend\Features\IUserMode::class );
 		$modeMock->expects( $this->any() )
 			->method( 'getModeIdentifier' )
 			->willReturn( $modeName );
@@ -28,22 +28,26 @@ class FeaturesManagerTest extends MediaWikiTestCase {
 	}
 
 	/**
-	 * @covers ::setup
+	 * Test that hook is used to allow extensions/skins to register features.
+	 * @covers ::useHookToRegisterExtensionOrSkinFeatures
 	 */
-	public function testSetUpTwice() {
-		$called = 0;
-		$this->setTemporaryHook( 'MobileFrontendFeaturesRegistration', function () use ( &$called ){
-			$called++;
-		} );
-		$manager = new FeaturesManager( new UserModes() );
-		$manager->setup();
-		$manager->setup();
-		$this->assertEquals( 1, $called, 'MobileFrontendFeaturesRegistration was called only once' );
+	public function testFeatureManagerUsesHooks() {
+		$called = false;
+		$userModes = new UserModes();
+		$manager = new FeaturesManager( $userModes );
+		$this->setTemporaryHook( 'MobileFrontendFeaturesRegistration',
+			function ( $actual ) use ( &$called, $manager ) {
+				$this->assertSame( $manager, $actual );
+				$called = true;
+			}
+		);
+		$manager->useHookToRegisterExtensionOrSkinFeatures();
+		$this->assertTrue( $called,
+			'The MobileFrontendFeaturesRegistration wasn\'t executed' );
 	}
 
 	/**
 	 * @covers ::registerFeature
-	 * @expectedException \RuntimeException
 	 */
 	public function testCannotRegisterSameFeatureTwice() {
 		$featureA =
@@ -54,6 +58,7 @@ class FeaturesManagerTest extends MediaWikiTestCase {
 
 		$manager = new FeaturesManager( $userModes );
 		$manager->registerFeature( $featureA );
+		$this->expectException( RuntimeException::class );
 		$manager->registerFeature( $featureA );
 	}
 
@@ -76,11 +81,11 @@ class FeaturesManagerTest extends MediaWikiTestCase {
 
 	/**
 	 * @covers ::getFeature
-	 * @expectedException \RuntimeException
 	 */
 	public function testGetFeatureThrowsExceptionWhenFeatureNotFound() {
 		$userModes = new UserModes();
 		$manager = new FeaturesManager( $userModes );
+		$this->expectException( RuntimeException::class );
 		$manager->getFeature( 'featureA' );
 	}
 
@@ -138,7 +143,7 @@ class FeaturesManagerTest extends MediaWikiTestCase {
 		$manager = new FeaturesManager( $userModes );
 		$manager->registerFeature( $featureA );
 
-		$this->assertEquals( false, $manager->isFeatureAvailableForCurrentUser( 'featureA' ) );
+		$this->assertFalse( $manager->isFeatureAvailableForCurrentUser( 'featureA' ) );
 	}
 
 	/**
@@ -157,7 +162,7 @@ class FeaturesManagerTest extends MediaWikiTestCase {
 		$manager = new FeaturesManager( $userModes );
 		$manager->registerFeature( $featureA );
 
-		$this->assertEquals( true, $manager->isFeatureAvailableForCurrentUser( 'featureA' ) );
+		$this->assertTrue( $manager->isFeatureAvailableForCurrentUser( 'featureA' ) );
 	}
 
 	/**
@@ -166,8 +171,7 @@ class FeaturesManagerTest extends MediaWikiTestCase {
 	public function testGetModeUsesModesToRetrieveData() {
 		$modeMock = $this->getTestMode( 'testMode' );
 
-		$userModes = $this->getMock( \MobileFrontend\Features\UserModes::class, [ 'getMode' ],
-			[], '', false );
+		$userModes = $this->createMock( \MobileFrontend\Features\UserModes::class );
 		$userModes->expects( $this->once() )
 			->method( 'getMode' )
 			->with( 'testMode' )

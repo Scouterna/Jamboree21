@@ -3,7 +3,7 @@
  * @return {Object}
  */
 module.exports = function parseBlockInfo( blockinfo ) {
-	var blockInfo, expiry, reason,
+	var blockInfo, expiry, reason, expiryInSeconds,
 		moment = window.moment;
 
 	// Workaround to parse a message parameter for mw.message, see T96885
@@ -25,10 +25,7 @@ module.exports = function parseBlockInfo( blockinfo ) {
 		partial: blockinfo.blockpartial || false,
 		creator: {
 			name: blockinfo.blockedby,
-			url: mw.Title.makeTitle(
-				mw.config.get( 'wgNamespaceIds' ).user,
-				blockinfo.blockedby
-			).getUrl()
+			url: null
 		},
 		expiry: null,
 		duration: null,
@@ -36,9 +33,26 @@ module.exports = function parseBlockInfo( blockinfo ) {
 		blockId: blockinfo.blockid
 	};
 
+	// URL only useful if block creator is a local user
+	if ( blockinfo.blockedbyid === 0 ) {
+		blockInfo.creator.url = '';
+	} else {
+		blockInfo.creator.url = mw.Title.makeTitle(
+			mw.config.get( 'wgNamespaceIds' ).user,
+			blockInfo.creator.name
+		).getUrl();
+	}
+
 	expiry = blockinfo.blockexpiry;
 	if ( [ 'infinite', 'indefinite', 'infinity', 'never' ].indexOf( expiry ) === -1 ) {
-		blockInfo.expiry = moment( expiry ).format( 'LLL' );
+		expiryInSeconds = moment( expiry ).diff( moment(), 'seconds' );
+
+		if ( expiryInSeconds <= 86400 ) {
+			// For 24 hour blocks/or remaining expiry time and less, show both date and time
+			blockInfo.expiry = mw.message( 'parentheses', moment( expiry ).format( 'LL, LT' ) ).escaped();
+		} else {
+			blockInfo.expiry = mw.message( 'parentheses', moment( expiry ).format( 'LL' ) ).escaped();
+		}
 		blockInfo.duration = moment().to( expiry, true );
 	}
 

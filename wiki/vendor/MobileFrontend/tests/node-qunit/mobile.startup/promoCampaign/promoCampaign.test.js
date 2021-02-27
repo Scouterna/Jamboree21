@@ -1,14 +1,13 @@
 let
 	promoCampaign,
-	sandbox,
+	sandbox;
+const
 	jQuery = require( '../../utils/jQuery' ),
 	dom = require( '../../utils/dom' ),
 	oo = require( '../../utils/oo' ),
 	mediaWiki = require( '../../utils/mw' ),
 	mustache = require( '../../utils/mustache' ),
-	sinon = require( 'sinon' );
-
-const
+	sinon = require( 'sinon' ),
 	ACTIONS = {
 		onLoad: 'onLoad'
 	},
@@ -136,6 +135,24 @@ QUnit.test( '#showIfEligible when eligible', function ( assert ) {
 	subject.showIfEligible( ACTIONS.onLoad );
 
 	assert.strictEqual( this.onShow.called, true, 'onShow' );
+	assert.strictEqual( this.onShow.calledWithExactly( ACTIONS.onLoad ), true, 'onShow called with additional args' );
+} );
+
+QUnit.test( '#showIfEligible when eligible and passed additional args', function ( assert ) {
+	this.storage.get.withArgs( ON_LOAD_STORAGE_KEY ).returns( null );
+	const subject = promoCampaign(
+		this.onShow,
+		ACTIONS,
+		CAMPAIGN_NAME,
+		true,
+		true,
+		this.storage
+	);
+
+	subject.showIfEligible( ACTIONS.onLoad, 1, 2, 3 );
+
+	assert.strictEqual( this.onShow.called, true, 'onShow' );
+	assert.strictEqual( this.onShow.calledWithExactly( ACTIONS.onLoad, 1, 2, 3 ), true, 'onShow called with additional args' );
 } );
 
 QUnit.test( '#makeActionIneligible when successful', function ( assert ) {

@@ -2,10 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Bishnu Saikia",
+			"Dibya Dutta",
 			"Gitartha.bordoloi",
-			"Nilamdyuti",
 			"IKHazarika",
-			"Dibya Dutta"
+			"Nilamdyuti"
 		]
 	},
 	"mobile-frontend-account-create-captcha-placeholder": "ওপৰত লিখা পাঠ্য লিখক",
@@ -20,7 +20,6 @@
 	"mobile-frontend-diffview-title": "$1ৰ বিভিন্ন সংশোধনসমূহৰ মাজৰ পাৰ্থক্য",
 	"mobile-frontend-featured-article": "আজিৰ নিৰ্বাচিত সমল",
 	"mobile-frontend-last-modified-date": "$1 তাৰিখে $2 সময়ত শেষ পৰিৱৰ্তন কৰা হৈছিল",
-	"mobile-frontend-main-menu-page-title": "ছাইট পৰিভ্ৰমন",
 	"mobile-frontend-main-menu-settings-heading": "ম’বাইল ছাইট ছেটিং",
 	"mobile-frontend-missing-image": "চিত্ৰ",
 	"mobile-frontend-news-items": "খবৰৰ শীৰ্ষত",
@@ -31,7 +30,7 @@
 	"mobile-frontend-settings-beta": "বিটা",
 	"mobile-frontend-terms-text": "ব্যৱহাৰৰ নিয়মাৱলী",
 	"mobile-frontend-view": "মোবাইল সংস্কৰণ",
-	"mobile-frontend-view-desktop": "ডেক্সটপ",
+	"mobile-frontend-view-desktop": "ডেস্কটপ",
 	"mobile-frontend-watchlist-a-z": "তালিকা",
 	"mobile-frontend-watchlist-add": "$1 আপোনাৰ লক্ষ্য তালিকাত যোগ দিয়া হ’ল",
 	"mobile-frontend-watchlist-filter-all": "সকলো",

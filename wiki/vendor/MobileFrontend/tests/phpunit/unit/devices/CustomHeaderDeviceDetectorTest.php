@@ -10,12 +10,6 @@ use MobileFrontend\Devices\CustomHeaderDeviceDetector;
  * @group MobileFrontend
  */
 class CustomHeaderDeviceDetectorTest extends \MediaWikiUnitTestCase {
-
-	/**
-	 * @var \GlobalVarConfig
-	 */
-	private $config;
-
 	/**
 	 * @var \MobileFrontend\Devices\UADeviceDetector
 	 */
@@ -26,7 +20,7 @@ class CustomHeaderDeviceDetectorTest extends \MediaWikiUnitTestCase {
 	 */
 	private $request;
 
-	protected function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 
 		$config = new HashConfig();

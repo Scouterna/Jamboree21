@@ -1,10 +1,11 @@
-var
+const
 	jQuery = require( '../utils/jQuery' ),
 	dom = require( '../utils/dom' ),
 	mediaWiki = require( '../utils/mw' ),
 	oo = require( '../utils/oo' ),
 	sinon = require( 'sinon' ),
-	mustache = require( '../utils/mustache' ),
+	mustache = require( '../utils/mustache' );
+let
 	WatchList,
 	Icon,
 	sandbox;
@@ -18,7 +19,13 @@ QUnit.module( 'MobileFrontend WatchList.js', {
 		mediaWiki.setUp( sandbox, global );
 		mustache.setUp( sandbox, global );
 
+		sandbox.stub( global.mw.Title, 'newFromText' ).returns(
+			{ getUrl: function () {} }
+		);
 		sandbox.stub( mw.user, 'isAnon' ).returns( false );
+		sandbox.stub( mw.loader, 'require' ).withArgs( 'mediawiki.page.watch.ajax' ).returns( {
+			watchstar: () => {}
+		} );
 
 		WatchList = require( '../../../src/mobile.special.watchlist.scripts/WatchList' );
 		Icon = require( '../../../src/mobile.startup/Icon' );
@@ -30,7 +37,7 @@ QUnit.module( 'MobileFrontend WatchList.js', {
 } );
 
 QUnit.test( 'In watched mode', function ( assert ) {
-	var
+	const
 		stub = {
 			get: sandbox.stub()
 		},

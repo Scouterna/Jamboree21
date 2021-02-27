@@ -1,7 +1,5 @@
 var skin,
 	browser = require( './Browser' ).getSingleton(),
-	lazyImageLoader = require( './lazyImages/lazyImageLoader' ),
-	lazyImageTransformer = require( './lazyImages/lazyImageTransformer' ),
 	View = require( './View' ),
 	util = require( './util' ),
 	currentPage = require( './currentPage' ),
@@ -22,31 +20,13 @@ var skin,
  * scroll:throttled, resize:throttled, and section-toggled events
  */
 function Skin( params ) {
-	var self = this,
-		options = util.extend( {}, params );
+	var options = util.extend( {}, params );
 
 	this.page = options.page;
 	this.name = options.name;
 	this.eventBus = options.eventBus;
 	options.isBorderBox = false;
 	View.call( this, options );
-
-	if (
-		mw.config.get( 'wgMFLazyLoadImages' )
-	) {
-		util.docReady( function () {
-			var
-				container = document.getElementById( 'content' ),
-				// todo: remove when tests are only headless. There is no #content in
-				//       Special:JavaScriptTest.
-				images = ( container && lazyImageLoader.queryPlaceholders( container ) ) || [];
-			self.lazyImageTransformer = lazyImageTransformer.newLazyImageTransformer(
-				self.eventBus, self.$el.find.bind( self.$el ),
-				util.getWindow().height() * 1.5, images
-			);
-			self.lazyImageTransformer.loadImages();
-		} );
-	}
 }
 
 mfExtend( Skin, View, {
@@ -68,20 +48,14 @@ mfExtend( Skin, View, {
 	 */
 	postRender: function () {
 		var $el = this.$el;
-		if ( browser.supportsAnimations() ) {
-			$el.addClass( 'animations' );
-		}
+
 		if ( browser.supportsTouchEvents() ) {
 			$el.addClass( 'touch-events' );
-		}
-		util.parseHTML( '<div class="transparent-shield cloaked-element">' )
-			.appendTo( $el.find( '#mw-mf-page-center' ) );
-		if ( this.lazyImageTransformer ) {
-			this.lazyImageTransformer.loadImages();
 		}
 
 		/**
 		 * Fired when the skin is clicked.
+		 *
 		 * @event Skin#click
 		 */
 		this.$el.find( '#mw-mf-page-center' ).on( 'click', ( ev ) => {
@@ -92,6 +66,7 @@ mfExtend( Skin, View, {
 	/**
 	 * Returns the appropriate license message including links/name to
 	 * terms of use (if any) and license page
+	 *
 	 * @memberof Skin
 	 * @instance
 	 * @return {string}
@@ -126,6 +101,7 @@ mfExtend( Skin, View, {
 
 /**
  * Get a skin singleton
+ *
  * @return {Skin}
  */
 Skin.getSingleton = function () {

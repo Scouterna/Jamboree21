@@ -1,32 +1,37 @@
 var
 	user = mw.user,
 	icons = require( '../mobile.startup/icons' ),
-	spinner = icons.spinner().$el,
+	$spinner = icons.spinner().$el,
 	mfExtend = require( '../mobile.startup/mfExtend' ),
-	PageGateway = require( '../mobile.startup/PageGateway' ),
 	Overlay = require( '../mobile.startup/Overlay' ),
 	header = require( '../mobile.startup/headers' ).header,
 	util = require( '../mobile.startup/util' ),
-	popup = require( '../mobile.startup/toast' ),
 	autosign = require( './autosign' ),
-	Page = require( '../mobile.startup/Page' ),
 	Button = require( '../mobile.startup/Button' );
 
 /**
+ * Callback executed when a save has successfully completed.
+ *
+ * @callback onSaveComplete
+ */
+
+/**
  * Overlay for showing talk page section
+ *
  * @class TalkSectionOverlay
  * @extends Overlay
- * @uses PageGateway
- * @uses Page
- * @uses Button
- * @uses Toast
  * @param {Object} options
+ * @param {number} options.id Section ID
+ * @param {Section} options.section
+ * @param {mw.Api} options.api
+ * @param {string} options.title
+ * @param {string} options.licenseMsg
+ * @param {onSaveComplete} [options.onSaveComplete]
  */
 function TalkSectionOverlay( options ) {
 	const onBeforeExit = this.onBeforeExit.bind( this );
 
 	this.editorApi = options.api;
-	this.pageGateway = new PageGateway( options.api );
 	this.state = {
 		// current value of the textarea
 		text: ''
@@ -101,6 +106,7 @@ mfExtend( TalkSectionOverlay, Overlay, {
 	} ),
 	/**
 	 * A function to run before exiting the overlay
+	 *
 	 * @memberof TalkSectionOverlay
 	 * @instance
 	 * @param {Event} ev
@@ -110,6 +116,7 @@ mfExtend( TalkSectionOverlay, Overlay, {
 	},
 	/**
 	 * A function to run before exiting the overlay
+	 *
 	 * @memberof TalkSectionOverlay
 	 * @instance
 	 * @param {Function} exit
@@ -118,6 +125,7 @@ mfExtend( TalkSectionOverlay, Overlay, {
 	onBeforeExit: function ( exit, cancel ) {
 		var confirmMessage = mw.msg( 'mobile-frontend-editor-cancel-confirm' );
 
+		// eslint-disable-next-line no-alert
 		if ( !this.state.text || window.confirm( confirmMessage ) ) {
 			exit();
 		} else {
@@ -127,6 +135,7 @@ mfExtend( TalkSectionOverlay, Overlay, {
 	/**
 	 * Accounts for the fact sections are loaded asynchronously and sets the headers
 	 * for the overlay
+	 *
 	 * @inheritdoc
 	 */
 	preRender: function () {
@@ -143,24 +152,22 @@ mfExtend( TalkSectionOverlay, Overlay, {
 	/**
 	 * Fetches the talk topics of the page specified in options.title
 	 * if options.section is not defined.
+	 *
 	 * @inheritdoc
 	 * @memberof TalkSectionOverlay
 	 * @instance
 	 */
 	postRender: function () {
 		Overlay.prototype.postRender.apply( this );
-		this.$el.find( '.talk-section' ).prepend( spinner );
+		this.$el.find( '.talk-section' ).prepend( $spinner );
 		this.$saveButton = this.options.saveButton.$el;
 		this.$el.find( '.comment-content' ).append( this.$saveButton );
-		if ( !this.options.section ) {
-			this.renderFromApi( this.options );
-		} else {
-			this.hideSpinner();
-			this._enableComments();
-		}
+		this.hideSpinner();
+		this._enableComments();
 	},
 	/**
 	 * Enables comments on the current rendered talk topic
+	 *
 	 * @memberof TalkSectionOverlay
 	 * @instance
 	 * @private
@@ -174,23 +181,8 @@ mfExtend( TalkSectionOverlay, Overlay, {
 		}
 	},
 	/**
-	 * Loads the discussion from api and add it to the Overlay
-	 * @memberof TalkSectionOverlay
-	 * @instance
-	 * @param {Object} options Render options
-	 */
-	renderFromApi: function ( options ) {
-		var self = this;
-
-		this.pageGateway.getPage( options.title ).then( function ( pageData ) {
-			var page = new Page( pageData );
-			options.section = page.getSection( options.id );
-			self.render( options );
-			self.hideSpinner();
-		} );
-	},
-	/**
 	 * Handler for focus of textarea
+	 *
 	 * @memberof TalkSectionOverlay
 	 * @instance
 	 */
@@ -199,6 +191,7 @@ mfExtend( TalkSectionOverlay, Overlay, {
 	},
 	/**
 	 * Handle a click on the save button
+	 *
 	 * @memberof TalkSectionOverlay
 	 * @instance
 	 */
@@ -224,13 +217,9 @@ mfExtend( TalkSectionOverlay, Overlay, {
 				appendtext: val,
 				redirect: true
 			} ).then( function () {
-				popup.show( mw.msg( 'mobile-frontend-talk-reply-success' ) );
-				// invalidate the cache
-				self.pageGateway.invalidatePage( self.options.title );
-
-				self.renderFromApi( self.options );
-
-				enableSaveButton();
+				if ( self.options.onSaveComplete ) {
+					self.options.onSaveComplete();
+				}
 			}, function ( data, response ) {
 				// FIXME: Code sharing with SourceEditorOverlay?
 				var msg,
@@ -253,7 +242,7 @@ mfExtend( TalkSectionOverlay, Overlay, {
 				}
 
 				self.hideSpinner();
-				popup.show( msg, 'toast error' );
+				mw.notify( msg, { type: 'error' } );
 				enableSaveButton();
 			} );
 		} else {

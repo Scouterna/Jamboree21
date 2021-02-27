@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hosseinblue",
 			"Arash71",
-			"Lakzon",
-			"Huji"
+			"Hosseinblue",
+			"Huji",
+			"Lakzon"
 		]
 	},
 	"abusefilter-edit-builder-vars-user-mobile": "اینکه کاربر از میانای تلفن همراه استفاده می‌کند یا نه",
@@ -31,9 +31,6 @@
 	"mobile-frontend-diffview-bytesremoved": "$1 {{PLURAL:$1|بایت|بایت ها}} حذف‌شده{{PLURAL:$1|}}",
 	"mobile-frontend-diffview-editcount": "<div>$1</div> {{PLURAL:$1|ویرایش}}",
 	"mobile-frontend-diffview-title": "گؤەڕیال(تغییرات)",
-	"mobile-frontend-donate-image-anon": "لطفاً برای نمایش صفحه بارگذاری‌ها وارد شوید.",
-	"mobile-frontend-donate-image-nouploads": "هیچ بارگذاری‌ای نیست.",
-	"mobile-frontend-donate-image-title": "بارگذاری‌ها",
 	"mobile-frontend-edit-login-action": "<strong>به بهبود {{SITENAME}} کمک کنید.</strong><br />ورود برای ویرایش.",
 	"mobile-frontend-edit-signup-action": "<strong>به بهبود {{SITENAME}} کمک کنید.</strong><br />ثبت‌نام برای ویرایش.",
 	"mobile-frontend-editor-anon": "ویرایش بدون ورود",
@@ -91,7 +88,6 @@
 	"mobile-frontend-last-modified-with-user-seconds": "آخرین ویرایش {{PLURAL:$3|$3 ثانیه}} پیش توسط {{PLURAL:$5|[$6 $2]|0=یک کاربر نشناس}} [$4 {{GENDER:$1|انجام شده‌است}}]",
 	"mobile-frontend-last-modified-with-user-years": "آخرین ویرایش {{PLURAL:$3|$3 سال}} پیش توسط {{PLURAL:$5|[$6 $2]|0=یک کاربر نشناس}} [$4 {{GENDER:$1|انجام شده‌است}}]",
 	"mobile-frontend-main-menu": "سەر منو(منواصلی)",
-	"mobile-frontend-main-menu-page-title": "هدایت‌کننده وب‌گاه",
 	"mobile-frontend-main-menu-settings-heading": "تنظیمۀل",
 	"mobile-frontend-media-details": "جزئیات",
 	"mobile-frontend-media-license-link": "اطلاعات مجوز",
@@ -106,9 +102,6 @@
 	"mobile-frontend-nearby-title": "نۀزیکی",
 	"mobile-frontend-news-items": "در خبرها",
 	"mobile-frontend-overlay-close": "ئآنیائن-بستِن",
-	"mobile-frontend-photo-upload-invalid-user": "کاربر «$1» نؤم نؤیسی نؤیة.",
-	"mobile-frontend-photo-upload-user-count": "{{PLURAL:$1|<span>$1</span> بارگذاری}}",
-	"mobile-frontend-photo-upload-user-count-over-limit": "۵۰۰+ بارگذاری",
 	"mobile-frontend-privacy-link-text": " حد شۀخصی/حد ووژ زانستن",
 	"mobile-frontend-references-citation": "یادکرد/ویرکرد",
 	"mobile-frontend-requires-mobile": "این صفحه بر روی دسکتاپ در دسترس نیست. لطفاً پیوند مشاهده گوشی همراه در پایین صفحه را کلیک کنید.",
@@ -120,17 +113,11 @@
 	"mobile-frontend-search-content-no-results": "<b>{{int:mobile-frontend-search-content}}</b> برای دیدن اگر این متن در همه‌جا پدیدار شود.",
 	"mobile-frontend-search-no-results": "با این عنوان هیچ صفحه‌ای.",
 	"mobile-frontend-settings-beta": "آزمایشی",
-	"mobile-frontend-talk-fullpage": "وۀ عؤنوان ولگۀ ویکی بزانتئ",
 	"mobile-frontend-talk-add-overlay-content-placeholder": "در ذهن/ویر شما چیست؟",
 	"mobile-frontend-talk-add-overlay-subject-placeholder": "عنوان",
 	"mobile-frontend-talk-add-overlay-submit": "اضافه کردن گةپ",
-	"mobile-frontend-talk-explained": "مکالمات زیر در حال حاضر فعال هستند",
-	"mobile-frontend-talk-explained-empty": "هیچ مکالمه‌ای دربارۀ این وةڵگة وجود ندارد.",
-	"mobile-frontend-talk-overlay-header": "گەپ(قسە)",
 	"mobile-frontend-talk-reply": "جوواو دائن",
 	"mobile-frontend-talk-reply-info": "به خاطر داشته باشید پیام شما به طور خودکار با نام کاربریتان امضا خواهد شد.",
-	"mobile-frontend-talk-reply-success": "پاسخ شما با موفقیت در صفحۀ بحث ذخیره شد.",
-	"mobile-frontend-talk-topic-feedback": "موضوع جدیدی به صفحه بحث اضافه شده است!",
 	"mobile-frontend-talk-topic-error": "این عنوان به دلیل خطای ناشناخته‌ای نمی‌تواند افزوده شود.",
 	"mobile-frontend-talk-topic-error-protected": "این صفحهٔ بحث قفل شده‌است، شما دسترسی افزودن موضوعی به آن را ندارید.",
 	"mobile-frontend-talk-topic-error-permission": "این عنوان نمی‌تواند افزوده شود. شما دسترسی ویرایش صفحات را ندارید.",
@@ -161,7 +148,5 @@
 	"tag-mobile_edit-description": "ویرایش انجام‌شده از گوشی همراه (وب یا برنامه)",
 	"tag-mobile_web_edit": "دۀسکاری وۀ مرورگر تلفن همراه",
 	"tag-mobile_web_edit-description": "ویرایش انجام‌شده از وبگاه موبایل",
-	"mobile-frontend-loading-message": "در حال بارگیری...",
-	"mobile-frontend-panel-ok": "باشد",
-	"mobile-frontend-panel-cancel": "نه، سپاسگزارم"
+	"mobile-frontend-loading-message": "در حال بارگیری..."
 }

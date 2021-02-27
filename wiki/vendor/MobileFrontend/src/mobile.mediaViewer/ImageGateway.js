@@ -4,6 +4,7 @@ var sizeBuckets = [ 320, 640, 800, 1024, 1280, 1920, 2560, 2880 ],
 
 /**
  * Gets the first size larger than or equal to the provided size
+ *
  * @memberof ImageGateway
  * @param {number} size
  * @return {number}
@@ -18,10 +19,11 @@ function findSizeBucket( size ) {
 
 /**
  * API for retrieving image thumbnails for a given page
+ *
  * @class ImageGateway
  *
  * @param {Object} options Configuration options
- * @property {mw.Api} options.api
+ * @cfg {mw.Api} options.api
  */
 function ImageGateway( options ) {
 	this._cache = {};
@@ -29,6 +31,7 @@ function ImageGateway( options ) {
 }
 /**
  * Get thumbnail via the API and cache it. Return the result from the cache if exists.
+ *
  * @param {string} title Url of image
  * @return {jQuery.Deferred} with the image info
  */

@@ -1,13 +1,14 @@
 <?php
 
 use MediaWiki\Revision\RevisionRecord;
+use Wikimedia\IPUtils;
 
 /**
  * This is an abstract class intended for use by special pages that consist primarily of
  * a list of pages, for example, Special:Watchlist or Special:History.
  */
 abstract class MobileSpecialPageFeed extends MobileSpecialPage {
-	/**  @var boolean $showUsername Whether to show the username in results or not */
+	/** @var bool Whether to show the username in results or not */
 	protected $showUsername = true;
 	protected $lastDate;
 	/** @var Title|null */
@@ -21,7 +22,7 @@ abstract class MobileSpecialPageFeed extends MobileSpecialPage {
 		$out = $this->getOutput();
 		$out->addModuleStyles( [
 			'mobile.special.pagefeed.styles',
-			'mobile.special.user.icons'
+			'mobile.user.icons'
 		] );
 		$this->setHeaders();
 		$out->setProperty( 'unstyledContent', true );
@@ -74,20 +75,26 @@ abstract class MobileSpecialPageFeed extends MobileSpecialPage {
 
 	/**
 	 * Generates revision text based on user's rights and preference
-	 * @param Revision $rev
+	 * @param RevisionRecord $rev
 	 * @param User $user viewing the revision
 	 * @param bool $unhide whether the user wants to see hidden comments
-	 *   if the user doesn't have prmission comment will display as rev-deleted-comment
-	 * @return string plain test label
+	 *   if the user doesn't have permission, comment will display as rev-deleted-comment
+	 * @return string plain text label
 	 */
-	protected function getRevisionCommentHTML( $rev, $user, $unhide ) {
-		if ( $rev->userCan( RevisionRecord::DELETED_COMMENT, $user ) ) {
+	protected function getRevisionCommentHTML( RevisionRecord $rev, $user, $unhide ) {
+		if ( RevisionRecord::userCanBitfield(
+			$rev->getVisibility(),
+			RevisionRecord::DELETED_COMMENT,
+			$user
+		) ) {
 			if ( $rev->isDeleted( RevisionRecord::DELETED_COMMENT ) && !$unhide ) {
 				$comment = $this->msg( 'rev-deleted-comment' )->escaped();
 			} else {
-				$comment = $rev->getComment( RevisionRecord::FOR_THIS_USER, $user );
+				$commentObj = $rev->getComment( RevisionRecord::FOR_THIS_USER, $user );
+				$commentText = $commentObj ? $commentObj->text : '';
+
 				// escape any HTML in summary and add CSS for any auto-generated comments
-				$comment = $this->formatComment( $comment, $this->title );
+				$comment = $this->formatComment( $commentText, $this->title );
 			}
 		} else {
 			// Confusingly "Revision::userCan" Determines if the current user is
@@ -101,20 +108,25 @@ abstract class MobileSpecialPageFeed extends MobileSpecialPage {
 
 	/**
 	 * Generates username text based on user's rights and preference
-	 * @param Revision $rev
+	 * @param RevisionRecord $rev
 	 * @param User $user viewing the revision
 	 * @param bool $unhide whether the user wants to see hidden usernames
 	 * @return string plain test label
 	 */
 	protected function getUsernameText( $rev, $user, $unhide ) {
-		$userId = $rev->getUser( RevisionRecord::FOR_THIS_USER, $user );
-		if ( $userId === 0 ) {
-			$username = IP::prettifyIP( $rev->getUserText( RevisionRecord::RAW ) );
+		$revUser = $rev->getUser( RevisionRecord::FOR_THIS_USER, $user );
+		if ( $revUser && $revUser->isRegistered() ) {
+			$username = $revUser->getName();
 		} else {
-			$username = $rev->getUserText( RevisionRecord::FOR_THIS_USER, $user );
+			$revUser = $rev->getUser( RevisionRecord::RAW );
+			$username = IPUtils::prettifyIP( $revUser->getName() );
 		}
 		if (
-			!$rev->userCan( RevisionRecord::DELETED_USER, $user ) ||
+			!RevisionRecord::userCanBitfield(
+				$rev->getVisibility(),
+				RevisionRecord::DELETED_USER,
+				$user
+			) ||
 			( $rev->isDeleted( RevisionRecord::DELETED_USER ) && !$unhide )
 		) {
 			$username = $this->msg( 'rev-deleted-user' )->text();

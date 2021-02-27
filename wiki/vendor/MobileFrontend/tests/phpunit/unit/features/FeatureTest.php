@@ -10,7 +10,7 @@ use MobileFrontend\Features\Feature;
 class FeatureTest extends \MediaWikiUnitTestCase {
 	private $madeUpConfigVariable;
 
-	public function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 		$this->madeUpConfigVariable = [
 			'beta' => true,
@@ -22,7 +22,7 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 	 * @covers ::isAvailable
 	 */
 	public function testIsAvailableDefault() {
-		$modeMock = $this->getMock( \MobileFrontend\Features\IUserMode::class );
+		$modeMock = $this->createMock( \MobileFrontend\Features\IUserMode::class );
 		$modeMock->method( 'getModeIdentifier' )
 			->willReturn( 'default' );
 
@@ -38,11 +38,11 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 	 * @covers ::isAvailable
 	 */
 	public function testIsAvailable() {
-		$betaMock = $this->getMock( \MobileFrontend\Features\IUserMode::class );
+		$betaMock = $this->createMock( \MobileFrontend\Features\IUserMode::class );
 		$betaMock->method( 'getModeIdentifier' )
 			->willReturn( 'beta' );
 
-		$stableMock = $this->getMock( \MobileFrontend\Features\IUserMode::class );
+		$stableMock = $this->createMock( \MobileFrontend\Features\IUserMode::class );
 		$stableMock->method( 'getModeIdentifier' )
 			->willReturn( 'base' );
 
@@ -118,7 +118,7 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 		$this->assertSame( $actual, $expected );
 	}
 
-	public function tearDown() {
+	protected function tearDown() : void {
 		unset( $this->madeUpConfigVariable );
 		parent::tearDown();
 	}

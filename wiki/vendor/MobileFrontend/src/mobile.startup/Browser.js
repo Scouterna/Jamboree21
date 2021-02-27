@@ -5,12 +5,14 @@ var
 /**
  * Memoize a class method. Caches the result of the method based on the
  * arguments. Instances do not share a cache.
+ *
  * @param {Function} method Method to be memoized
  * @return {Function}
  */
 function memoize( method ) {
 	/**
 	 * Memoized version of the method
+	 *
 	 * @return {Function}
 	 */
 	var memoized = function () {
@@ -28,6 +30,7 @@ function memoize( method ) {
 
 /**
  * Representation of user's current browser
+ *
  * @class Browser
  * @param {string} ua the user agent of the current browser
  * @param {jQuery.Object} $container an element to associate with the Browser object
@@ -41,6 +44,7 @@ Browser.prototype = {
 	/**
 	 * Returns whether the current browser is an ios device.
 	 * FIXME: jquery.client does not support iPad detection so we cannot use it.
+	 *
 	 * @memberof Browser
 	 * @instance
 	 * @param {number} [version] integer describing a specific version you want to test against.
@@ -70,6 +74,7 @@ Browser.prototype = {
 	} ),
 	/**
 	 * Determine if a device has a widescreen.
+	 *
 	 * @memberof Browser
 	 * @instance
 	 * @return {boolean}
@@ -81,30 +86,8 @@ Browser.prototype = {
 		return window.innerWidth >= val;
 	} ),
 	/**
-	 * Checks browser support for CSS transforms, transitions
-	 * and CSS animation.
-	 * Currently assumes support for the latter 2 in the case of the
-	 * former.
-	 * See http://stackoverflow.com/a/12621264/365238
-	 * @memberof Browser
-	 * @instance
-	 * @return {boolean}
-	 */
-	supportsAnimations: memoize( function () {
-		var elemStyle = document.createElement( 'foo' ).style;
-		function supportsProperty( property ) {
-			// We only test "webkit-", because that's the only prefix needed for the relevant
-			// properties (in supportsAnimations) and supported browsers. If usage is expanded,
-			// other prefixes may need to be checked as well.
-			return property in elemStyle ||
-				( 'webkit' + property[ 0 ].toUpperCase() + property.slice( 1 ) ) in elemStyle;
-		}
-		return supportsProperty( 'animationName' ) &&
-			supportsProperty( 'transform' ) &&
-			supportsProperty( 'transition' );
-	} ),
-	/**
 	 * Whether touchstart and other touch events are supported by the current browser.
+	 *
 	 * @memberof Browser
 	 * @instance
 	 * @return {boolean}
@@ -114,6 +97,7 @@ Browser.prototype = {
 	} ),
 	/**
 	 * Detect if browser supports geolocation
+	 *
 	 * @memberof Browser
 	 * @instance
 	 * @return {boolean}

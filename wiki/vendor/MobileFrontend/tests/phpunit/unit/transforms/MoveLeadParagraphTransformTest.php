@@ -37,9 +37,8 @@ class MoveLeadParagraphTransformTest extends \MediaWikiUnitTestCase {
 		$bodyNode->appendChild( $infobox );
 		$bodyNode->appendChild( $section );
 
-		$this->assertEquals(
+		$this->assertFalse(
 			MoveLeadParagraphTransform::getInfoboxContainer( $pNode ),
-			false,
 			'The paragraph is not inside a .infobox or .mw-stack element'
 		);
 		$this->assertEquals(
@@ -51,9 +50,8 @@ class MoveLeadParagraphTransformTest extends \MediaWikiUnitTestCase {
 			MoveLeadParagraphTransform::getInfoboxContainer( $stack ),
 			$stack
 		);
-		$this->assertEquals(
+		$this->assertFalse(
 			MoveLeadParagraphTransform::getInfoboxContainer( $stack, '/infobox-container/' ),
-			false,
 			'Only .infobox-container elements can now wrap infoboxes so the stack does not resolve'
 		);
 		$this->assertEquals(
@@ -93,11 +91,16 @@ class MoveLeadParagraphTransformTest extends \MediaWikiUnitTestCase {
 	}
 
 	public function provideTransform() {
+		$divinfobox = '<div class="infobox infobox_v3">infobox</div>';
+		$hatnote = '<div role="note" class="hatnote navigation-not-searchable">hatnote.</div>';
 		$infobox = '<table class="infobox">1</table>';
 		$coordinates = '<span id="coordinates"><span>0;0</span></span>';
+		$wrappedCoordsWithTrailingWhitespace = '<p><span><span id="coordinates">not empty</span>'
+		  . '</span>    </p>';
 		$anotherInfobox = '<table class="infobox">2</table>';
 		$stackInfobox = "<div class=\"mw-stack\">$infobox</div>";
 		$emptyStack = '<div class="mw-stack">Empty</div>';
+		$emptypelt = '<p class="mw-empty-elt"></p>';
 		$multiStackInfobox = "<div class=\"mw-stack\">$infobox$anotherInfobox</div>";
 		$paragraph = '<p><b>First paragraph</b> <span> with info that links to a '
 			. PHP_EOL . ' <a href="">Page</a></span> and some more content</p>';
@@ -111,6 +114,16 @@ class MoveLeadParagraphTransformTest extends \MediaWikiUnitTestCase {
 			. '<table class="mf-test-infobox"></table></table>';
 
 		return [
+			[
+				"$hatnote$hatnote$emptypelt $wrappedCoordsWithTrailingWhitespace$infobox<p>one</p>",
+				"$hatnote$hatnote$emptypelt $wrappedCoordsWithTrailingWhitespace<p>one</p>$infobox",
+				'coordinates can be wrapped (T242447)'
+			],
+			[
+				"$divinfobox<p>one</p>",
+				"<p>one</p>$divinfobox",
+				'infoboxes can be divs',
+			],
 			[
 				"$collapsibleNotInfobox<p>one</p>",
 				"$collapsibleNotInfobox<p>one</p>",

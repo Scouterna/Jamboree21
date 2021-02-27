@@ -1,7 +1,7 @@
-/* global $, OO */
+/* global $ */
 var storage = mw.storage,
 	browser = require( './mobile.startup/Browser' ).getSingleton(),
-	toast = require( './mobile.startup/toast' ),
+	toast = require( './mobile.startup/showOnPageReload' ),
 	amcOutreach = require( './mobile.startup/amcOutreach/amcOutreach' ),
 	EXPAND_SECTIONS_KEY = 'expandSections',
 	msg = mw.msg,
@@ -9,17 +9,19 @@ var storage = mw.storage,
 
 /**
  * Notifies the user that settings were asynchronously saved.
+ *
  * @param {boolean} [isPending] if set toast will show after page has been reloaded.
  */
 function notify( isPending ) {
 	if ( isPending ) {
 		toast.showOnPageReload( msg( 'mobile-frontend-settings-save' ) );
 	} else {
-		toast.show( msg( 'mobile-frontend-settings-save' ) );
+		mw.notify( msg( 'mobile-frontend-settings-save' ) );
 	}
 }
 /**
  * Creates a label for use with a form input
+ *
  * @param {string} heading
  * @param {string} description
  * @return {OO.ui.LabelWidget}
@@ -40,6 +42,7 @@ function createLabel( heading, description ) {
 
 /**
  * Adds a font changer field to the form
+ *
  * @param {jQuery.Object} $form
  */
 function addFontChangerToForm( $form ) {
@@ -84,6 +87,7 @@ function addFontChangerToForm( $form ) {
 
 /**
  * Adds an expand all sections field to the form
+ *
  * @param {jQuery.Object} $form
  */
 function addExpandAllSectionsToForm( $form ) {
@@ -178,19 +182,19 @@ function infuseToggles( toggleObjects, $form ) {
  */
 function initMobileOptions() {
 	var $form = $( '#mobile-options' ),
-		betaToggle = $( '#enable-beta-toggle' ),
-		amcToggle = $( '#enable-amc-toggle' ),
+		$betaToggle = $( '#enable-beta-toggle' ),
+		$amcToggle = $( '#enable-amc-toggle' ),
 		toggles = [];
 
-	if ( betaToggle.length ) {
+	if ( $betaToggle.length ) {
 		toggles.push( {
-			$el: betaToggle,
+			$el: $betaToggle,
 			onToggle: function () {}
 		} );
 	}
-	if ( amcToggle.length ) {
+	if ( $amcToggle.length ) {
 		toggles.push( {
-			$el: amcToggle,
+			$el: $amcToggle,
 			onToggle: function ( value ) {
 				if ( !value && amcOutreach.loadCampaign().isCampaignActive() ) {
 					// Make all amc outreach actions ineligible so the user doesn't have

@@ -100,40 +100,6 @@ See: https://www.mediawiki.org/wiki/Analytics/Kraken/Data_Formats/X-Analytics
 * Type: `Boolean`
 * Default: `false`
 
-#### $wgMFAppPackageId
-
-ID of the App to deep link to replacing the browser. Set `false` to have no
-such link.
-
-See: <https://developers.google.com/app-indexing/webmasters/details>
-
-* Type: `Boolean|String`
-* Default: `false`
-
-#### $wgMFAppScheme
-
-Scheme to use for the deep link.
-
-* Type: `String`
-* Default: `'http'`
-
-#### $wgMFEditorOptions
-
-Options to control several functions of the mobile editor.  Possible values:
-
-* `skipPreview`: Should the mobile edit workflow contain an edit preview
-  (before save) to give the user the possibility to review the new text
-  resulting of his changes or not.
-
-
-* Type: `Array`
-* Default:
-```php
-  [
-    'skipPreview' => false,
-  ]
-```
-
 #### $wgMFUsePreferredEditor
 
 Use the user's preferred editor (i.e. visual editor or source editor) on first load. Uses the `visualeditor-editor` user option.
@@ -162,26 +128,6 @@ mobile preferences option.
     'base' => false,
     'beta' => false,
     'amc' => false,
-  ]
-```
-
-#### $wgMFExperiments
-
-A list of experiments active on the skin.
-
-* Type: `Array`
-* Default:
-```php
-  [
-    // Experiment to prompts users to opt into the beta experience of the skin.
-    'betaoptin' => [
-      'name' => 'betaoptin',
-      'enabled' => false,
-      'buckets' => [
-        'control' => 0.97,
-        'A' => 0.03,
-      ],
-    ],
   ]
 ```
 
@@ -230,14 +176,6 @@ This should not be used in production, it is strictly for development purposes.
 
 * Type: `string`
 * Default: ''
-
-#### $wgMFMobileMainPageCss
-
-Allow editors to edit MediaWiki:MobileMainPage.css to serve render blocking css to the main
-page.
-
-* Type: `boolean`
-* Default: false
 
 #### $wgMFMwApiContentProviderBaseUri
 
@@ -294,6 +232,9 @@ See <https://m.mediawiki.org/wiki/Mobile_Gateway/Mobile_homepage_formatting>
 Use is discouraged as it leads to unnecessary technical debt and on the long
 term the goal is to deprecate usage of this config variable. Use at your own
 risk!
+
+If this feature is enabled you can disable it temporarily by appending
+?debug=1&mfnolegacytransform=1 to the main page URI.
 
 * Type: `Boolean`
 * Default: `false`
@@ -533,14 +474,6 @@ include the preceding `.` (e.g. yes: `.wikipedia.org`, **no**: `wikipedia.org`)
 * Type: `String|null`
 * Default: `null`
 
-#### $wgMobileFrontendLogo
-
-Path to the logo used in the login/signup form.  The standard height is `72px`
-
-* Type: `Boolean`
-* Default: `false`
-
-
 #### $wgMFEnableBeta
 
 Whether beta mode is enabled.
@@ -576,12 +509,12 @@ Link to feedback page for beta features. If false no feedback link will be shown
 * Type: `String|false`
 * Default: `false`
 
-#### $wgMFDefaultSkinClass
+#### $wgDefaultMobileSkin
 
 The default skin for MobileFrontend.
 
 * Type: `String`
-* Default: `'SkinMinerva'`
+* Default: `'minerva'`
 
 #### $wgMFNamespacesWithoutCollapsibleSections
 
@@ -616,22 +549,6 @@ Set to `false` for "dictionary style", sections are not collapsed.
 
 * Type: `Boolean`
 * Default: `true`
-
-#### $wgMFPhotoUploadWiki
-
-The wiki id/dbname for where photos are uploaded, if photos are uploaded to
-a wiki other than the local wiki (eg commonswiki).
-
-* Type: `String|null`
-* Default: `null`
-
-#### $wgMFPhotoUploadEndpoint
-
-An api to which any photos should be uploaded.
-e.g. `$wgMFPhotoUploadEndpoint = 'https://commons.wikimedia.org/w/api.php';`
-
-* Type: `String`
-* Default: Defaults to the current wiki
 
 #### $wgMFUseWikibase
 
@@ -718,3 +635,27 @@ usually are diagrams that compress well and benefit from the higher resolution.
     "image/svg+xml",
   ]
 ```
+
+#### $wgMFNamespacesWithLeadParagraphs
+
+A list of namespace codes that have lead paragraphs. Lead paragraphs will be
+shown before infoboxes if `$wgMFShowFirstParagraphBeforeInfobox` is enabled.
+
+* Type: `Array`
+* Default:
+```php
+  [
+    0
+  ]
+```
+
+#### $wgMFStopMobileRedirectCookieSecureValue
+
+The default value of the 'secure' cookie parameter that controls
+MobileFrontend's mobile redirect behavior.  This variable defaults to true to
+encourage the use of TLS on any servers hosting MediaWiki and to avoid the
+disclosure of minor user privacy issues regarding a user's mobile browsing
+preferences.
+
+* Type: `Boolean`
+* Default: `true`

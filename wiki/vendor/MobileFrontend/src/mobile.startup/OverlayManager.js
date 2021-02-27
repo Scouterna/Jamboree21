@@ -23,7 +23,6 @@ function OverlayManager( router, container ) {
 	this.router = router;
 	// use an object instead of an array for entries so that we don't
 	// duplicate entries that already exist
-	// eslint-disable-next-line no-restricted-properties
 	this.entries = {};
 	// stack of all the open overlays, stack[0] is the latest one
 	this.stack = [];
@@ -34,6 +33,7 @@ function OverlayManager( router, container ) {
 
 /**
  * Attach an event to the overlays hide event
+ *
  * @param {Overlay} overlay
  */
 function attachHideEvent( overlay ) {
@@ -46,23 +46,41 @@ OverlayManager.prototype = {
 	/**
 	 * Don't try to hide the active overlay on a route change event triggered
 	 * by hiding another overlay.
-	 * Called when hiding an overlay.
+	 * Called when something other than OverlayManager calls Overlay.hide
+	 * on an overlay that it itself managed by the OverlayManager.
+	 * MUST be called when the stack is not empty.
+	 *
 	 * @memberof OverlayManager
 	 * @instance
 	 * @private
 	 */
-	_onHideOverlay: function () {
+	_onHideOverlayOutsideOverlayManager: function () {
+		const currentRoute = this.stack[0].route,
+			routeIsString = typeof currentRoute === 'string',
+			currentPath = this.router.getPath(),
+			// Since routes can be strings or regexes, it's important to do an equality
+			// check BEFORE a match check.
+			routeIsSame = ( routeIsString && currentPath === currentRoute ) ||
+				currentPath.match( currentRoute );
+
 		this.hideCurrent = false;
 
-		this.router.back();
+		// If the path hasn't changed then the user didn't close the overlay by
+		// calling history.back() or triggering a route change. We must go back
+		// to get out of the overlay. See T237677.
+		if ( routeIsSame ) {
+			// does the route need to change?
+			this.router.back();
+		}
 	},
 
 	/** Attach overlay to DOM
+	 *
 	 * @memberof OverlayManager
 	 * @instance
 	 * @private
 	 * @param {Overlay} overlay to attach
-	*/
+	 */
 	_attachOverlay: function ( overlay ) {
 		if ( !overlay.$el.parents().length ) {
 			this.container.appendChild( overlay.$el[0] );
@@ -70,6 +88,7 @@ OverlayManager.prototype = {
 	},
 	/**
 	 * Show the overlay and bind the '_om_hide' event to _onHideOverlay.
+	 *
 	 * @memberof OverlayManager
 	 * @instance
 	 * @private
@@ -81,8 +100,11 @@ OverlayManager.prototype = {
 		// eslint-disable-next-line no-restricted-properties
 		window.history.replaceState( MANAGED_STATE, null, window.location.href );
 
-		// if hidden using overlay (not hardware) button, update the state
-		overlay.once( '_om_hide', this._onHideOverlay.bind( this ) );
+		// the _om_hide event is added to an overlay that is displayed.
+		// It will fire if an Overlay emits a hide event (See attachHideEvent)
+		// in the case where a route change has not occurred (this event is disabled
+		// inside _hideOverlay which is called inside _checkRoute)
+		overlay.once( '_om_hide', this._onHideOverlayOutsideOverlayManager.bind( this ) );
 
 		this._attachOverlay( overlay );
 		overlay.show();
@@ -90,13 +112,15 @@ OverlayManager.prototype = {
 
 	/**
 	 * Hide overlay
+	 *
 	 * @memberof OverlayManager
 	 * @instance
 	 * @private
 	 * @param {Overlay} overlay to hide
+	 * @param {Function} onBeforeExitCancel to pass to onBeforeExit
 	 * @return {boolean} Whether the overlay has been hidden
 	 */
-	_hideOverlay: function ( overlay ) {
+	_hideOverlay: function ( overlay, onBeforeExitCancel ) {
 		let result;
 
 		function exit() {
@@ -108,14 +132,14 @@ OverlayManager.prototype = {
 		overlay.off( '_om_hide' );
 
 		if ( overlay.options && overlay.options.onBeforeExit ) {
-			overlay.options.onBeforeExit( exit );
+			overlay.options.onBeforeExit( exit, onBeforeExitCancel );
 		} else {
 			exit();
 		}
 
 		// if closing prevented, reattach the callback
 		if ( !result ) {
-			overlay.once( '_om_hide', this._onHideOverlay.bind( this ) );
+			overlay.once( '_om_hide', this._onHideOverlayOutsideOverlayManager.bind( this ) );
 		}
 
 		return result;
@@ -123,6 +147,7 @@ OverlayManager.prototype = {
 
 	/**
 	 * Show match's overlay if match is not null.
+	 *
 	 * @memberof OverlayManager
 	 * @instance
 	 * @private
@@ -137,35 +162,25 @@ OverlayManager.prototype = {
 				// if the match is an overlay that was previously opened, reuse it
 				self._show( match.overlay );
 			} else {
-				// else create an overlay using the factory function result (either
-				// a promise or an overlay)
+				// else create an overlay using the factory function result
 				factoryResult = match.factoryResult;
-				// http://stackoverflow.com/a/13075985/365238
-				if ( typeof factoryResult.promise === 'function' ) {
-					factoryResult.then( function ( overlay ) {
-						match.overlay = overlay;
-						attachHideEvent( overlay );
-						self._show( overlay );
-					} );
-				} else {
-					match.overlay = factoryResult;
-					attachHideEvent( match.overlay );
-					self._show( factoryResult );
-				}
+				match.overlay = factoryResult;
+				attachHideEvent( match.overlay );
+				self._show( factoryResult );
 			}
 		}
 	},
 
 	/**
 	 * A callback for Router's `route` event.
+	 *
 	 * @memberof OverlayManager
 	 * @instance
 	 * @private
 	 * @param {jQuery.Event} ev Event object.
 	 */
 	_checkRoute: function ( ev ) {
-		let current = this.stack[0],
-			match;
+		const current = this.stack[0];
 
 		// When entering an overlay for the first time,
 		// the manager should remember the user's scroll position
@@ -182,16 +197,15 @@ OverlayManager.prototype = {
 			current &&
 			current.overlay !== undefined &&
 			this.hideCurrent &&
-			!this._hideOverlay( current.overlay )
+			!this._hideOverlay( current.overlay, () => {
+				// if hide prevented, prevent route change event
+				ev.preventDefault();
+			} )
 		) {
-			// if hide prevented, prevent route change event
-			ev.preventDefault();
 			return;
 		}
 
-		// eslint-disable-next-line no-restricted-properties
-		match = Object.keys( this.entries ).reduce( function ( m, id ) {
-			// eslint-disable-next-line no-restricted-properties
+		const match = Object.keys( this.entries ).reduce( function ( m, id ) {
 			return m || this._matchRoute( ev.path, this.entries[ id ] );
 		}.bind( this ), null );
 
@@ -209,6 +223,7 @@ OverlayManager.prototype = {
 	/**
 	 * Check if a given path matches one of the existing entries and
 	 * remove it from the stack.
+	 *
 	 * @memberof OverlayManager
 	 * @instance
 	 * @private
@@ -220,12 +235,24 @@ OverlayManager.prototype = {
 	_matchRoute: function ( path, entry ) {
 		var
 			next,
-			match = path.match( entry.route ),
+			didMatch,
+			captures,
+			match,
 			previous = this.stack[1],
 			self = this;
 
+		if ( typeof entry.route === 'string' ) {
+			didMatch = entry.route === path;
+			captures = [];
+		} else {
+			match = path.match( entry.route );
+			didMatch = !!match;
+			captures = didMatch ? match.slice( 1 ) : [];
+		}
+
 		/**
 		 * Returns object to add to stack
+		 *
 		 * @method
 		 * @ignore
 		 * @return {Object}
@@ -233,11 +260,14 @@ OverlayManager.prototype = {
 		function getNext() {
 			return {
 				path: path,
-				factoryResult: entry.factory.apply( self, match.slice( 1 ) )
+				// Important for managing states of things such as the image overlay which change
+				// overlay routing parameters during usage.
+				route: entry.route,
+				factoryResult: entry.factory.apply( self, captures )
 			};
 		}
 
-		if ( match ) {
+		if ( didMatch ) {
 			// if previous stacked overlay's path matches, assume we're going back
 			// and reuse a previously opened overlay
 			if ( previous && previous.path === path ) {
@@ -264,7 +294,7 @@ OverlayManager.prototype = {
 	 * Add an overlay that should be shown for a specific fragment identifier.
 	 *
 	 * The following code will display an overlay whenever a user visits a URL that
-	 * end with '#/hi/name'. The value of `name` will be passed to the overlay.
+	 * ends with '#/hi/name'. The value of `name` will be passed to the overlay.
 	 *
 	 *     @example
 	 *     overlayManager.add( /\/hi\/(.*)/, function ( name ) {
@@ -280,9 +310,31 @@ OverlayManager.prototype = {
 	 *
 	 * @memberof OverlayManager
 	 * @instance
-	 * @param {RegExp} route route regular expression, optionally with parameters.
-	 * @param {Function} factory a function returning an overlay or a $.Deferred
-	 * which resolves to an overlay.
+	 * @param {RegExp|string} route definition that can be a regular
+	 * expression (optionally with parameters) or a string literal.
+	 *
+	 * T238364: Routes should only contain characters allowed by RFC3986 to ensure
+	 * compatibility across browsers. Encode the route with `encodeURIComponent()`
+	 * prior to registering it with OverlayManager if necessary (should probably
+	 * be done with all routes containing user generated characters) to avoid
+	 * inconsistencies with how different browsers encode illegal URI characters:
+	 *
+	 * ```
+	 *   var encodedRoute = encodeURIComponent('ugc < " ` >');
+	 *
+	 *   overlayManager.add(
+	 *     encodedRoute,
+	 *     function () { return new Overlay(); }
+	 *   );
+	 *
+	 *   window.location.hash = '#' + encodedRoute;
+	 * ```
+	 * The above example shows how to register a string literal route with illegal
+	 * URI characters. Routes registered as a regex will likely NOT have to
+	 * perform any encoding (unless they explicitly contain illegal URI
+	 * characters) as their user generated content portion will likely just be a
+	 * capturing group (e.g. `/\/hi\/(.*)/`).
+	 * @param {Function} factory a function returning an overlay
 	 */
 	add: function ( route, factory ) {
 		var self = this,
@@ -291,7 +343,6 @@ OverlayManager.prototype = {
 				factory: factory
 			};
 
-		// eslint-disable-next-line no-restricted-properties
 		this.entries[route] = entry;
 		// Check if overlay should be shown for the current path.
 		// The DOM must fully load before we can show the overlay because Overlay relies on it.
@@ -322,15 +373,17 @@ OverlayManager.prototype = {
 
 /**
  * Retrieve a singleton instance using 'mediawiki.router'.
+ *
  * @memberof OverlayManager
  * @return {OverlayManager}
  */
 OverlayManager.getSingleton = function () {
 	if ( !overlayManager ) {
 		const
+			router = mw.loader.require( 'mediawiki.router' ),
 			container = document.createElement( 'div' ),
-			// eslint-disable-next-line no-restricted-properties
-			hash = window.location.hash,
+			// Note getPath returns hash minus the '#' character:
+			hash = router.getPath(),
 			// eslint-disable-next-line no-restricted-properties
 			state = window.history.state;
 		container.className = 'mw-overlays-container';
@@ -343,11 +396,17 @@ OverlayManager.getSingleton = function () {
 			// eslint-disable-next-line no-restricted-properties
 			window.history.replaceState( null, null, '#' );
 			// eslint-disable-next-line no-restricted-properties
-			window.history.pushState( MANAGED_STATE, null, hash );
+			window.history.pushState( MANAGED_STATE, null, `#${hash}` );
 		}
-		overlayManager = new OverlayManager( mw.loader.require( 'mediawiki.router' ), container );
+		overlayManager = new OverlayManager( router, container );
 	}
 	return overlayManager;
 };
 
+OverlayManager.test = {
+	MANAGED_STATE,
+	__clearCache: () => {
+		overlayManager = null;
+	}
+};
 module.exports = OverlayManager;

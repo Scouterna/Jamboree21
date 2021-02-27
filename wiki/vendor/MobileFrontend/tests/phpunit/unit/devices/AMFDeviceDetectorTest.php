@@ -2,8 +2,8 @@
 
 namespace Tests\MobileFrontend\Devices;
 
-use WebRequest;
 use MobileFrontend\Devices\AMFDeviceDetector;
+use WebRequest;
 
 /**
  * @group MobileFrontend
@@ -20,7 +20,7 @@ class AMFDeviceDetectorTest extends \MediaWikiUnitTestCase {
 	 */
 	private $detector;
 
-	protected function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 
 		$this->request = new WebRequest();
