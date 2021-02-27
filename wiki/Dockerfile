@@ -82,40 +82,60 @@ RUN set -eux; \
 	chown -R www-data:www-data /var/www/data
 
 # Version
-ENV MEDIAWIKI_MAJOR_VERSION 1.34
-ENV MEDIAWIKI_BRANCH REL1_34
-ENV MEDIAWIKI_VERSION 1.34.0
+ENV MEDIAWIKI_MAJOR_VERSION 1.35
+ENV MEDIAWIKI_VERSION 1.35.1
 ENV MEDIAWIKI_SHA512 b6b1aeec26a1c114eeec0bdf18d4b3160fe02dac2920a39a045acb74e62aa8f8a28e6a81c01fedba7976e4dd0c96463e0f1badfddd3015eef9197b01586a236d
 
 # MediaWiki setup
 RUN set -eux; \
+	fetchDeps=" \
+		gnupg \
+		dirmngr \
+	"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends $fetchDeps; \
+	\
 	curl -fSL "https://releases.wikimedia.org/mediawiki/${MEDIAWIKI_MAJOR_VERSION}/mediawiki-${MEDIAWIKI_VERSION}.tar.gz" -o mediawiki.tar.gz; \
-	echo "${MEDIAWIKI_SHA512} *mediawiki.tar.gz" | sha512sum -c -; \
+	curl -fSL "https://releases.wikimedia.org/mediawiki/${MEDIAWIKI_MAJOR_VERSION}/mediawiki-${MEDIAWIKI_VERSION}.tar.gz.sig" -o mediawiki.tar.gz.sig; \
+	export GNUPGHOME="$(mktemp -d)"; \
+# gpg key from https://www.mediawiki.org/keys/keys.txt
+	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys \
+		D7D6767D135A514BEB86E9BA75682B08E8A3FEC4 \
+		441276E9CCD15F44F6D97D18C119E1A64D70938E \
+		F7F780D82EBFB8A56556E7EE82403E59F9F8CD79 \
+		1D98867E82982C8FE0ABC25F9B69B3109D3BB7B0 \
+	; \
+	gpg --batch --verify mediawiki.tar.gz.sig mediawiki.tar.gz; \
 	tar -x --strip-components=1 -f mediawiki.tar.gz; \
-	rm mediawiki.tar.gz; \
-	chown -R www-data:www-data extensions skins cache images
+	gpgconf --kill all; \
+	rm -r "$GNUPGHOME" mediawiki.tar.gz.sig mediawiki.tar.gz; \
+	chown -R www-data:www-data extensions skins cache images; \
+	\
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+	rm -rf /var/lib/apt/lists/*
 
-
-# install extensions
-COPY vendor/VisualEditor extensions/VisualEditor
 COPY LocalSettings.php LocalSettings.php
 COPY logo.png logo.png
-COPY vendor/MobileFrontend extensions/MobileFrontend
+
+# install extensions
+COPY vendor/Auth_remoteuser extensions/Auth_remoteuser
+COPY vendor/CategoryTree extensions/CategoryTree
+COPY vendor/MassEditRegex extensions/MassEditRegex
 COPY vendor/MinervaNeue skins/MinervaNeue
 COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSuggestions
-COPY vendor/simplesamlphp-1.18.4 simplesamlphp
-COPY vendor/Auth_remoteuser extensions/Auth_remoteuser
-COPY vendor/MassEditRegex extensions/MassEditRegex
+COPY vendor/MobileFrontend extensions/MobileFrontend
+COPY vendor/PluggableAuth extensions/PluggableAuth
+COPY vendor/Renameuser extensions/Renameuser
+COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
+COPY vendor/VisualEditor extensions/VisualEditor
 
 # SimpleSAML setup
+COPY vendor/simplesamlphp-1.18.4 simplesamlphp
 RUN ln -sf simplesamlphp/www simplesaml
 COPY simplesamlconfig/config.php simplesamlphp/config/config.php
 COPY simplesamlconfig/saml20-idp-remote.php simplesamlphp/metadata/saml20-idp-remote.php
 COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
 
-COPY vendor/PluggableAuth extensions/PluggableAuth
-COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
-COPY vendor/Renameuser extensions/Renameuser
 
 # Patch Media-wiki, set 403-code on permission errors
 COPY patches /tmp/patches

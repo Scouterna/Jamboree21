@@ -160,6 +160,7 @@ wfLoadSkin( 'Vector' );
 # to LocalSettings.php. Check specific extension documentation for more details.
 # The following extensions were automatically enabled:
 wfLoadExtension( 'Cite' );
+wfLoadExtension( 'CategoryTree' );
 wfLoadExtension( 'MultimediaViewer' );
 wfLoadExtension( 'PdfHandler' );
 wfLoadExtension( 'WikiEditor' );
