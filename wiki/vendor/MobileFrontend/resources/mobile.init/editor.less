@@ -6,15 +6,11 @@
 	@timing: 400ms 100ms;
 
 	.content .section-heading .indicator {
-		transition: width @timing, min-width @timing, opacity @timing;
+		transition: width @timing, min-width @timing, padding @timing, opacity @timing;
 		width: 0;
 		min-width: 0;
+		padding-right: 0;
 		opacity: 0;
-
-		&:before {
-			// Prevent icon from scaling during the transition
-			width: 1.5em;
-		}
 	}
 
 	.mw-editsection {
@@ -27,7 +23,7 @@
 		border-bottom-color: transparent;
 	}
 
-	#content {
+	.mw-body {
 		transition: padding-bottom @timing, margin-bottom @timing, transform @timing;
 		// Values set dynamically in JS code
 	}

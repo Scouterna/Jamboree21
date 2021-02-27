@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mikalai Udodau",
-			"Чаховіч Уладзіслаў",
-			"Дзяніс Тутэйшы",
+			"Artsiom91",
 			"Mechanizatar",
-			"Artsiom91"
+			"Mikalai Udodau",
+			"Дзяніс Тутэйшы",
+			"Чаховіч Уладзіслаў"
 		]
 	},
 	"abusefilter-edit-builder-vars-user-mobile": "Ці рэдагуе ўдзельнік праз мабільны інтэрфейс",
@@ -17,12 +17,10 @@
 	"mobile-frontend-diffview-404-desc": "Ідэнтыфікатара версіі, што вы запыталі, няма.",
 	"mobile-frontend-diffview-anonymous": "Ананімны ўдзельнік",
 	"mobile-frontend-diffview-bytesadded": "$1 {{PLURAL:$1|байт дададзены|байты дададзена|байтаў дададзена}}",
-	"mobile-frontend-diffview-bytesnochange": "Аб'ём не змяніўся",
+	"mobile-frontend-diffview-bytesnochange": "Аб’ём не змяніўся",
 	"mobile-frontend-diffview-bytesremoved": "$1 {{PLURAL:$1|байт|байты|байтаў}} выдалена",
 	"mobile-frontend-diffview-editcount": "<div>$1</div> {{PLURAL:$1|праўка|праўкі|правак}}",
 	"mobile-frontend-diffview-title": "Змены",
-	"mobile-frontend-donate-image-nouploads": "Няма ўкладанняў.",
-	"mobile-frontend-donate-image-title": "Укладанні",
 	"mobile-frontend-editor-save": "Запісаць",
 	"mobile-frontend-editor-switch-editor": "Пераключыць рэдактар",
 	"mobile-frontend-featured-article": "Выбраны матэрыял дня",
@@ -55,7 +53,7 @@
 	"nearby": "Старонкі на тэмы побач з вамі",
 	"tag-mobile_edit": "Праўка з маб. прылады",
 	"tag-mobile_edit-description": "Праўка, зробленая праз мабільную прыладу (сайт або дадатак)",
+	"tag-advanced_mobile_edit": "Пашыраная мабільная праўка",
 	"tag-mobile_web_edit": "Праўка праз мабільную версію сайта",
-	"tag-mobile_web_edit-description": "Праўка, зробленая праз мабільную версію сайта",
-	"mobile-frontend-panel-cancel": "Не, дзякуй"
+	"tag-mobile_web_edit-description": "Праўка, зробленая праз мабільную версію сайта"
 }

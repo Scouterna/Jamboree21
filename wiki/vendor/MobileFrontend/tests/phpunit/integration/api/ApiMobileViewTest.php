@@ -7,7 +7,7 @@ use MediaWiki\MediaWikiServices;
  */
 class ApiMobileViewTest extends MediaWikiTestCase {
 
-	public function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 
 		$this->setMwGlobals( 'wgAPIModules', [ 'mobileview' => MockApiMobileView::class ] );
@@ -52,7 +52,7 @@ class ApiMobileViewTest extends MediaWikiTestCase {
 			[ [ 1, 2 ], [ 11 ], '1|1|2|1|11|2|1' ],
 			[ [ 1, 3, 4, 5 ], [], '1|3-5|4' ],
 			[ [ 10 ], [], '10-' ],
-			# https://bugzilla.wikimedia.org/show_bug.cgi?id=61868
+			# https://phabricator.wikimedia.org/T63868
 			[ [], [ '20-' ], '20-' ],
 		];
 	}
@@ -128,19 +128,11 @@ class ApiMobileViewTest extends MediaWikiTestCase {
 	 * @covers ApiMobileView::getResult
 	 */
 	public function testViewWithTransforms( array $input, array $expected ) {
-		if ( version_compare(
-			PHPUnit_Runner_Version::id(),
-			'4.0.0',
-			'<'
-		) ) {
-			$this->markTestSkipped( 'testViewWithTransforms requires PHPUnit 4.0.0 or greater.' );
-		}
-
 		$api = $this->getMobileViewApi( $input );
-		$api->mockFile = $this->getMock( 'MockFSFile',
-			[ 'getWidth', 'getHeight', 'getTitle', 'getMimeType', 'transform' ],
-			[], '', false
-		);
+		$api->mockFile = $this->getMockBuilder( File::class )
+			->onlyMethods( [ 'getWidth', 'getHeight', 'getTitle', 'getMimeType', 'transform' ] )
+			->disableOriginalConstructor()
+			->getMock();
 		$api->mockFile->method( 'getWidth' )->will( $this->returnValue( 640 ) );
 		$api->mockFile->method( 'getHeight' )->will( $this->returnValue( 480 ) );
 		$api->mockFile->method( 'getTitle' )
@@ -157,7 +149,7 @@ class ApiMobileViewTest extends MediaWikiTestCase {
 	}
 
 	public function mockTransform( array $params ) {
-		$thumb = $this->getMock( 'MediaTransformOutput' );
+		$thumb = $this->createMock( MediaTransformOutput::class );
 		$thumb->method( 'getUrl' )->will( $this->returnValue( 'http://dummy' ) );
 		$thumb->method( 'getWidth' )->will( $this->returnValue( $params['width'] ) );
 		$thumb->method( 'getHeight' )->will( $this->returnValue( $params['height'] ) );
@@ -552,8 +544,7 @@ Text 2
 		$pageprops = [];
 		$addDescriptionToResult->invokeArgs( $api, [ $resultObj, $pageprops, 'mobileview' ] );
 		$mobileview = $resultObj->getResultData( 'mobileview' );
-		$this->assertEmpty( $mobileview[ 'description' ] );
-		$this->assertEmpty( $mobileview[ 'descriptionsource' ] );
+		$this->assertNull( $mobileview );
 	}
 
 	/**

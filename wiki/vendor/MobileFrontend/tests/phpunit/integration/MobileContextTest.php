@@ -21,7 +21,7 @@ class MobileContextTest extends MediaWikiTestCase {
 		return $method;
 	}
 
-	protected function tearDown() {
+	protected function tearDown() : void {
 		parent::tearDown();
 
 		MobileContext::resetInstanceForTesting();
@@ -45,13 +45,14 @@ class MobileContextTest extends MediaWikiTestCase {
 		$request->setRequestURL( $url );
 		$request->setCookies( $cookies, '' );
 
-		$context = new DerivativeContext( RequestContext::getMain() );
-		$config = MediaWikiServices::getInstance()->getService( 'MobileFrontend.Config' );
+		MobileContext::resetInstanceForTesting();
+		/** @var MobileContext $context */
+		$instance = MediaWikiServices::getInstance()->getService( 'MobileFrontend.Context' );
+
+		/** @var MutableContext $context */
+		$context = $instance->getContext();
 		$context->setRequest( $request );
-		$context->setOutput( new OutputPage( $context ) );
-		$instance = unserialize( 'O:13:"MobileContext":0:{}' );
-		$instance->setContext( $context );
-		$instance->setConfig( $config );
+
 		return $instance;
 	}
 
@@ -240,7 +241,8 @@ class MobileContextTest extends MediaWikiTestCase {
 	/**
 	 * A null title shouldn't result in a fatal exception - bug T142914
 	 * @covers MobileContext::shouldDisplayMobileView
-	 * @covers MobileContext::setUseFormat
+	 * @covers MobileContext::shouldDisplayMobileViewInternal
+	 * @covers MobileContext::getUseFormat
 	 */
 	public function testRedirectMobileEnabledPages() {
 		$this->setMwGlobals( [
@@ -248,7 +250,7 @@ class MobileContextTest extends MediaWikiTestCase {
 		] );
 		$mobileContext = $this->makeContext();
 		$mobileContext->getRequest()->setVal( 'action', 'history' );
-		$mobileContext->setUseFormat( 'mobile' );
+		$mobileContext->getRequest()->setVal( 'useformat', 'mobile' );
 
 		$this->assertTrue( $mobileContext->shouldDisplayMobileView() );
 	}
@@ -259,7 +261,7 @@ class MobileContextTest extends MediaWikiTestCase {
 	 */
 	public function testGetMobileAction( $mobileaction = null ) {
 		$context = $this->makeContext();
-		if ( is_null( $mobileaction ) ) {
+		if ( $mobileaction === null ) {
 			$assert = '';
 		} else {
 			$context->getRequest()->setVal( 'mobileaction', $mobileaction );
@@ -273,26 +275,6 @@ class MobileContextTest extends MediaWikiTestCase {
 		return [
 			[ null ],
 			[ 'view_normal_site' ],
-		];
-	}
-
-	/**
-	 * @dataProvider getUseFormatProvider
-	 * @covers MobileContext::getUseFormat
-	 */
-	public function testGetUseFormat( $explicit, $requestParam, $expected ) {
-		$context = $this->makeContext();
-		$context->getRequest()->setVal( 'useformat', $requestParam );
-		$context->setUseFormat( $explicit );
-		$this->assertEquals( $expected, $context->getUseFormat() );
-	}
-
-	public function getUseFormatProvider() {
-		return [
-			[ 'mobile', null, 'mobile' ],
-			[ null, 'mobile', 'mobile' ],
-			[ null, null, '' ],
-			[ 'desktop', 'mobile', 'desktop' ],
 		];
 	}
 
@@ -577,6 +559,7 @@ class MobileContextTest extends MediaWikiTestCase {
 		$wgMFStripResponsiveImages,
 		$stripResponsiveImages = null
 	) {
+		/** @var MobileContext $context */
 		$context = MediaWikiServices::getInstance()->getService( 'MobileFrontend.Context' );
 		$context->setForceMobileView( $forceMobileView );
 

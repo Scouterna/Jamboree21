@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-# arguments: $0 - some parameters for the diff function (to tell script what to diff)
 set -euo pipefail
 
-git diff "$@" --name-only --exit-code resources/dist || {
-	cat << eof
-There are changes to resources/dist.
+cat << eof
+Checking the contents of resources/dist
 
 I will now check that you built them using the correct Node.js version v$(< .nvmrc).
 Note: You are using $(node -v).
@@ -23,7 +21,7 @@ Try running `npm run build` again or removing the node_modules folder and runnin
 eof
 			exit 1;
 	}
-	bundlesize
+	PATH="$(npm bin):$(npm bin -g):$PATH" bundlesize
 	echo 'Your changes look good!'
 	exit 0;
 }

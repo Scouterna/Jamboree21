@@ -20,7 +20,7 @@ class MobileFormatterTest extends MediaWikiTestCase {
 	 */
 	private $mfContext;
 
-	protected function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 
 		$services = \MediaWiki\MediaWikiServices::getInstance();
@@ -33,7 +33,7 @@ class MobileFormatterTest extends MediaWikiTestCase {
 	 *
 	 * @param string $heading
 	 * @param string $innerHtml of the heading element
-	 * @param integer $sectionNumber heading corresponds to
+	 * @param int $sectionNumber heading corresponds to
 	 * @return string
 	 */
 	private function makeSectionHeading( $heading, $innerHtml, $sectionNumber = 1 ) {
@@ -48,7 +48,7 @@ class MobileFormatterTest extends MediaWikiTestCase {
 	 *
 	 * @param string $sectionNumber
 	 * @param string $contentHtml
-	 * @param boolean $isReferenceSection whether the section contains references
+	 * @param bool $isReferenceSection whether the section contains references
 	 * @return string
 	 */
 	private function makeSectionHtml( $sectionNumber, $contentHtml = '',
@@ -61,8 +61,8 @@ class MobileFormatterTest extends MediaWikiTestCase {
 			$className .= ' ' . MobileFormatter::STYLE_COLLAPSIBLE_SECTION_CLASS;
 		}
 
-		return "<div class=\"$className\" id=\"mf-section-$sectionNumber\""
-			. "$attrs>$contentHtml</div>";
+		return "<section class=\"$className\" id=\"mf-section-$sectionNumber\""
+			. "$attrs>$contentHtml</section>";
 	}
 
 	/**
@@ -739,14 +739,14 @@ class MobileFormatterTest extends MediaWikiTestCase {
 		);
 		$formatter->enableExpandableSections();
 
-		$loggerMock = $this->getMock( \Psr\Log\LoggerInterface::class );
+		$loggerMock = $this->createMock( \Psr\Log\LoggerInterface::class );
 		$loggerMock->expects( $this->once() )
 			->method( 'info' )
 			->will( $this->returnCallback( function ( $message ) use ( $title ) {
 				// Debug message contains Page title
-				$this->assertContains( $title, $message );
+				$this->assertStringContainsString( $title, $message );
 				// and contains revision id which is 0 by default
-				$this->assertContains( '0', $message );
+				$this->assertStringContainsString( '0', $message );
 			} ) );
 
 		$this->setLogger( 'mobile', $loggerMock );
@@ -785,7 +785,7 @@ class MobileFormatterTest extends MediaWikiTestCase {
 		);
 		$formatter->enableExpandableSections();
 
-		$loggerMock = $this->getMock( \Psr\Log\LoggerInterface::class );
+		$loggerMock = $this->createMock( \Psr\Log\LoggerInterface::class );
 		$loggerMock->expects( $this->never() )
 			->method( 'info' );
 
@@ -828,7 +828,7 @@ class MobileFormatterTest extends MediaWikiTestCase {
 		);
 		$formatter->enableExpandableSections();
 
-		$loggerMock = $this->getMock( \Psr\Log\LoggerInterface::class );
+		$loggerMock = $this->createMock( \Psr\Log\LoggerInterface::class );
 		$loggerMock->expects( $this->never() )
 			->method( 'info' );
 

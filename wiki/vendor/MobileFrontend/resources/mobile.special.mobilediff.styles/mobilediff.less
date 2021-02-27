@@ -5,6 +5,7 @@
 @userInfoHeight: 8em;
 @userInfoPadding: 1em;
 
+/* stylelint-disable selector-max-id */
 #mw-mf-page-center {
 	// See https://phabricator.wikimedia.org/T144579#2699879
 	// This prevents the footer margin bottom from collapsing on iOS9.3
@@ -30,6 +31,20 @@ footer {
 #mw-mf-diffarea {
 	.hyphens( auto );
 	padding: 0 1em ( 2 * @userInfoHeight + 1em );
+}
+
+.diff {
+	.diff-title {
+		display: none;
+	}
+
+	td {
+		padding: 0;
+	}
+
+	ins, del {
+		white-space: pre-wrap;
+	}
 }
 
 #mw-mf-diffview {
@@ -66,9 +81,12 @@ footer {
 		margin-left: 0.5em;
 	}
 
-	ins,
-	del {
+	.mw-diff-inline-added ins,
+	.mw-diff-inline-changed ins,
+	.mw-diff-inline-deleted del,
+	.mw-diff-inline-changed del {
 		color: #000;
+		word-break: break-all;
 		text-decoration: none;
 	}
 
@@ -76,11 +94,13 @@ footer {
 		margin-right: 2px;
 	}
 
-	ins {
+	.mw-diff-inline-added ins,
+	.mw-diff-inline-changed ins {
 		background-color: #75c877;
 	}
 
-	del {
+	.mw-diff-inline-deleted del,
+	.mw-diff-inline-changed del {
 		background-color: #e07076;
 		text-decoration: none;
 	}
@@ -173,3 +193,4 @@ footer {
 		padding-right: 0;
 	}
 }
+/* stylelint-enable selector-max-id */

@@ -4,13 +4,16 @@
 /* stylelint-disable no-descending-specificity */
 
 .overlay-enabled {
+	// stylelint-disable-next-line selector-max-id
 	#mw-mf-page-center {
 		overflow: hidden;
 		// FIXME: override old overlay styles, remove when old overlays gone
 		display: block;
 	}
 
-	.overlay, #mw-mf-page-center {
+	// stylelint-disable-next-line selector-max-id
+	.overlay,
+	#mw-mf-page-center {
 		// use height instead of bottom 0 so that overlay expands when there's
 		// more content, don't use min-height because of
 		// http://stackoverflow.com/questions/3808512/the-inherited-height-of-a-child-div-from-a-parent-with-a-min-height-attribute
@@ -23,8 +26,6 @@
 }
 
 // Overlays
-//
-// Styleguide 7.
 
 // Overlays (read only)
 //
@@ -38,7 +39,7 @@
 //     <div class="overlay-header-container visible">
 //       <div class="overlay-header">
 //         <ul>
-//          <li><button class="cancel icon">Close</button></li>
+//           <li><button class="cancel icon">Close</button></li>
 //         </ul>
 //         <div class="overlay-title"><h2>Overlay</h2></div>
 //       </div>
@@ -46,8 +47,6 @@
 //     <div class="content">Overlay with no icon.</div>
 //   </div>
 // </html>
-//
-// Styleguide 7.1.
 
 // Overlays (primary)
 //
@@ -62,19 +61,17 @@
 //     <div class="overlay-header-container visible">
 //       <div class="overlay-header">
 //         <ul>
-//          <li><button class="cancel icon">Close</button></li>
+//           <li><button class="cancel icon">Close</button></li>
 //         </ul>
 //         <div class="overlay-title"><h2>Overlay</h2></div>
 //         <ul>
-//          <li><button class="continue icon">Continue</button></li>
+//           <li><button class="continue icon">Continue</button></li>
 //         </ul>
 //       </div>
 //     </div>
 //     <div class="content">Overlay with progressive action.</div>
 //   </div>
 // </html>
-//
-// Styleguide 7.2.
 
 // Overlays
 //
@@ -98,8 +95,6 @@
 //     <div class="content">Overlay with completion action.</div>
 //   </div>
 // </html>
-//
-// Styleguide 7.3.
 .overlay {
 	position: absolute;
 	top: 0;
@@ -176,9 +171,12 @@
 			background-color: @colorProgressive;
 			color: #fff;
 			width: auto;
-			padding: 0 1.2em;
 			display: table-cell;
 			vertical-align: middle;
+
+			&:not( .mw-ui-icon-element ) {
+				padding: 0 1.2em;
+			}
 
 			&[ disabled ] {
 				background-color: @colorGray12;
@@ -289,8 +287,6 @@
 //   </div>
 //   <div class="content"></div>
 // </div>
-//
-// Styleguide 7.4.
 .overlay-bottom {
 	border-top: 1px solid @grayLight;
 	top: auto;

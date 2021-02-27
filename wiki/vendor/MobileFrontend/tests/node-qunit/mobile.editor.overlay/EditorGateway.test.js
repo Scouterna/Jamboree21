@@ -1,9 +1,10 @@
-var sandbox, EditorGateway, spy, postStub, apiReject, apiHappy, apiRvNoSection,
+let sandbox, EditorGateway, spy, postStub, apiReject, apiHappy, apiRvNoSection,
 	apiCaptchaFail, apiAbuseFilterDisallow, apiAbuseFilterWarning, apiAbuseFilterOther,
 	apiTestError, apiReadOnly, apiExpiredToken, apiWithSectionLine, apiHappyTestContent,
 	apiEmptySuccessResponse, apiNoSectionLine, apiRejectHttp,
+	happyResponse;
+const
 	util = require( '../../../src/mobile.startup/util' ),
-	happyResponse,
 	API_REQUEST_DATA = {
 		title: 'test',
 		action: 'edit',
@@ -204,7 +205,7 @@ QUnit.module( 'MobileFrontend mobile.editor.overlay/EditorGateway', {
 } );
 
 QUnit.test( '#getContent (no section)', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'MediaWiki:Test.css'
 	} );
@@ -223,12 +224,10 @@ QUnit.test( '#getContent (no section)', function ( assert ) {
 } );
 
 QUnit.test( '#getContent', function ( assert ) {
-	var gateway;
-
-	gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function ( resp ) {
@@ -241,7 +240,7 @@ QUnit.test( '#getContent', function ( assert ) {
 } );
 
 QUnit.test( '#getContent, new page', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'test',
 		isNewPage: true
@@ -255,17 +254,17 @@ QUnit.test( '#getContent, new page', function ( assert ) {
 } );
 
 QUnit.test( '#getContent, missing section', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiRvNoSection,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	assert.rejects( gateway.getContent(), /^rvnosuchsection$/, 'return error code' );
 } );
 
 QUnit.test( '#getBlockInfo', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 			api: apiHappy,
 			title: 'test'
 		} ),
@@ -292,10 +291,10 @@ QUnit.test( '#getBlockInfo', function ( assert ) {
 } );
 
 QUnit.test( '#save, success', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -307,7 +306,7 @@ QUnit.test( '#save, success', function ( assert ) {
 	} ).then( function () {
 		assert.strictEqual( gateway.hasChanged, false, 'reset hasChanged' );
 		assert.strictEqual( postStub.calledWithMatch( 'csrf', util.extend( {}, API_REQUEST_DATA, {
-			section: 1,
+			section: '1',
 			text: 'section 1',
 			basetimestamp: '2013-05-15T00:30:26Z',
 			starttimestamp: '2013-05-15T00:30:26Z'
@@ -316,7 +315,7 @@ QUnit.test( '#save, success', function ( assert ) {
 } );
 
 QUnit.test( '#save, new page', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'Talk:test',
 		isNewPage: true
@@ -341,7 +340,7 @@ QUnit.test( '#save, new page', function ( assert ) {
 } );
 
 QUnit.test( '#save, after #setPrependText', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'test'
 	} );
@@ -358,10 +357,10 @@ QUnit.test( '#save, after #setPrependText', function ( assert ) {
 } );
 
 QUnit.test( '#save, submit CAPTCHA', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -375,7 +374,7 @@ QUnit.test( '#save, submit CAPTCHA', function ( assert ) {
 	} ).then( function () {
 		assert.strictEqual( gateway.hasChanged, false, 'reset hasChanged' );
 		assert.ok( postStub.calledWithMatch( 'csrf', util.extend( {}, API_REQUEST_DATA, {
-			section: 1,
+			section: '1',
 			text: 'section 1',
 			captchaid: 123,
 			captchaword: 'abc',
@@ -386,10 +385,10 @@ QUnit.test( '#save, submit CAPTCHA', function ( assert ) {
 } );
 
 QUnit.test( '#save, request failure', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiRejectHttp,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -403,10 +402,10 @@ QUnit.test( '#save, request failure', function ( assert ) {
 } );
 
 QUnit.test( '#save, API failure', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiReject,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -422,10 +421,10 @@ QUnit.test( '#save, API failure', function ( assert ) {
 } );
 
 QUnit.test( '#save, CAPTCHA response with image URL', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiCaptchaFail,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -449,10 +448,10 @@ QUnit.test( '#save, CAPTCHA response with image URL', function ( assert ) {
 } );
 
 QUnit.test( '#save, AbuseFilter warning', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiAbuseFilterWarning,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -474,10 +473,10 @@ QUnit.test( '#save, AbuseFilter warning', function ( assert ) {
 } );
 
 QUnit.test( '#save, AbuseFilter disallow', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiAbuseFilterDisallow,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -499,10 +498,10 @@ QUnit.test( '#save, AbuseFilter disallow', function ( assert ) {
 } );
 
 QUnit.test( '#save, AbuseFilter other', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiAbuseFilterOther,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -524,10 +523,10 @@ QUnit.test( '#save, AbuseFilter other', function ( assert ) {
 } );
 
 QUnit.test( '#save, extension errors', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiTestError,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -546,10 +545,10 @@ QUnit.test( '#save, extension errors', function ( assert ) {
 	} );
 } );
 QUnit.test( '#save, read-only error', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 			api: apiReadOnly,
 			title: 'test',
-			sectionId: 1
+			sectionId: '1'
 		} ),
 		resolveSpy = sandbox.spy(),
 		rejectSpy = sandbox.spy(),
@@ -574,10 +573,10 @@ QUnit.test( '#save, read-only error', function ( assert ) {
 } );
 
 QUnit.test( '#save, unknown errors', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiEmptySuccessResponse,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -592,10 +591,10 @@ QUnit.test( '#save, unknown errors', function ( assert ) {
 } );
 
 QUnit.test( '#save, without changes', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiHappy,
 		title: 'test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getContent().then( function () {
@@ -607,7 +606,7 @@ QUnit.test( '#save, without changes', function ( assert ) {
 		} );
 	} ).then( function () {
 		assert.ok( apiHappy.postWithToken.calledWithMatch( 'csrf', util.extend( {}, API_REQUEST_DATA, {
-			section: 1,
+			section: '1',
 			text: 'section',
 			basetimestamp: '2013-05-15T00:30:26Z',
 			starttimestamp: '2013-05-15T00:30:26Z'
@@ -616,10 +615,10 @@ QUnit.test( '#save, without changes', function ( assert ) {
 } );
 
 QUnit.test( '#EditorGateway', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 			api: apiHappyTestContent,
 			title: 'Test',
-			sectionId: 1
+			sectionId: '1'
 		} ),
 		resolveSpy = sandbox.spy();
 
@@ -639,10 +638,10 @@ QUnit.test( '#EditorGateway', function ( assert ) {
 } );
 
 QUnit.test( '#EditorGateway, check without sectionLine', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiNoSectionLine,
 		title: 'Test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getPreview( {
@@ -653,10 +652,10 @@ QUnit.test( '#EditorGateway, check without sectionLine', function ( assert ) {
 } );
 
 QUnit.test( '#EditorGateway, check with sectionLine', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiWithSectionLine,
 		title: 'Test',
-		sectionId: 1
+		sectionId: '1'
 	} );
 
 	return gateway.getPreview( {
@@ -668,7 +667,7 @@ QUnit.test( '#EditorGateway, check with sectionLine', function ( assert ) {
 } );
 
 QUnit.test( '#save, when token has expired', function ( assert ) {
-	var gateway = new EditorGateway( {
+	const gateway = new EditorGateway( {
 		api: apiExpiredToken,
 		title: 'MediaWiki:Test.css'
 	} );

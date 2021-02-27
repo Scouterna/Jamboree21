@@ -1,6 +1,8 @@
 <?php
 
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Storage\RevisionRecord;
+use Wikimedia\IPUtils;
 use Wikimedia\Rdbms\IResultWrapper;
 
 /**
@@ -9,19 +11,19 @@ use Wikimedia\Rdbms\IResultWrapper;
  */
 class SpecialMobileContributions extends SpecialMobileHistory {
 	/**
-	 * @var string $specialPageName The Name of the special page
+	 * @var string The Name of the special page
 	 *		(Note we do not redirect to Special:History/$par to
 	 *		allow the parameter to be used for usernames)
 	 */
 	protected $specialPageName = 'Contributions';
-	/**  @var User $user Saves the userobject*/
+	/** @var User */
 	protected $user;
 	/**
-	 * @var MWTimestamp $lastDate A timestamp used for
+	 * @var MWTimestamp A timestamp used for
 	 *		MobileSpecialPageFeed::renderListHeaderWhereNeeded
 	 */
 	protected $lastDate;
-	/**  @var bool $showUsername Whether to show the username in results or not */
+	/** @var bool Whether to show the username in results or not */
 	protected $showUsername = false;
 	/** @var array Lengths of previous revisions */
 	protected $prevLengths = [];
@@ -38,11 +40,11 @@ class SpecialMobileContributions extends SpecialMobileHistory {
 	protected function getHeaderBarLink( $title ) {
 		// Convert user page URL to User object.
 		$user = User::newFromName( $title->getText(), false );
-		$glyph = $user->isAnon() ? 'userAnonymous' : 'userAvatar';
+		$icon = $user->isAnon() ? 'userAnonymous' : 'userAvatar';
 
 		return Html::rawElement( 'a',
 			[
-				'class' => MobileUI::iconClass( $glyph, 'before', 'mw-mf-user' ),
+				'class' => MobileUI::iconClass( $icon, 'before', 'mw-mf-user' ),
 				'href' => $title->getLocalURL(),
 			],
 			Html::element( 'span', [], $title->getText() )
@@ -54,26 +56,29 @@ class SpecialMobileContributions extends SpecialMobileHistory {
 	 * @param string|null $par The username
 	 */
 	public function executeWhenAvailable( $par = '' ) {
-		$this->offset = $this->getRequest()->getVal( 'offset', false );
+		$this->offset = $this->getRequest()->getVal( 'offset', '' );
 		if ( $par ) {
 			// enter article history view
 			$this->user = User::newFromName( $par, false );
-			if ( $this->user && ( $this->user->idForName() || User::isIP( $par ) ) ) {
+
+			$usernameUtils = MediaWikiServices::getInstance()->getUserNameUtils();
+			$userIsIP = ( $usernameUtils->isIP( $par ) || IPUtils::isIPv6( $par ) );
+			if ( $this->user && ( $this->user->idForName() || $userIsIP ) ) {
 				// set page title as on desktop site - bug 66656
 				$username = $this->user->getName();
 				$out = $this->getOutput();
 				$out->addModuleStyles( [
 					'mobile.pagelist.styles',
-					'mobile.special.user.icons',
 					"mobile.placeholder.images",
 					'mobile.pagesummary.styles',
+					'mobile.user.icons'
 				] );
 				$out->setHTMLTitle( $this->msg(
 					'pagetitle',
 					$this->msg( 'contributions-title', $username )->plain()
 				)->inContentLanguage() );
 
-				if ( User::isIP( $par ) ) {
+				if ( $userIsIP ) {
 					$this->renderHeaderBar( Title::newFromText( 'User:' . $par ) );
 				} else {
 					$this->renderHeaderBar( $this->user->getUserPage() );
@@ -101,25 +106,28 @@ class SpecialMobileContributions extends SpecialMobileHistory {
 	 */
 	protected function showContributions( IResultWrapper $res, ContribsPager $pager ) {
 		$numRows = $res->numRows();
-		$rev = null;
 		$out = $this->getOutput();
-		$revs = [];
-		$prevRevs = [];
+
+		$revisionRecord = null;
+		$revisionRecords = [];
+		$previousRecords = [];
 		foreach ( $res as $row ) {
-			$rev = $pager->tryToCreateValidRevision( $row );
-			if ( $rev ) {
-				$revs[] = $rev;
-				if ( $res->key() <= self::LIMIT + 1 && $rev->getParentId() ) {
-					$prevRevs[] = $rev->getParentId();
+			$revisionRecord = $pager->tryCreatingRevisionRecord( $row );
+			if ( $revisionRecord ) {
+				$revisionRecords[] = $revisionRecord;
+				if ( $res->key() <= self::LIMIT + 1 && $revisionRecord->getParentId() ) {
+					$previousRecords[] = $revisionRecord->getParentId();
 				}
 			}
 		}
-		$this->prevLengths = Revision::getParentLengths( wfGetDB( DB_REPLICA ), $prevRevs );
+		$this->prevLengths = MediaWikiServices::getInstance()
+			->getRevisionStore()
+			->getRevisionSizes( $previousRecords );
 		if ( $numRows > 0 ) {
 			$count = 0;
-			foreach ( $revs as $rev ) {
+			foreach ( $revisionRecords as $revRecord ) {
 				if ( $count++ < self::LIMIT ) {
-					$this->showContributionsRow( $rev );
+					$this->showContributionsRow( $revRecord );
 				}
 			}
 			$out->addHTML( '</ul>' );
@@ -130,15 +138,15 @@ class SpecialMobileContributions extends SpecialMobileHistory {
 		} else {
 			// For users who exist but have not made any edits
 			$out->addHTML(
-				Html::warningBox( $this->msg( 'mobile-frontend-history-no-results' ) ) );
+				Html::warningBox( $this->msg( 'mobile-frontend-history-no-results' )->parse() ) );
 		}
 	}
 
 	/**
 	 * Render the contribution of the pagerevision (time, bytes added/deleted, pagename comment)
-	 * @param Revision $rev Revision to show contribution for
+	 * @param RevisionRecord $rev Revision to show contribution for
 	 */
-	protected function showContributionsRow( Revision $rev ) {
+	private function showContributionsRow( RevisionRecord $rev ) {
 		$unhide = (bool)$this->getRequest()->getVal( 'unhide' );
 		$user = $this->getUser();
 		$username = $this->getUsernameText( $rev, $user, $unhide );
@@ -148,14 +156,23 @@ class SpecialMobileContributions extends SpecialMobileHistory {
 		$this->renderListHeaderWhereNeeded( $this->getLanguage()->userDate( $ts, $this->getUser() ) );
 		$ts = new MWTimestamp( $ts );
 
-		if ( $rev->userCan( RevisionRecord::DELETED_TEXT, $user ) ) {
+		$visibility = $rev->getVisibility();
+		if ( RevisionRecord::userCanBitfield(
+			$visibility,
+			RevisionRecord::DELETED_TEXT,
+			$user
+		) ) {
 			$diffLink = SpecialPage::getTitleFor( 'MobileDiff', $rev->getId() )->getLocalURL();
 		} else {
 			$diffLink = false;
 		}
 
 		// FIXME: Style differently user comment when this is the case
-		if ( !$rev->userCan( RevisionRecord::DELETED_USER, $user ) ) {
+		if ( !RevisionRecord::userCanBitfield(
+			$visibility,
+			RevisionRecord::DELETED_USER,
+			$user
+		) ) {
 			$username = $this->msg( 'rev-deleted-user' )->text();
 		}
 
@@ -164,8 +181,9 @@ class SpecialMobileContributions extends SpecialMobileHistory {
 			$bytes = $rev->getSize() - $this->prevLengths[$rev->getParentId()];
 		}
 		$isMinor = $rev->isMinor();
+		$title = Title::newFromLinkTarget( $rev->getPageAsLinkTarget() );
 		$this->renderFeedItemHtml( $ts, $diffLink, $username, $comment,
-			$rev->getTitle(), $user->isAnon(), $bytes, $isMinor
+			$title, $user->isAnon(), $bytes, $isMinor
 		);
 	}
 

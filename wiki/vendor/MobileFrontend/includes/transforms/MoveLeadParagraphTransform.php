@@ -2,11 +2,11 @@
 
 namespace MobileFrontend\Transforms;
 
+use DOMDocument;
+use DOMElement;
+use DOMNode;
 use DOMXPath;
 use MediaWiki\MediaWikiServices;
-use DOMElement;
-use DOMDocument;
-use DOMNode;
 
 class MoveLeadParagraphTransform implements IMobileTransform {
 	/**
@@ -40,7 +40,7 @@ class MoveLeadParagraphTransform implements IMobileTransform {
 	/**
 	 * Helper function to verify that passed $node matched nodename and has set required classname
 	 * @param DOMElement $node Node to verify
-	 * @param string|boolean $requiredNodeName Required tag name, has to be lowercase
+	 * @param string|bool $requiredNodeName Required tag name, has to be lowercase
 	 *   if false it is ignored and requiredClass is used.
 	 * @param string $requiredClass Regular expression with required class name
 	 * @return bool
@@ -64,6 +64,9 @@ class MoveLeadParagraphTransform implements IMobileTransform {
 		while ( $node->parentNode ) {
 			/** @phan-suppress-next-line PhanTypeMismatchArgument DOMNode vs. DOMElement */
 			if ( self::matchElement( $node, 'table', '/^infobox$/' ) ||
+				// infobox's can be divs
+				/** @phan-suppress-next-line PhanTypeMismatchArgument DOMNode vs. DOMElement */
+				self::matchElement( $node, 'div', '/^infobox$/' ) ||
 				/** @phan-suppress-next-line PhanTypeMismatchArgument DOMNode vs. DOMElement */
 				self::matchElement( $node, false, $wrapperClass ) ) {
 				$infobox = $node;
@@ -98,7 +101,7 @@ class MoveLeadParagraphTransform implements IMobileTransform {
 	 * @return DOMNode|null The first infobox
 	 */
 	private function identifyInfoboxElement( DOMXPath $xPath, DOMNode $body ) {
-		$xPathQueryInfoboxes = './/table[starts-with(@class,"infobox") or contains(@class," infobox")]';
+		$xPathQueryInfoboxes = './/*[starts-with(@class,"infobox") or contains(@class," infobox")]';
 		$infoboxes = $xPath->query( $xPathQueryInfoboxes, $body );
 
 		if ( $infoboxes->length > 0 ) {
@@ -233,14 +236,14 @@ class MoveLeadParagraphTransform implements IMobileTransform {
 				return false;
 			}
 			// getting textContent is a heavy operation, cache it as we might need it later
-			$nodeContent = $node->textContent;
+			$nodeContent = trim( $node->textContent );
 
 			if ( $nodeContent ) {
 				// assume valid HTML and only one #coordinates element
 				// this may not behave correctly if garbage in.
 				$coordEl = $coords->item( 0 );
 				// Is there content of this node in addition to the coordinates ?
-				return $nodeContent === $coordEl->textContent;
+				return $nodeContent === trim( $coordEl->textContent );
 			}
 		}
 		return true;

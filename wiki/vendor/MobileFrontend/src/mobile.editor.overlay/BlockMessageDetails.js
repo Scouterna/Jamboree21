@@ -24,7 +24,9 @@ class BlockMessageDetails extends View {
 	get defaults() {
 		return {
 			createDetailsAnchorHref: function () {
-				return mw.util.getUrl( 'Special:BlockList', { wpTarget: '#' + this.blockId } );
+				return function ( blockId, render ) {
+					return mw.util.getUrl( 'Special:BlockList', { wpTarget: '#' + render( blockId ) } );
+				};
 			},
 			createDetailsAnchorLabel: function () {
 				return mw.msg( 'mobile-frontend-editor-blocked-drawer-help' );
@@ -47,7 +49,7 @@ class BlockMessageDetails extends View {
 	postRender() {
 		const userIcon = new Icon( {
 			tagName: 'span',
-			name: 'profile',
+			name: 'userAvatar',
 			hasText: true,
 			label: this.options.creator.name
 		} );
@@ -60,7 +62,7 @@ class BlockMessageDetails extends View {
 		);
 		this.$el.find( '.block-message-icon' ).prepend(
 			( new Icon( {
-				name: 'stop-hand',
+				name: 'stopHand-destructive',
 				additionalClassNames: 'mw-ui-icon-flush-top'
 			} ) ).$el
 		);
@@ -84,18 +86,33 @@ class BlockMessageDetails extends View {
         </div>
       {{/reason}}
       <div class="block-message-item block-message-creator">
-        <h6>{{ creatorHeader }}</h6>
-        <div><strong><a href="{{ creator.url }}"></a></strong></div>
+        {{#creator.name}}
+          <h6>{{ creatorHeader }}</h6>
+          <div>
+            <strong>
+              {{#creator.url}}
+                <a href="{{ creator.url }}"></a>
+              {{/creator.url}}
+              {{^creator.url}}
+                {{ creator.name }}
+              {{/creator.url}}
+            </strong>
+          </div>
+        {{/creator.name}}
       </div>
       {{#expiry}}
         <div class="block-message-item">
           <h6>{{ expiryHeader }}</h6>
-          <div><strong>{{#duration}}{{ duration }} / {{/duration}}{{ expiry }}</strong></div>
+          <div><strong>{{#duration}}{{ duration }}{{/duration}} {{ expiry }}</strong></div>
         </div>
       {{/expiry}}
     </div>
     <div class="block-message-item block-message-buttons">
-      <a href="{{ createDetailsAnchorHref }}">{{ createDetailsAnchorLabel }}</a>
+      {{#blockId}}
+        <a href="{{#createDetailsAnchorHref}}{{ blockId }}{{/createDetailsAnchorHref}}">
+          {{ createDetailsAnchorLabel }}
+        </a>
+      {{/blockId}}
     </div>
   </div>` );
 	}

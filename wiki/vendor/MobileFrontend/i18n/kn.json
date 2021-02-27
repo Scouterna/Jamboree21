@@ -1,12 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"M G Harish",
-			"Nayvik",
-			"VASANTH S.N.",
-			"Omshivaprakash",
 			"Ananth subray",
 			"Kamalaksha",
+			"M G Harish",
+			"Nayvik",
+			"Omshivaprakash",
+			"VASANTH S.N.",
 			"Vikashegde"
 		]
 	},
@@ -16,7 +16,6 @@
 	"mobile-frontend-desc": "ಮೊಬೈಲ್ ಮುನ್ನೆಲೆ",
 	"mobile-frontend-diffview-anonymous": "ಅನಾಮಿಕ ಸದಸ್ಯ",
 	"mobile-frontend-diffview-title": "ಬದಲಾವಣೆಗಳು",
-	"mobile-frontend-donate-image-title": "ನಕೆಲೇರಿಕೆಗಳು",
 	"mobile-frontend-editor-save": "ಉಳಿಸಿ",
 	"mobile-frontend-featured-article": "ಇಂದಿನ ವಿಶೇಷ ಲೇಖನ",
 	"mobile-frontend-languages-header": "ಭಾಷೆಗಳು",
@@ -35,7 +34,6 @@
 	"mobile-frontend-save-settings": "ಉಳಿಸಿ",
 	"mobile-frontend-talk-add-overlay-content-placeholder": "ನಿಮ್ಮ ಮನದಲ್ಲೇನಿದೆ?",
 	"mobile-frontend-talk-add-overlay-subject-placeholder": "ವಿಷಯ",
-	"mobile-frontend-talk-overlay-header": "ಚರ್ಚೆ",
 	"mobile-frontend-talk-reply": "ಉತ್ತರಿಸಿ",
 	"mobile-frontend-terms-text": "ಬಳಕೆಯ ನಿಬಂಧನೆಗಳು",
 	"mobile-frontend-view": "ಮೊಬೈಲ್ ವೀಕ್ಷಣೆ",

@@ -1,18 +1,20 @@
 <?php
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\UserGroupManager;
+use MediaWiki\User\UserOptionsLookup;
 
 /**
  * Basic mobile implementation of SpecialPage to use in specific mobile special pages
  */
 class MobileSpecialPage extends SpecialPage {
-	/** @var boolean $hasDesktopVersion If true, the page will also be available on desktop */
+	/** @var bool If true, the page will also be available on desktop */
 	protected $hasDesktopVersion = false;
-	/** @var string $mode Saves the actual mode used by user (stable|beta) */
+	/** @var string Saves the actual mode used by user (stable|beta) */
 	protected $mode = 'stable';
-	/** @var boolean $listed Whether this special page should appear on Special:SpecialPages */
+	/** @var bool Whether this special page should appear on Special:SpecialPages */
 	protected $listed = false;
-	/** @var boolean Whether the special page's content should be wrapped in div.content */
+	/** @var bool Whether the special page's content should be wrapped in div.content */
 	protected $unstyledContent = true;
 	/** @var Config MobileFrontend's config object */
 	protected $config = null;
@@ -22,6 +24,10 @@ class MobileSpecialPage extends SpecialPage {
 	protected $errorNotFoundDescriptionMsg = 'mobile-frontend-generic-404-desc';
 	/** @var MobileContext */
 	protected $mobileContext;
+	/** @var UserOptionsLookup */
+	protected $userOptionsLookup;
+	/** @var UserGroupManager */
+	protected $userGroupManager;
 
 	/**
 	 * @param string $page
@@ -32,6 +38,8 @@ class MobileSpecialPage extends SpecialPage {
 		$services = MediaWikiServices::getInstance();
 		$this->config = $services->getService( 'MobileFrontend.Config' );
 		$this->mobileContext = $services->getService( 'MobileFrontend.Context' );
+		$this->userOptionsLookup = $services->getUserOptionsLookup();
+		$this->userGroupManager = $services->getUserGroupManager();
 	}
 
 	/**
@@ -52,7 +60,7 @@ class MobileSpecialPage extends SpecialPage {
 			 !$this->hasDesktopVersion ) {
 			# We are not going to return any real content
 			$out->setStatusCode( 404 );
-			$this->renderUnavailableBanner( $this->msg( 'mobile-frontend-requires-mobile' ) );
+			$this->renderUnavailableBanner( $this->msg( 'mobile-frontend-requires-mobile' )->parse() );
 		} elseif ( $this->mode !== 'stable' ) {
 			if ( $this->mode === 'beta' && !$this->mobileContext->isBetaGroupMember() ) {
 				$this->renderUnavailableBanner( $this->msg( 'mobile-frontend-requires-optin' )->parse() );
@@ -110,7 +118,8 @@ class MobileSpecialPage extends SpecialPage {
 		if ( $rl->isModuleRegistered( $specialScriptModuleName ) ) {
 			$out->addModules( $specialScriptModuleName );
 		}
-		Hooks::run( 'MobileSpecialPageStyles', [ $id, $out ] );
+		$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
+		$hookContainer->run( 'MobileSpecialPageStyles', [ $id, $out ] );
 	}
 
 	/**
@@ -143,5 +152,21 @@ class MobileSpecialPage extends SpecialPage {
 	 */
 	public function getDesktopUrl( $subPage ) {
 		return null;
+	}
+
+	/**
+	 * Get a user options lookup object.
+	 * @return UserOptionsLookup
+	 */
+	protected function getUserOptionsLookup() : UserOptionsLookup {
+		return $this->userOptionsLookup;
+	}
+
+	/**
+	 * Get a user group manager object.
+	 * @return UserGroupManager
+	 */
+	protected function getUserGroupManager() : UserGroupManager {
+		return $this->userGroupManager;
 	}
 }

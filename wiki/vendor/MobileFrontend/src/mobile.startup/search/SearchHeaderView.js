@@ -8,6 +8,7 @@ const util = require( '../util' ),
 class SearchHeaderView extends View {
 	/**
 	 * constructor
+	 *
 	 * @inheritdoc
 	 * @param {Object} props
 	 * @param {Function} props.onInput executed every time input changes
@@ -50,7 +51,7 @@ class SearchHeaderView extends View {
 	postRender() {
 		const clearIcon = new Icon( {
 			tagName: 'button',
-			name: 'search-clear',
+			name: 'clear',
 			isSmall: true,
 			label: mw.msg( 'mobile-frontend-clear-search' ),
 			additionalClassNames: 'clear',

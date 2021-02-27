@@ -1,12 +1,11 @@
 <?php
 
 use HtmlFormatter\HtmlFormatter;
-use MediaWiki\MediaWikiServices;
 use MobileFrontend\ContentProviders\IContentProvider;
+use MobileFrontend\Transforms\LazyImageTransform;
+use MobileFrontend\Transforms\LegacyMainPageTransform;
 use MobileFrontend\Transforms\MoveLeadParagraphTransform;
 use MobileFrontend\Transforms\NoTransform;
-use MobileFrontend\Transforms\LegacyMainPageTransform;
-use MobileFrontend\Transforms\LazyImageTransform;
 
 /**
  * Converts HTML into a mobile-friendly version
@@ -18,46 +17,47 @@ class MobileFormatter extends HtmlFormatter {
 	const STYLE_COLLAPSIBLE_SECTION_CLASS = 'collapsible-block';
 
 	/**
+	 * Should legacy transforms be applied?
+	 * @var boolean $legacyTransformsDisabled
+	 */
+	private $legacyTransformsDisabled = false;
+
+	/**
 	 * Whether scripts can be added in the output.
-	 * @var boolean $scriptsEnabled
+	 * @var bool
 	 */
 	private $scriptsEnabled = true;
 
 	/**
 	 * The current revision id of the Title being worked on
-	 * @var integer $revId
+	 * @var int
 	 */
 	private $revId;
 
-	/** @var array $topHeadingTags Array of strings with possible tags,
-		can be recognized as top headings. */
+	/**
+	 * @var string[] Array of strings with possible tags,
+	 * can be recognized as top headings.
+	 */
 	public $topHeadingTags = [];
 
 	/**
-	 * @var LazyImageTransform $lazyTransform
+	 * @var LazyImageTransform
 	 */
 	protected $lazyTransform;
 
 	/**
-	 * Saves a Title Object
-	 * @var Title $title
+	 * @var Title
 	 */
 	protected $title;
 
 	/**
-	 * Whether the table of contents is needed on this page
-	 * @var boolean $isTOCEnabled
-	 */
-	protected $isTOCEnabled = false;
-
-	/**
 	 * Are sections expandable?
-	 * @var boolean $expandableSections
+	 * @var bool
 	 */
 	protected $expandableSections = false;
 	/**
 	 * Whether actual page is the main page and should be special cased
-	 * @var boolean $mainPage
+	 * @var bool
 	 */
 	protected $mainPage = false;
 
@@ -112,40 +112,38 @@ class MobileFormatter extends HtmlFormatter {
 	 * @param MobileContext $context in which the page is being rendered. Needed to access page title
 	 *  and MobileFrontend configuration.
 	 * @param IContentProvider $provider
-	 * @param bool $enableSections (optional)
-	 *  whether to wrap the content of sections
+	 * @param bool $enableSections whether to wrap the content of sections
+	 * @param Config $config
 	 *
-	 * @return MobileFormatter
+	 * @return self
 	 */
 	public static function newFromContext(
-		MobileContext $context, IContentProvider $provider, $enableSections = false
+		MobileContext $context,
+		IContentProvider $provider,
+		$enableSections,
+		Config $config
 	) {
-		$config = MediaWikiServices::getInstance()->getService( 'MobileFrontend.Config' );
 		$mfSpecialCaseMainPage = $config->get( 'MFSpecialCaseMainPage' );
 
 		$title = $context->getTitle();
 		$isMainPage = $title->isMainPage();
 		$html = self::wrapHTML( $provider->getHTML() );
-		$formatter = new MobileFormatter( $html, $title, $config, $context );
+		$formatter = new self( $html, $title, $config, $context );
 		if ( $isMainPage ) {
 			$formatter->enableExpandableSections( !$mfSpecialCaseMainPage );
 		} else {
 			$formatter->enableExpandableSections( $enableSections );
 		}
 
+		$request = $context->getRequest();
+		$formatter->disableLegacyTransforms(
+			// avoid caching problems
+			$request->getBool( 'debug' )
+			&& $request->getBool( 'mfnolegacytransform' )
+		);
 		$formatter->setIsMainPage( $isMainPage && $mfSpecialCaseMainPage );
-		$formatter->enableTOCPlaceholder( strpos( $html, 'toclevel' ) !== false );
 
 		return $formatter;
-	}
-
-	/**
-	 * Mark whether a placeholder table of contents should be included at the end of the lead
-	 * section
-	 * @param bool $flag should TOC be included?
-	 */
-	public function enableTOCPlaceholder( $flag = true ) {
-		$this->isTOCEnabled = $flag;
 	}
 
 	/**
@@ -168,7 +166,7 @@ class MobileFormatter extends HtmlFormatter {
 	}
 
 	/**
-	 * Performs various transformations to the content to make it appropiate for mobile devices.
+	 * Performs various transformations to the content to make it appropriate for mobile devices.
 	 * @param bool $removeDefaults Whether default settings at $wgMFRemovableClasses should be used
 	 * @param bool $unused kept for backwards compatibility - previously used for
 	 *  lazy loaded references
@@ -215,6 +213,14 @@ class MobileFormatter extends HtmlFormatter {
 			$this->filterContentInSection( $doc, $doc, 0, $transformOptions );
 		}
 		return $removed;
+	}
+
+	/**
+	 * Disable any legacy transforms
+	 * @param bool $disable whether legacy transforms should be disabled.
+	 */
+	public function disableLegacyTransforms( bool $disable ) : void {
+		$this->legacyTransformsDisabled = $disable;
 	}
 
 	/**
@@ -276,7 +282,7 @@ class MobileFormatter extends HtmlFormatter {
 	 * @return string Processed HTML
 	 */
 	public function getText( $element = null ) {
-		if ( $this->mainPage ) {
+		if ( $this->mainPage && !$this->legacyTransformsDisabled ) {
 			$transform = new LegacyMainPageTransform();
 			$doc = $this->getDoc();
 			/** @phan-suppress-next-line PhanTypeMismatchArgument DOMNode vs. DOMElement */
@@ -377,7 +383,7 @@ class MobileFormatter extends HtmlFormatter {
 	 *
 	 * @param DOMDocument $doc
 	 * @param DOMElement $heading
-	 * @param integer $sectionNumber
+	 * @param int $sectionNumber
 	 * @param bool $isCollapsible
 	 */
 	private function prepareHeading(
@@ -415,7 +421,7 @@ class MobileFormatter extends HtmlFormatter {
 
 		// FIXME: The class `/mf\-section\-[0-9]+/` is kept for caching reasons
 		// but given class is unique usage is discouraged. [T126825]
-		$sectionBody = $doc->createElement( 'div' );
+		$sectionBody = $doc->createElement( 'section' );
 		$sectionBody->setAttribute( 'class', $sectionClass );
 		$sectionBody->setAttribute( 'id', 'mf-section-' . $sectionNumber );
 		return $sectionBody;

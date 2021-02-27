@@ -1,4 +1,4 @@
-/* global $, document */
+/* global $ */
 var util = require( './util' ),
 	mfExtend = require( './mfExtend' ),
 	// Cached regex to split keys for `delegate`.
@@ -8,6 +8,7 @@ var util = require( './util' ),
 /**
  * Generate a unique integer id (unique within the entire client session).
  * Useful for temporary DOM ids.
+ *
  * @param {string} prefix Prefix to be used when generating the id.
  * @return {string}
  */
@@ -101,6 +102,7 @@ OO.mixinClass( View, OO.EventEmitter );
 mfExtend( View, {
 	/**
 	 * Name of tag that contains the rendered template
+	 *
 	 * @memberof View
 	 * @instance
 	 * @property {string} tagName
@@ -109,6 +111,7 @@ mfExtend( View, {
 	/**
 	 * Tells the View to ignore tagName and className when constructing the element
 	 * and to rely solely on the template
+	 *
 	 * @memberof View
 	 * @instance
 	 * @property {boolean} isTemplateMode
@@ -118,7 +121,7 @@ mfExtend( View, {
 	 * @memberof View
 	 * @instance
 	 * @property {Mixed}
-	 * Specifies the template used in render(). Object|string|HoganTemplate
+	 * Specifies the template used in render(). Object|string
 	 */
 	template: undefined,
 
@@ -145,6 +148,7 @@ mfExtend( View, {
 	/**
 	 * A set of default options that are merged with options passed into the initialize
 	 * function.
+	 *
 	 * @memberof View
 	 * @instance
 	 * @property {Object} defaults Default options hash.
@@ -158,6 +162,7 @@ mfExtend( View, {
 
 	/**
 	 * Run once during construction to set up the View
+	 *
 	 * @memberof View
 	 * @instance
 	 * @param {Object} options Object passed to the constructor.
@@ -200,20 +205,18 @@ mfExtend( View, {
 
 	/**
 	 * Called when this.$el is ready.
+	 *
 	 * @memberof View
 	 * @instance
 	 * @private
 	 * @param {Object} props
 	 */
 	_postInitialize: function ( props ) {
-		var
-			BORDER_BOX_CLASS = 'view-border-box',
-			className = props.className;
-
-		this.$el.addClass( className );
+		// eslint-disable-next-line mediawiki/class-doc
+		this.$el.addClass( props.className );
 		// border-box will be added provided this flag is not set
 		if ( props.isBorderBox !== false ) {
-			this.$el.addClass( BORDER_BOX_CLASS );
+			this.$el.addClass( 'view-border-box' );
 		}
 
 		this.render( {} );
@@ -222,6 +225,7 @@ mfExtend( View, {
 	/**
 	 * Function called before the view is rendered. Can be redefined in
 	 * objects that extend View.
+	 *
 	 * @memberof View
 	 * @instance
 	 */
@@ -236,7 +240,6 @@ mfExtend( View, {
 	 */
 	postRender: function () {},
 
-	// eslint-disable-next-line valid-jsdoc
 	/**
 	 * Fill this.$el with template rendered using data if template is set.
 	 *
@@ -326,6 +329,7 @@ mfExtend( View, {
 	 * Clears all callbacks previously bound to the view by `delegateEvents`.
 	 * You usually don't need to use this, but may wish to if you have multiple
 	 * views attached to the same DOM element.
+	 *
 	 * @memberof View
 	 * @instance
 	 */
@@ -370,7 +374,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func append
- * @param {...(string|Node|Node[]|JQuery)} contents
+ * @param {...(string|Node|Node[]|jQuery)} contents
  * @return {this}
  */
 
@@ -378,7 +382,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func append
- * @param {function(number, string): string|Node|Node[]|JQuery} contents
+ * @param {function(number, string): string|Node|Node[]|jQuery} contents
  * @return {this}
  */
 
@@ -386,7 +390,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func prepend
- * @param {...(string|Node|Node[]|JQuery)} contents
+ * @param {...(string|Node|Node[]|jQuery)} contents
  * @return {this}
  */
 
@@ -394,7 +398,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func prepend
- * @param {function(number, string): string|Node|Node[]|JQuery} contents
+ * @param {function(number, string): string|Node|Node[]|jQuery} contents
  * @return {this}
  */
 
@@ -402,7 +406,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func appendTo
- * @param {string|Node|Node[]|JQuery} target
+ * @param {string|Node|Node[]|jQuery} target
  * @return {this}
  */
 
@@ -410,7 +414,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func prependTo
- * @param {string|Node|Node[]|JQuery} target
+ * @param {string|Node|Node[]|jQuery} target
  * @return {this}
  */
 
@@ -418,7 +422,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func after
- * @param {...(string|Node|Node[]|JQuery)} contents
+ * @param {...(string|Node|Node[]|jQuery)} contents
  * @return {this}
  */
 
@@ -426,7 +430,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func after
- * @param {function(number, string): string|Node|Node[]|JQuery} contents
+ * @param {function(number, string): string|Node|Node[]|jQuery} contents
  * @return {this}
  */
 
@@ -434,7 +438,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func before
- * @param {...(string|Node|Node[]|JQuery)} contents
+ * @param {...(string|Node|Node[]|jQuery)} contents
  * @return {this}
  */
 
@@ -442,7 +446,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func before
- * @param {function(number, string): string|Node|Node[]|JQuery} contents
+ * @param {function(number, string): string|Node|Node[]|jQuery} contents
  * @return {this}
  */
 
@@ -456,7 +460,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func insertAfter
- * @param {string|Node|Node[]|JQuery} target
+ * @param {string|Node|Node[]|jQuery} target
  * @return {this}
  */
 
@@ -464,7 +468,7 @@ mfExtend( View, {
  * @memberof View
  * @instance
  * @func insertBefore
- * @param {string|Node|Node[]|JQuery} target
+ * @param {string|Node|Node[]|jQuery} target
  * @return {this}
  */
 

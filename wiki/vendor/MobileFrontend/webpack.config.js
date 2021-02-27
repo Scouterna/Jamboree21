@@ -1,4 +1,5 @@
-/* eslint-env node, es6 */
+'use strict';
+
 const
 	CleanPlugin = require( 'clean-webpack-plugin' ),
 	glob = require( 'glob' ),
@@ -11,19 +12,15 @@ const
 	ENTRIES = {
 		tests: 'tests.mobilefrontend',
 		startup: 'mobile.startup',
-		amcOutreachDrawer: 'mobile.amcOutreachDrawer',
 		categories: 'mobile.categories.overlays',
 		editor: 'mobile.editor.overlay',
 		editorVe: 'mobile.editor.ve',
 		languages: 'mobile.languages.structured',
 		mediaViewer: 'mobile.mediaViewer',
 		mobileInit: 'mobile.init',
-		notifications: 'mobile.notifications.overlay',
 		talk: 'mobile.talk.overlays',
 		mobileOptions: 'mobile.special.mobileoptions.scripts',
-		mobileDiff: 'mobile.special.mobilediff.scripts',
 		nearby: 'mobile.special.nearby.scripts',
-		uploads: 'mobile.special.uploads.scripts',
 		userLogin: 'mobile.special.userlogin.scripts',
 		watchlist: 'mobile.special.watchlist.scripts'
 	};
@@ -72,28 +69,24 @@ module.exports = ( env, argv ) => ( {
 		// If we utilize webpack lazy loading instead of resource loader lazy
 		// loading, we won't be required to explicitly create this new chunk and
 		// this can be removed.
-		[ENTRIES.amcOutreachDrawer]: './src/mobile.amcOutreachDrawer/mobile.amcOutreachDrawer',
 		[ENTRIES.categories]: './src/mobile.categories.overlays/mobile.categories.overlays.js',
 		[ENTRIES.editor]: './src/mobile.editor.overlay/mobile.editor.overlay.js',
 		[ENTRIES.editorVe]: './src/mobile.editor.ve/mobile.editor.ve.js',
 		[ENTRIES.languages]: './src/mobile.languages.structured/mobile.languages.structured.js',
 		[ENTRIES.mediaViewer]: './src/mobile.mediaViewer/mobile.mediaViewer.js',
-		[ENTRIES.notifications]: './src/mobile.notifications.overlay/mobile.notifications.overlay.js',
 		[ENTRIES.talk]: './src/mobile.talk.overlays/mobile.talk.overlays.js',
 		// all mobile skins,
 		[ENTRIES.mobileInit]: './src/mobile.init/mobile.init.js',
 		// T212823 Make a chunk for each mobile special page
-		[ENTRIES.mobileDiff]: './src/mobile.special.mobilediff.scripts.js',
 		[ENTRIES.mobileOptions]: './src/mobile.special.mobileoptions.scripts.js',
 		[ENTRIES.nearby]: './src/mobile.special.nearby.scripts/mobile.special.nearby.scripts.js',
 		[ENTRIES.userLogin]: './src/mobile.special.userlogin.scripts.js',
-		[ENTRIES.uploads]: './src/mobile.special.uploads.scripts/mobile.special.uploads.scripts.js',
 		[ENTRIES.watchlist]: './src/mobile.special.watchlist.scripts/mobile.special.watchlist.scripts.js'
 	},
 
 	// tests.mobilefrontend has additional dependencies but they're provided externally. This code
 	// can be removed if tests.mobilefrontend is removed.
-	externals: [ 'jquery', 'jsdom', 'oojs', 'sinon', 'qunit', 'fs', 'path' ],
+	externals: [ 'jquery', 'jsdom', 'oojs', 'qunit', 'fs', 'path' ],
 	resolve: {
 		alias: {
 			// This avoids leaking unnecessary code into the webpack test build
@@ -171,14 +164,12 @@ module.exports = ( env, argv ) => ( {
 						ENTRIES.editorVe,
 						ENTRIES.languages,
 						ENTRIES.mediaViewer,
-						ENTRIES.notifications,
 						ENTRIES.talk,
 						ENTRIES.mobileInit,
 						ENTRIES.mobileDiff,
 						ENTRIES.mobileOptions,
 						ENTRIES.nearby,
 						ENTRIES.userLogin,
-						ENTRIES.uploads,
 						ENTRIES.watchlist
 					].includes( chunk.name )
 				}
@@ -227,7 +218,7 @@ module.exports = ( env, argv ) => ( {
 		// Note: entrypoint size implicitly includes the mobile.startup.runtime and mobile.common
 		// chunks.
 		maxAssetSize: 60.5 * 1024,
-		maxEntrypointSize: 87.0 * 1024,
+		maxEntrypointSize: 89.9 * 1024,
 		// The default filter excludes map files but we rename ours. Also, any modules prefixed with
 		// "tests." are excluded from performance checks as they are not shipped to end users.
 		// eslint-disable-next-line no-restricted-properties

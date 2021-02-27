@@ -17,9 +17,9 @@ class MobilePage {
 	 */
 	private $title;
 	/**
-	 * @var Revision|bool
+	 * @var RevisionRecord|bool|null
 	 */
-	private $rev;
+	private $rev = false;
 	/**
 	 * @var string|bool
 	 */
@@ -39,10 +39,10 @@ class MobilePage {
 	}
 
 	/**
-	 * @return RevisionRecord|bool
+	 * @return RevisionRecord|null
 	 */
 	private function getRevision() {
-		if ( $this->rev === null ) {
+		if ( $this->rev === false ) {
 			$this->rev = MediaWikiServices::getInstance()->getRevisionStore()
 				->getRevisionByTitle( $this->title );
 		}
@@ -87,9 +87,10 @@ class MobilePage {
 			$edit['timestamp'] = wfTimestamp( TS_UNIX, $rev->getTimestamp() );
 			$userIdentity = $rev->getUser();
 			if ( $userIdentity ) {
+				$userOptionsLookup = MediaWikiServices::getInstance()->getUserOptionsLookup();
 				$revUser = User::newFromIdentity( $userIdentity );
 				$edit['name'] = $revUser->getName();
-				$edit['gender'] = $revUser->getOption( 'gender' );
+				$edit['gender'] = $userOptionsLookup->getOption( $revUser, 'gender' );
 			}
 		}
 		return $edit;
@@ -119,7 +120,7 @@ class MobilePage {
 	/**
 	 * Check whether a page has a thumbnail associated with it
 	 *
-	 * @return Boolean whether the page has an image associated with it
+	 * @return bool whether the page has an image associated with it
 	 */
 	public function hasThumbnail() {
 		return $this->file ? true : false;
@@ -138,8 +139,8 @@ class MobilePage {
 	/**
 	 * Get the thumbnail container for getMediumThumbnailHtml() and getSmallThumbnailHtml().
 	 *
-	 * @param integer $size the width of the thumbnail
-	 * @param boolean $useBackgroundImage Whether the thumbnail should have a background image
+	 * @param int $size the width of the thumbnail
+	 * @param bool $useBackgroundImage Whether the thumbnail should have a background image
 	 * @return string
 	 */
 	private function getPageImageHtml( $size, $useBackgroundImage = false ) {

@@ -5,6 +5,7 @@ use MobileFrontend\ContentProviders\ContentProviderFactory;
 use MobileFrontend\Features\BetaUserMode;
 use MobileFrontend\Features\Feature;
 use MobileFrontend\Features\FeaturesManager;
+use MobileFrontend\Features\LoggedInUserMode;
 use MobileFrontend\Features\StableUserMode;
 use MobileFrontend\Features\UserModes;
 
@@ -21,9 +22,11 @@ return [
 
 	'MobileFrontend.UserModes' => function ( MediaWikiServices $services ) {
 		$modes = new UserModes();
+		/** @var MobileContext $context */
 		$context = $services->getService( 'MobileFrontend.Context' );
 		$modes->registerMode( new StableUserMode( $context ) );
 		$modes->registerMode( new BetaUserMode( $context ) );
+		$modes->registerMode( new LoggedInUserMode( $context->getUser() ) );
 		$modes->registerMode( $services->getService( 'MobileFrontend.AMC.UserMode' ) );
 		return $modes;
 	},
@@ -49,6 +52,7 @@ return [
 		$manager->registerFeature( new Feature( 'MFUseDesktopSpecialWatchlistPage', 'mobile-frontend',
 			$config->get( 'MFUseDesktopSpecialWatchlistPage' ) ) );
 
+		$manager->useHookToRegisterExtensionOrSkinFeatures();
 		return $manager;
 	},
 	'MobileFrontend.AMC.Manager' => function ( MediaWikiServices $services ) {
@@ -59,7 +63,9 @@ return [
 	'MobileFrontend.AMC.UserMode' => function ( MediaWikiServices $services ) {
 		return new MobileFrontend\AMC\UserMode(
 			$services->getService( 'MobileFrontend.AMC.Manager' ),
-			$services->getService( 'MobileFrontend.Context' )->getUser()
+			$services->getService( 'MobileFrontend.Context' )->getUser(),
+			$services->getUserOptionsLookup(),
+			$services->getUserOptionsManager()
 		);
 	},
 	'MobileFrontend.AMC.Outreach' => function ( MediaWikiServices $services ) {

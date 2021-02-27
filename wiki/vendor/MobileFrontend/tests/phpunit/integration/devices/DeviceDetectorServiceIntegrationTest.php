@@ -2,9 +2,9 @@
 
 namespace Tests\MobileFrontend\Devices;
 
-use MediaWikiTestCase;
 use FauxRequest;
 use GlobalVarConfig;
+use MediaWikiTestCase;
 use MobileFrontend\Devices\DeviceDetectorService;
 
 /**
@@ -16,7 +16,7 @@ use MobileFrontend\Devices\DeviceDetectorService;
  * @group integration
  */
 class DeviceDetectorServiceIntegrationTest extends MediaWikiTestCase {
-	public function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 
 		$this->setMwGlobals( 'wgMFAutodetectMobileView', true );

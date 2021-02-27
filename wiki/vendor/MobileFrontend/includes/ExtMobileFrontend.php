@@ -1,16 +1,41 @@
 <?php
 
 use MediaWiki\MediaWikiServices;
+use MobileFrontend\ContentProviders\ContentProviderFactory;
 use Wikibase\Client\WikibaseClient;
 use Wikibase\DataModel\Entity\EntityDocument;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Term\FingerprintProvider;
-use MobileFrontend\ContentProviders\ContentProviderFactory;
+use Wikimedia\IPUtils;
 
 /**
  * Implements additional functions to use in MobileFrontend
  */
 class ExtMobileFrontend {
+	/**
+	 * Provide alternative HTML for a user page which has not been created.
+	 * Let the user know about it with pretty graphics and different texts depending
+	 * on whether the user is the owner of the page or not.
+	 * @param OutputPage $out
+	 * @param Title $title
+	 * @return string that is empty if the transform does not apply.
+	 */
+	public static function blankUserPageHTML( OutputPage $out, Title $title ) {
+		$pageUser = self::buildPageUserObject( $title );
+
+		$out->addModuleStyles( [
+			'mediawiki.ui.icon',
+			'mobile.userpage.styles', 'mobile.userpage.images'
+		] );
+
+		if ( $pageUser && !$title->exists() ) {
+			return self::getUserPageContent(
+				$out, $pageUser, $title );
+		} else {
+			return '';
+		}
+	}
+
 	/**
 	 * Transforms content to be mobile friendly version.
 	 * Filters out various elements and runs the MobileFormatter.
@@ -25,6 +50,7 @@ class ExtMobileFrontend {
 		$featureManager = $services->getService( 'MobileFrontend.FeaturesManager' );
 		/** @var ContentProviderFactory $contentProviderFactory */
 		$contentProviderFactory = $services->getService( 'MobileFrontend.ContentProviderFactory' );
+		/** @var MobileContext $context */
 		$context = $services->getService( 'MobileFrontend.Context' );
 		$config = $services->getService( 'MobileFrontend.Config' );
 		$provideTagline = $featureManager->isFeatureAvailableForCurrentUser(
@@ -40,23 +66,6 @@ class ExtMobileFrontend {
 		$title = $out->getTitle();
 		$ns = $title->getNamespace();
 		$isView = $context->getRequest()->getText( 'action', 'view' ) == 'view';
-
-		// If the page is a user page which has not been created, then let the
-		// user know about it with pretty graphics and different texts depending
-		// on whether the user is the owner of the page or not.
-		if ( $ns === NS_USER && !$title->isSubpage() && $isView ) {
-			$pageUser = self::buildPageUserObject( $title );
-
-			$out->addModuleStyles( [
-				'mediawiki.ui.icon',
-				'mobile.userpage.styles', 'mobile.userpage.images'
-			] );
-
-			if ( $pageUser && !$title->exists() ) {
-				return self::getUserPageContent(
-					$out, $pageUser, $title );
-			}
-		}
 
 		$enableSections = (
 			// Don't collapse sections e.g. on JS pages
@@ -79,14 +88,16 @@ class ExtMobileFrontend {
 			return $html;
 		}
 
-		$formatter = MobileFormatter::newFromContext( $context, $provider, $enableSections );
+		$formatter = MobileFormatter::newFromContext( $context, $provider, $enableSections, $config );
 
-		Hooks::run( 'MobileFrontendBeforeDOM', [ $context, $formatter ] );
+		$hookContainer = $services->getHookContainer();
+		$hookContainer->run( 'MobileFrontendBeforeDOM', [ $context, $formatter ] );
 
 		if ( $context->getContentTransformations() ) {
 			$isSpecialPage = $title->isSpecialPage();
 			$removeImages = $featureManager->isFeatureAvailableForCurrentUser( 'MFLazyLoadImages' );
-			$showFirstParagraphBeforeInfobox = $ns === NS_MAIN &&
+			$leadParagraphEnabled = in_array( $ns, $config->get( 'MFNamespacesWithLeadParagraphs' ) );
+			$showFirstParagraphBeforeInfobox = $leadParagraphEnabled &&
 				$featureManager->isFeatureAvailableForCurrentUser( 'MFShowFirstParagraphBeforeInfobox' );
 
 			// Remove images if they're disabled from special pages, but don't transform otherwise
@@ -106,7 +117,8 @@ class ExtMobileFrontend {
 	private static function buildPageUserObject( Title $title ) {
 		$titleText = $title->getText();
 
-		if ( User::isIP( $titleText ) ) {
+		$usernameUtils = MediaWikiServices::getInstance()->getUserNameUtils();
+		if ( $usernameUtils->isIP( $titleText ) || IPUtils::isIPv6( $titleText ) ) {
 			return User::newFromAnyId( null, $titleText, null );
 		}
 
@@ -126,7 +138,9 @@ class ExtMobileFrontend {
 	 * @param Title $title
 	 * @return string
 	 */
-	public static function getUserPageContent( IContextSource $output, User $pageUser, Title $title ) {
+	protected static function getUserPageContent( IContextSource $output,
+		User $pageUser, Title $title
+	) {
 		$context = MediaWikiServices::getInstance()->getService( 'MobileFrontend.Context' );
 		$pageUsername = $pageUser->getName();
 		// Is the current user viewing their own page?
