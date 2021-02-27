@@ -39,9 +39,10 @@ def sendhook():
     #print(str(r.headers))
     print(r.text)
 
+
 def main():
     print("Hello from thread!")
-    schedule.every().day.at("12:00").do(sendhook)
+    schedule.every().day.at("10:45").do(sendhook)  // Time in UTC
     while True:
         try:
             schedule.run_pending()
@@ -49,4 +50,4 @@ def main():
             print("Conn refused, trying in 60s")
             continue
         
-        time.sleep(1)
+        time.sleep(60)
