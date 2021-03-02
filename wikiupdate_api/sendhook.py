@@ -50,4 +50,4 @@ def main():
             print("Conn refused, trying in 60s")
             continue
         
-        time.sleep(60)
+        time.sleep(1)
