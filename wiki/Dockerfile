@@ -127,7 +127,6 @@ COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/Renameuser extensions/Renameuser
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
-COPY vendor/VisualEditor extensions/VisualEditor
 
 # SimpleSAML setup
 COPY vendor/simplesamlphp-1.18.4 simplesamlphp
