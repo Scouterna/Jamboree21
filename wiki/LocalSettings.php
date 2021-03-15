@@ -174,21 +174,7 @@ $wgDefaultUserOptions['visualeditor-editor'] = "visualeditor";
 # We can't use RESTBase, so: (ref.
 # https://www.mediawiki.org/wiki/Extension:VisualEditor#Switching_between_Wikitext_Editing_and_VisualEditor)
 $wgVisualEditorAllowLossySwitching=false;
-$wgVirtualRestConfig['modules']['parsoid'] = [
-	// URL to the Parsoid instance - use port 8142 if you use the Debian package - the parameter 'URL' was first used but is now deprecated (string)
-	'url' => getenv('MEDIAWIKI_BASE_URL') . '/parsoid',
-	// Parsoid "domain" (string, optional) - MediaWiki >= 1.26
-	'domain' => 'jamboree21',
-	// Forward cookies in the case of private wikis (string or false, optional)
-	'forwardCookies' => true,
-	// request timeout in seconds (integer or null, optional)
-	'timeout' => null,
-	// Parsoid HTTP proxy (string or null, optional)
-	'HTTPProxy' => null,
-	// whether to parse URL as if they were meant for RESTBase (boolean or null, optional)
-	'restbaseCompat' => false,
-];
-
+$wgGroupPermissions['user']['writeapi'] = true;
 
 # End of automatically generated settings.
 # Add more configuration options below.
