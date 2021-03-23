@@ -140,5 +140,6 @@ COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
 COPY patches /tmp/patches
 RUN sed 's/\x0D$//g' -i /var/www/html/includes/OutputPage.php /tmp/patches/OutputPage-403.patch
 RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.patch
+RUN patch /var/www/html/includes/MediaWiki.php < /tmp/patches/Fix-bug-in-content-encoding.patch
 
 RUN	chown -R www-data:www-data extensions skins cache images

@@ -24,7 +24,8 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 
 ## Uncomment this to disable output compression
-# $wgDisableOutputCompression = true;
+# Must be disabled to work on Chrome after 1.35
+$wgDisableOutputCompression = true;
 
 $wgSitename = "Jamboree22";
 $wgMetaNamespace = "Meta";
