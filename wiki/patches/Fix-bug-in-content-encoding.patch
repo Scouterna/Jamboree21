@@ -1,0 +1,28 @@
+From 9945e9ab7dfd0f3f2988b0da7380d7897a7f9fff Mon Sep 17 00:00:00 2001
+From: mrmanner <johan@mrmanner.eu>
+Date: Sat, 13 Mar 2021 15:30:32 +0100
+Subject: [PATCH] Fix bug in content-encoding
+
+This patch is a temporary fix for the bug T235554, described at 
+https://phabricator.wikimedia.org/T235554.
+
+---
+ includes/MediaWiki.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/includes/MediaWiki.php b/includes/MediaWiki.php
+index dac51adf..72ebbce8 100644
+--- a/includes/MediaWiki.php
++++ b/includes/MediaWiki.php
+@@ -1066,7 +1066,7 @@ class MediaWiki {
+ 			// The client should not be blocked on "post-send" updates. If apache or ob_* decide
+ 			// that a response should be gzipped, the entire script will have to finish before
+ 			// any data can be sent. Disable compression if there are any post-send updates.
+-			$response->header( 'Content-Encoding: identity' );
++			// $response->header( 'Content-Encoding: identity' );
+ 			AtEase\AtEase::suppressWarnings();
+ 			ini_set( 'zlib.output_compression', 0 );
+ 			if ( function_exists( 'apache_setenv' ) ) {
+-- 
+2.29.2
+
