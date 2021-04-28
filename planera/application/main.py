@@ -3,6 +3,7 @@ import os, json
 from datetime import date, datetime
 from io import StringIO
 from html.parser import HTMLParser
+import cal
 
 app = Flask(__name__)
 
@@ -50,4 +51,6 @@ def main():
     app.run()
 
 if __name__ == "__main__":
+    cal.get_cal()
     main()
+    
