@@ -1,5 +1,6 @@
 from O365 import Account
 import datetime as dt
+from dateutil.relativedelta import relativedelta
 
 credentials = ('b791f64f-5373-4418-be01-2c41bd06fb08','')
 acc = Account(credentials)
@@ -12,8 +13,12 @@ def get_cal():
     sched = acc.schedule()
     calendar = sched.get_default_calendar()
     q = calendar.new_query('start').greater_equal(dt.datetime.today())
-    q.chain('and').on_attribute('end').less_equal(dt.datetime(2022, 5, 24))
+    q.chain('and').on_attribute('end').less_equal(dt.datetime.today() + relativedelta(months = 1))
     events = calendar.get_events(query=q,include_recurring=True)
-
+    evlist = []
     for event in events:
-        print(event.subject)
+        evlist.append(event)
+
+    evlist.sort(key=lambda x: x.start)
+
+    return evlist

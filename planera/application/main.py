@@ -30,7 +30,10 @@ def index():
     j = json.loads(open("data.json", 'r').read())
     s = jsontohtml(j)
     now = datetime.strftime(datetime.now(), "%Y-%m-%d, %H:%M")
-    return render_template("index.html", jmb_name = "Jamboree22", daysleft=diff.days, now=now, wikilatest=s)
+    events = cal.get_cal()
+
+    return render_template("index.html", jmb_name = "Jamboree22", daysleft=diff.days, now=now, wikilatest=s, events = events)
+
 
 def jsontohtml(j):
     out = "<table>"
@@ -51,6 +54,5 @@ def main():
     app.run()
 
 if __name__ == "__main__":
-    cal.get_cal()
     main()
     

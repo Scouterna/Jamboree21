@@ -88,6 +88,12 @@
         </div>
         <div class="cell">
             <h2>Kalender</h2>
+            <table>
+                <tr><th>Tillställning</th><th>Start</th><th>Slut</th><th>Möteslänk</th></tr>
+                {% for event in events %}
+                <tr><td>{{ event.subject }}</td><td>{{ event.start.strftime("%a %d/%m, %H:%M") }} </td><td>{{ event.end.strftime("%a %d/%m, %H:%M") }}</td><td><a href="{{ event.online_meeting_url }}">Länk</a></td></tr>
+                {% endfor %}
+            </table>
         </div>
         <div class="cell">
             <h2>Snabba länkar</h2>
@@ -109,6 +115,9 @@
                 <div class="links" id="reachmee"><a href="https://reachmee.com">
                     <img src="https://external-content.duckduckgo.com/ip3/site201.reachmee.com.ico" alt="" style="width: 100%;">
                 </a></div>
+                <div class="links" id="jamboree"><a href="https://jamboree.se">
+                    <div>J.SE</div>
+                </a></div>
             </div>
         </div>
         <div class="cell">
@@ -129,6 +138,9 @@
                         Tveka inte att höra av dig med stort som smått. Jamboreeledningen kan man kontakta genom att t.ex. skriva i vår <a target="blank" href="https://teams.microsoft.com/l/channel/19%3a8179b37a7fdb48b5973cff91b6227526%40thread.skype/2%2520-%2520Jamboreeledning%2520%25F0%259F%25A6%2585?groupId=952274eb-2c49-456c-b3e4-a326e7618379&tenantId=317a47ba-fd32-41b8-8ebe-310a1adc9863">kanal</a> eller i en chatt till valfri medlem.</li>
                 </ol>
                 Återigen varmt välkommen till Jamboree22 - nu kör vi!
+                <br>
+                Hälsningar,<br>
+                Jamboreeledningen
             </p>
         </div>
     </div>
