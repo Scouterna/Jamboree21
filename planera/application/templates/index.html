@@ -13,16 +13,14 @@
         
         #grid-col {
             display: grid;
-            grid-template-columns: 30% auto;
-            grid-template-rows: auto;
-            grid-column-gap: 10px;
+            grid-template-areas:  "welcome welcome link link info info"
+                                  "cal cal cal wiki wiki wiki";
             grid-row-gap: 30px;
+            grid-column-gap: 30px;
         }
 
-        div.cell {
-            background: white;
-            border: 1px solid #aaa;
-            padding: 10px;
+        body {
+            background-image: url("/static/back.png");
         }
         
         #daysleft {
@@ -32,6 +30,11 @@
         #nowtime {
             font-size: x-large;
         }
+
+        #grid-col > .link {
+            grid-area: link;
+        } 
+
         #linkgrid {
             display: grid;
             grid-template-columns: repeat(4,100px);
@@ -39,15 +42,31 @@
             grid-column-gap: 10px;
         }
 
-        #wiki {
+        #grid-col > .wiki {
+            grid-area: wiki;
         } 
+
+        #grid-col > .welcome {
+            grid-area: welcome;
+        } 
+
+        #grid-col > .cal {
+            grid-area: cal;
+        } 
+        #grid-col > .info {
+            grid-area: info;
+        } 
+
+        .info, .cal, .welcome, .wiki, .link {
+            border: 1px solid black;
+            border-radius: 15px;
+            padding: 10px;
+            background-color: #FAFAFA;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
 
         #facelist {
             font-size: 400%;
-        }
-
-        #reachmee {
-
         }
 
         .links {
@@ -77,28 +96,30 @@
         th, td {
             padding: 15px;
         }
+
+        #logo {
+            width: 100%;
+        }
+
+        .tit {
+            
+            /*-webkit-text-stroke:1px black;
+            -webkit-text-fill-color:green;*/
+            font-weight: 900;
+        }
     </style>
 </head>
 <body>
     <div id="grid-col">
-        <div class="cell">
-            <h1>Välkommen till {{ jmb_name }}</h1>
+        <div class="welcome">
+            <h1>Välkommen till</h1>
+            <img src="/static/logo.png" alt="Logo" id="logo">
             <p id="nowtime">{{ now }}</p>
             <p id="daysleft">{{ daysleft }} dagar kvar till {{ jmb_name }}.</p>
         </div>
-        <div class="cell">
-            <h2>Kalender</h2>
-            <table>
-                <tr><th>Tillställning</th><th>Start</th><th>Slut</th><th>Möteslänk</th></tr>
-                {% for event in events %}
-                <tr><td>{{ event.subject }}</td><td>{{ event.start.strftime("%a %d/%m, %H:%M") }} </td><td>{{ event.end.strftime("%a %d/%m, %H:%M") }}</td><td><a href="{{ event.online_meeting_url }}">Länk</a></td></tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="cell">
-            <h2>Snabba länkar</h2>
+        <div class="link">
+            <h2 class="tit">Användbara länkar</h2>
             <div id="linkgrid">
-                
                     <div class="links" id="wiki">
                         <a href="http://teams.microsoft.com" style="">
                             <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/99/Svenska_Scoutr%C3%A5det.svg/1200px-Svenska_Scoutr%C3%A5det.svg.png" alt="" style="max-width: 100%;">
@@ -120,11 +141,7 @@
                 </a></div>
             </div>
         </div>
-        <div class="cell">
-            <h2>Nytt på wikin</h2>
-            {{ wikilatest|safe }}
-        </div>
-        <div class="cell">
+        <div class="info">
             <h2>Varmt välkommen till {{ jmb_name }}!</h2>
             <p>
                 
@@ -143,6 +160,21 @@
                 Jamboreeledningen
             </p>
         </div>
+        <div class="cal">
+            <h2>Kommande händelser</h2>
+            <table>
+                <tr><th>Tillställning</th><th>Start</th><th>Slut</th><th>Möteslänk</th></tr>
+                {% for event in events %}
+                <tr><td>{{ event.subject }}</td><td>{{ event.start.strftime("%a %d/%m, %H:%M") }} </td><td>{{ event.end.strftime("%a %d/%m, %H:%M") }}</td><td><a href="{{ event.online_meeting_url }}">Länk</a></td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div class="wiki">
+            <h2>Nytt på wikin</h2>
+            {{ wikilatest|safe }}
+        </div>
+        
     </div>
 </body>
 </html>
