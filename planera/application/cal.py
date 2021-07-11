@@ -1,4 +1,4 @@
-from O365 import Account
+from O365 import Account, FileSystemTokenBackend
 import datetime as dt
 from dateutil.relativedelta import relativedelta
 
@@ -8,8 +8,9 @@ redirect_uri = "http://localhost:5000"
 scope = ["basic", "User.Read", "Calendars.Read"]
 
 
-def get_cal():
-    acc.authenticate(scopes = scope)
+def get_cal(tok_file):
+    tok_be = FileSystemTokenBackend(token_filename=tok_file)
+    print( acc.is_authenticated )
     sched = acc.schedule()
     calendar = sched.get_default_calendar()
     q = calendar.new_query('start').greater_equal(dt.datetime.today())

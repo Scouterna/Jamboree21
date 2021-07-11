@@ -37,9 +37,10 @@
 
         #linkgrid {
             display: grid;
-            grid-template-columns: repeat(4,100px);
-            grid-template-rows: 100px;
-            grid-column-gap: 10px;
+            grid-template-columns: repeat(2,125px);
+            grid-template-rows: repeat(2, 125px);
+            grid-column-gap: 5%;
+            grid-row-gap: 10%;
         }
 
         #grid-col > .wiki {
@@ -66,7 +67,12 @@
         }
 
         #facelist {
-            font-size: 400%;
+            font-size: 280%;
+            
+        }
+
+        #facelink {
+            text-decoration: none;
         }
 
         .links {
@@ -99,6 +105,7 @@
 
         #logo {
             width: 100%;
+            max-width: 300px;
         }
 
         .tit {
@@ -121,7 +128,7 @@
             <h2 class="tit">Användbara länkar</h2>
             <div id="linkgrid">
                     <div class="links" id="wiki">
-                        <a href="http://teams.microsoft.com" style="">
+                        <a href="https://jamboree.se" style="">
                             <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/99/Svenska_Scoutr%C3%A5det.svg/1200px-Svenska_Scoutr%C3%A5det.svg.png" alt="" style="max-width: 100%;">
                         </a>
                     </div>
@@ -130,14 +137,11 @@
                 <div class="links" id="teams"><a href="https://teams.microsoft.com">
                     <img src="https://thinkadnet.com/wp-content/uploads/2020/07/microsoftTeamslogo.jpg" alt="" style="max-width: 100%;">
                 </a></div>
-                <div class="links" id="facelist"><a href="https://facelist.webservices.scouterna.net">
-                    <div>FL</div>
+                <div class="links" id="facelist"><a id="facelink" href="https://facelist.webservices.scouterna.net">
+                    <div>Face<br>list</div>
                 </a></div>
                 <div class="links" id="reachmee"><a href="https://reachmee.com">
                     <img src="https://external-content.duckduckgo.com/ip3/site201.reachmee.com.ico" alt="" style="width: 100%;">
-                </a></div>
-                <div class="links" id="jamboree"><a href="https://jamboree.se">
-                    <div>J.SE</div>
                 </a></div>
             </div>
         </div>
@@ -171,7 +175,7 @@
         </div>
         
         <div class="wiki">
-            <h2>Nytt på wikin</h2>
+            <h2>Nytt på wikin - senaste dygnet</h2>
             {{ wikilatest|safe }}
         </div>
         
