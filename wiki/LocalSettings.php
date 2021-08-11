@@ -182,9 +182,6 @@ $wgGroupPermissions['user']['writeapi'] = true;
 wfLoadExtension( 'MobileFrontend' );
 wfLoadExtension( 'Auth_remoteuser' );
 
-# Load SMW
-enableSemantics(getenv('MEDIAWIKI_BASE_URL'));
-
 # install masseditregex
 require_once "$IP/extensions/MassEditRegex/MassEditRegex.php";
 $wgGroupPermissions['masseditregexeditor']['masseditregex'] = true;
@@ -233,3 +230,6 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
 		'xltx',
 	)
 );
+
+# Load SMW
+enableSemantics(getenv('MEDIAWIKI_BASE_URL'));
