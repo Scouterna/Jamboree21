@@ -27,5 +27,7 @@ RUN	chown -R www-data:www-data extensions skins cache images
 RUN apt-get update && apt-get install -y unzip --no-install-recommends && rm -rf /var/lib/apt/lists/*
 RUN bash /tmp/download-composer.sh
 
+RUN COMPOSER=composer.local.json php composer.phar require --no-update mediawiki/semantic-media-wiki 
+
 # Run composer
 RUN php composer.phar update --no-dev
