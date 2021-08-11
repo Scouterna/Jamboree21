@@ -166,6 +166,7 @@ wfLoadExtension( 'MultimediaViewer' );
 wfLoadExtension( 'PdfHandler' );
 wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'Renameuser' );
+wfLoadExtension( 'PageForms' );
 
 # Visual Editor
 wfLoadExtension( 'VisualEditor' );
