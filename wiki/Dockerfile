@@ -10,6 +10,7 @@ COPY vendor/MassEditRegex extensions/MassEditRegex
 COPY vendor/MinervaNeue skins/MinervaNeue
 COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSuggestions
 COPY vendor/MobileFrontend extensions/MobileFrontend
+COPY vendor/PageForms extensions/PageForms
 COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/Renameuser extensions/Renameuser
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
