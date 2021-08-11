@@ -22,5 +22,8 @@ RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.pa
 
 RUN	chown -R www-data:www-data extensions skins cache images
 
+# Install composer
+RUN apt-get update && apt-get install -y composer && rm -rf /var/lib/apt/lists/*
+
 # Run composer
 RUN composer update --no-dev
