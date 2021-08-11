@@ -14,13 +14,6 @@ COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/Renameuser extensions/Renameuser
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
 
-# SimpleSAML setup
-COPY vendor/simplesamlphp-1.18.4 simplesamlphp
-RUN ln -sf simplesamlphp/www simplesaml
-COPY simplesamlconfig/config.php simplesamlphp/config/config.php
-COPY simplesamlconfig/saml20-idp-remote.php simplesamlphp/metadata/saml20-idp-remote.php
-COPY simplesamlconfig/authsources.php simplesamlphp/config/authsources.php
-
 
 # Patch Media-wiki, set 403-code on permission errors
 COPY patches /tmp/patches
