@@ -13,6 +13,7 @@ COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/Renameuser extensions/Renameuser
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
+COPY download-composer.sh /tmp/download-composer.sh
 
 
 # Patch Media-wiki, set 403-code on permission errors
@@ -23,7 +24,8 @@ RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.pa
 RUN	chown -R www-data:www-data extensions skins cache images
 
 # Install composer
-RUN apt-get update && apt-get install -y composer && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y unzip --no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN bash /tmp/download-composer.sh
 
 # Run composer
-RUN composer update --no-dev
+RUN php composer.phar update --no-dev
