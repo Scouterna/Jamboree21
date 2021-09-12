@@ -12,6 +12,7 @@ COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSugge
 COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/PageForms extensions/PageForms
 COPY vendor/PluggableAuth extensions/PluggableAuth
+COPY vendor/Preloader extensions/Preloader
 COPY vendor/Renameuser extensions/Renameuser
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
 COPY download-composer.sh /tmp/download-composer.sh

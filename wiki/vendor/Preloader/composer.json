@@ -1,0 +1,9 @@
+{
+	"name": "troyengel/preloader",
+	"description": "Preloader MediaWiki Extension",
+	"type": "mediawiki-extension",
+	"license": "MIT",
+	"require": {
+		"composer/installers": "~1.0"
+	}
+}

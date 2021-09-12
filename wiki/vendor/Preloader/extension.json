@@ -1,0 +1,31 @@
+{
+	"name": "Preloader",
+	"version": "1.4",
+	"author": [
+		"Rob Church",
+		"Troy Engel",
+		"Jack Phoenix"
+	],
+	"license-name": "MIT",
+	"url": "https://www.mediawiki.org/wiki/Extension:Preloader",
+	"descriptionmsg": "preloader-desc",
+	"type": "parserhook",
+	"config": {
+		"PreloaderSource": {
+			"0": "Template:Preload",
+			"_merge_strategy": "array_plus"
+		}
+	},
+	"MessagesDirs": {
+		"Preloader": [
+			"i18n"
+		]
+	},
+	"AutoloadClasses": {
+		"Preloader": "Preloader.class.php"
+	},
+	"Hooks": {
+		"EditFormPreloadText": "Preloader::mainHook"
+	},
+	"manifest_version": 1
+}

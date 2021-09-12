@@ -1,0 +1,63 @@
+The MIT License (MIT)
+
+Copyright (c) 2006 Rob Church
+              2015 Troy Engel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+=============================================================================
+
+Date: Mon, 29 Dec 2014 17:05:18 +0000
+Subject: Re: License on code question
+From: Rob Church <xxxx@gmail.com>
+To: Troy Engel <yyyy@gmail.com>
+
+Hello,
+
+Most of the extension code I wrote should be MIT-licensed, but this hasn't
+a declaration, of course. Clearly, I have no particular desire to restrict
+use of the code by any means.
+
+Would it being MIT licensed be sufficient for your purposes? If so, then
+consider this a retrospective declaration of such; otherwise, let me know
+what you need.
+
+Kind regards,
+
+Rob Church
+
+==========================
+
+Date: Sun, 28 Dec 2014 12:54:14 -0600
+Subject: License on code question
+From: Troy Engel <yyyy@gmail.com>
+To: Rob Church <xxxx@gmail.com>
+
+Heya Rob - I know you don't work on this anymore at all, but need to
+ask -- is this particular piece of code under some sort of GPL/MIT/MPL
+license?
+
+  https://www.mediawiki.org/wiki/Extension:Preloader
+
+I just want to commit some of my personal changes to my own Github but
+wanted to be sure I wasn't violating your rights. Thanks!
+
+-te
+
+==========================

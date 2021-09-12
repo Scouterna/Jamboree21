@@ -164,6 +164,7 @@ wfLoadExtension( 'Cite' );
 wfLoadExtension( 'CategoryTree' );
 wfLoadExtension( 'MultimediaViewer' );
 wfLoadExtension( 'PdfHandler' );
+wfLoadExtension( 'Preloader' );
 wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'Renameuser' );
 wfLoadExtension( 'PageForms' );
