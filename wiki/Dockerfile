@@ -1,6 +1,5 @@
 FROM mediawiki:stable
 
-COPY LocalSettings.php LocalSettings.php
 COPY logo.png logo.png
 
 # install extensions
@@ -34,3 +33,5 @@ RUN COMPOSER=composer.local.json php composer.phar install
 
 # Run composer
 RUN php composer.phar update --no-dev
+
+COPY LocalSettings.php LocalSettings.php
