@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Grondin",
+			"Zetud"
+		]
+	},
+	"preloader-desc": "Fournit, pour les nouvelles pages, des fenêtres de texte personnalisables par nom d’espace"
+}

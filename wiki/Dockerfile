@@ -1,6 +1,5 @@
 FROM mediawiki:stable
 
-COPY LocalSettings.php LocalSettings.php
 COPY logo.png logo.png
 
 # install extensions
@@ -12,6 +11,7 @@ COPY vendor/MixedNamespaceSearchSuggestions extensions/MixedNamespaceSearchSugge
 COPY vendor/MobileFrontend extensions/MobileFrontend
 COPY vendor/PageForms extensions/PageForms
 COPY vendor/PluggableAuth extensions/PluggableAuth
+COPY vendor/Preloader extensions/Preloader
 COPY vendor/Renameuser extensions/Renameuser
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
 COPY download-composer.sh /tmp/download-composer.sh
@@ -33,3 +33,5 @@ RUN COMPOSER=composer.local.json php composer.phar install
 
 # Run composer
 RUN php composer.phar update --no-dev
+
+COPY LocalSettings.php LocalSettings.php

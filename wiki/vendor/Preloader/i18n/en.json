@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Rob Church"
+		]
+	},
+	"preloader-desc": "Provides customisable per-namespace boilerplate text for new pages"
+}

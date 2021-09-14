@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Siebrand"
+		]
+	},
+	"preloader-desc": "Geeft de mogelijkheid aan te passen per naamruimte tekstblokken te maken voor nieuwe pagina's"
+}
