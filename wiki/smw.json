@@ -1,0 +1,9 @@
+{
+    "mediawiki": {
+        "upgrade_key": "ecb6a57621ea1cbfb76860ddc03f44df504775c2",
+        "maintenance_mode": false,
+        "latest_version": "3.2.3",
+        "incomplete_tasks": [],
+        "last_optimization_run": "2021-09-14 03:39"
+    }
+}
