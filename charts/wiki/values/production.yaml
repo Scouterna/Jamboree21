@@ -1,8 +1,8 @@
 ---
 image: scouterna.azurecr.io/wiki
-domain: wiki.internal.jamboree.se.webservices.scouterna.net
-extraHostNames:
+domains:
   - wiki.jamboree.se
+  - wiki.internal.jamboree.se.webservices.scouterna.net
 storage:
   data:
     capacity: 16Gi
