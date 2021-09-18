@@ -19,9 +19,28 @@ spec:
           serviceName: mediawiki
           servicePort: 80
         path: /
+    {{ if .Values.ingress.extraHostNames }}
+    {{ range .Values.ingress.extraHostNames }}
+    - host: {{ . }}
+      http:
+      - backend:
+          serviceName: parsoid
+          servicePort: 8142
+        path: /parsoid
+      - backend:
+          serviceName: mediawiki
+          servicePort: 80
+        path: /
+    {{- end }}
+    {{- end }}
   tls:
   - hosts:
     - {{ .Values.domain }}
+    {{ if .Values.ingress.extraHostNames }}
+    {{ range .Values.ingress.extraHostNames }}
+    - {{ . }}
+    {{- end }}
+    {{- end }}
     secretName: wiki-tls
 ---
 apiVersion: configuration.konghq.com/v1
