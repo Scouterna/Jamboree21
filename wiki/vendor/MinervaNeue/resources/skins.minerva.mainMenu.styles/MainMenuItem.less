@@ -1,6 +1,6 @@
 @import '../../minerva.less/minerva.variables.less';
 
-/* stylelint-disable no-descending-specificity */
+// stylelint-disable no-descending-specificity, selector-max-id
 
 @menuLinkLineHeight: 24px;
 
@@ -15,6 +15,7 @@
 		top: 0;
 		bottom: 0;
 		border-left: 1px solid @grayMediumLight;
+		color: transparent;
 	}
 
 	.primary-action {
@@ -30,7 +31,7 @@
 		}
 
 		li {
-			background-color: @skinContentBgColor;
+			background-color: @background-color-base;
 			position: relative; // ensure the logout link in beta can be position absolute
 			border-top: 1px solid @colorGray14;
 			// offset the border for the icon by 1px
@@ -43,12 +44,10 @@
 			a {
 				color: @colorGray5;
 				display: block;
-				// Overflowing text is ellipsized.
 				max-width: 100%;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				overflow: hidden;
 				padding: @menuLinkLineHeight / 2 10px @menuLinkLineHeight / 2 15px;
+				// Overflow text is ellipsized in one line.
+				.text-overflow( @visible: false );
 
 				// T233166
 				&.secondary-action {
@@ -60,11 +59,6 @@
 					text-decoration: none;
 				}
 
-				&:visited,
-				&:active {
-					color: @colorGray5;
-				}
-
 				span {
 					font-size: @font-size-minerva-small;
 					font-weight: bold;
@@ -74,3 +68,4 @@
 		}
 	}
 }
+// stylelint-enable no-descending-specificity, selector-max-id

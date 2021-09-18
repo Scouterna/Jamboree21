@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require( 'assert' ),
 	MWBot = require( 'mwbot' ),
 	Api = require( 'wdio-mediawiki/Api' ),
@@ -6,8 +8,8 @@ const assert = require( 'assert' ),
 
 const waitForPropagation = ( timeMs ) => {
 	// wait 2 seconds so the change can propogate.
-	const d = new Date();
-	browser.waitUntil( () => new Date() - d > timeMs );
+	// Replace this with a more dynamic statement.
+	browser.pause( timeMs );
 };
 
 const createPages = ( pages ) => {
@@ -34,7 +36,10 @@ const createPages = ( pages ) => {
 };
 
 const createPage = ( title, wikitext ) => {
-	browser.call( () => Api.edit( title, wikitext ) );
+	browser.call( async () => {
+		const bot = await Api.bot();
+		await bot.edit( title, wikitext );
+	} );
 };
 
 const iAmUsingTheMobileSite = () => {
@@ -70,17 +75,25 @@ const pageExists = ( title ) => {
 	waitForPropagation( 2000 );
 };
 
+const pageExistsWithText = ( title, text ) => {
+	browser.call( () =>
+		createPage( title, text )
+	);
+	// wait 2 seconds so the change can propogate.
+	waitForPropagation( 2000 );
+};
+
 const iAmOnAPageThatDoesNotExist = () => {
 	return iAmOnPage( `NewPage ${new Date()}` );
 };
 
 const iShouldSeeAToastNotification = () => {
-	ArticlePage.notification_element.waitForVisible();
+	ArticlePage.notification_element.waitForDisplayed();
 };
 
 const iShouldSeeAToastNotificationWithMessage = ( msg ) => {
 	iShouldSeeAToastNotification();
-	const notificationBody = ArticlePage.notification_element.element( '.mw-notification-content' );
+	const notificationBody = ArticlePage.notification_element.$( '.mw-notification-content' );
 	assert.strictEqual( notificationBody.getText().indexOf( msg ) > -1, true );
 };
 
@@ -94,18 +107,18 @@ const iClickTheOverlayCloseButton = () => {
 };
 
 const iSeeAnOverlay = () => {
-	ArticlePageWithOverlay.overlay_element.waitForVisible();
-	assert.strictEqual( ArticlePageWithOverlay.overlay_element.isVisible(), true );
+	ArticlePageWithOverlay.overlay_element.waitForDisplayed();
+	assert.strictEqual( ArticlePageWithOverlay.overlay_element.isDisplayed(), true );
 };
 
 const iDoNotSeeAnOverlay = () => {
 	waitForPropagation( 5000 );
-	browser.waitUntil( () => !ArticlePageWithOverlay.overlay_element.isVisible() );
-	assert.strictEqual( ArticlePageWithOverlay.overlay_element.isVisible(), false );
+	browser.waitUntil( () => !ArticlePageWithOverlay.overlay_element.isDisplayed() );
+	assert.strictEqual( ArticlePageWithOverlay.overlay_element.isDisplayed(), false );
 };
 
 const iAmUsingMobileScreenResolution = () => {
-	browser.setViewportSize( { width: 320, height: 480 }, true );
+	browser.setWindowSize( 320, 480 );
 };
 
 module.exports = {
@@ -115,6 +128,7 @@ module.exports = {
 	iClickTheOverlayCloseButton,
 	iClickTheBrowserBackButton,
 	createPage, createPages,
+	pageExistsWithText,
 	pageExists, iAmOnAPageThatDoesNotExist, iShouldSeeAToastNotification,
 	iShouldSeeAToastNotificationWithMessage,
 	iAmLoggedIntoTheMobileWebsite,

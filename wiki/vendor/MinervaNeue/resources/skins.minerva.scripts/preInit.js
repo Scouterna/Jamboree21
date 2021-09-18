@@ -2,35 +2,15 @@
 // (see https://bugzilla.wikimedia.org/show_bug.cgi?id=44264)
 /**
  * mobileFrontend namespace
+ *
  * @class mw.mobileFrontend
  * @singleton
  */
 module.exports = function () {
-	var M = mw.mobileFrontend,
-		mobile = M.require( 'mobile.startup' ),
-		skin = mobile.Skin.getSingleton(),
-		mainMenu = require( './menu.js' );
+	var menus = require( './menu.js' );
 
-	/**
-	 * Close navigation if skin is tapped
-	 * @param {JQuery.Event} ev
-	 * @private
-	 */
-	function onSkinClick( ev ) {
-		var $target = $( ev.target );
-
-		// Make sure the menu is open and we are not clicking on the menu button
-		if (
-			mainMenu &&
-			mainMenu.isOpen() &&
-			// eslint-disable-next-line no-jquery/no-class-state
-			!$target.hasClass( 'main-menu-button' )
-		) {
-			mainMenu.closeNavigationDrawers();
-			ev.preventDefault();
-		}
-	}
-	skin.on( 'click', onSkinClick.bind( skin ) );
+	// setup main menu
+	menus.init();
 
 	( function ( wgRedirectedFrom ) {
 		// If the user has been redirected, then show them a toast message (see

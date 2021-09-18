@@ -1,3 +1,5 @@
+'use strict';
+
 const { ArticlePage } = require( '../support/world' ),
 	RunJobs = require( 'wdio-mediawiki/RunJobs' ),
 	Api = require( 'wdio-mediawiki/Api' ),
@@ -29,9 +31,11 @@ const iAmInAWikiThatHasCategories = ( title ) => {
 	// A pause is necessary to let the categories register with database before trying to use
 	// them in an article
 	waitForPropagation( 5000 );
-	browser.call( () => {
-		return Api.edit( title, wikitext );
+	browser.call( async () => {
+		const bot = await Api.bot();
+		await bot.edit( title, wikitext );
 	} );
+
 	browser.call( () => {
 		// The category overlay uses the category API
 		// which will only return results if the job queue has completed.
@@ -80,25 +84,23 @@ const watch = ( title ) => {
 	// So we run the non-js workflow.
 	const page = new Page();
 	page.openTitle( title, { action: 'watch' } );
-	browser.element( '#mw-content-text button[type="submit"]' ).click();
+	$( '#mw-content-text button[type="submit"]' ).click();
 	waitForPropagation( 10000 );
+	page.openTitle( title );
 };
 
 const iAmViewingAWatchedPage = () => {
 	const title = `I am on the "Selenium mobile watched page test ${new Date().getTime()}`;
-
 	browser.call( () => {
-		createPage( title, 'watch test' );
+		return createPage( title, 'watch test' );
 	} );
-	browser.call( () => {
-		watch( title );
-		// navigate away from page
-		iAmOnPage( 'Main Page' );
-		waitForPropagation( 5000 );
-		// and back to page
-		iAmOnPage( title );
-		waitForPropagation( 5000 );
-	} );
+	watch( title );
+	// navigate away from page
+	iAmOnPage( 'Main Page' );
+	waitForPropagation( 5000 );
+	// and back to page
+	iAmOnPage( title );
+	waitForPropagation( 5000 );
 };
 
 const iAmViewingAnUnwatchedPage = () => {
@@ -107,17 +109,17 @@ const iAmViewingAnUnwatchedPage = () => {
 	iAmOnPage( title );
 };
 
-const iAmOnAPageWithNoTalkTopics = () => {
+const iAmOnATalkPageWithNoTalkTopics = () => {
 	const title = `Selenium talk test ${new Date()}`;
 
 	createPage( title, 'Selenium' );
-	iAmOnPage( title );
+	iAmOnPage( `Talk:${title}` );
 };
 
 module.exports = {
 	waitForPropagation,
 	iAmOnAPageThatHasTheFollowingEdits,
-	iAmOnAPageWithNoTalkTopics,
+	iAmOnATalkPageWithNoTalkTopics,
 	iAmViewingAWatchedPage,
 	iAmViewingAnUnwatchedPage,
 	iAmInAWikiThatHasCategories,

@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Fwolff",
+			"Joris Darlington Quarshie",
 			"Naudefj"
 		]
 	},
@@ -32,5 +33,5 @@
 	"mobile-frontend-user-page-contributions": "Bydraes",
 	"mobile-frontend-user-page-member-since": "{{GENDER:$2|Aangesluit}} op $1",
 	"mobile-frontend-user-page-talk": "Bespreking",
-	"mobile-frontend-user-page-uploads": "Opgelaai"
+	"minerva-user-navigation": "Gebruikersnavigasie"
 }

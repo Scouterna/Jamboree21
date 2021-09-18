@@ -16,19 +16,28 @@
  */
 
 @import '../../minerva.less/minerva.variables.less';
+@import 'mediawiki.mixins.less';
+
+@icon-background-color--selected:  rgba( 0, 0, 0, 0.03 );
+
 /**
  * Mixin for a pseudo-element with a background image.
  */
-.mixin-background-square() {
-	// sizing
+.mixin-background-square( @size ) {
+	// Sizing properties
 	content: '';
 	display: block;
 	width: 100%;
 	height: 100%;
+	// In case display: block is overridden and display gets set to `flex`
+	// because of inheritance T233521.
+	min-width: @size;
+	min-height: @size;
 
-	// background
+	// Background properties.
 	background-repeat: no-repeat;
-	background-size: contain;
+	// Using static value instead of `background-size: contain` because of T233521#5545513.
+	background-size: @size @size;
 	background-position: center;
 }
 
@@ -51,12 +60,18 @@
 	box-sizing: content-box !important;
 	width: @icon-size-md;
 	height: @icon-size-md;
+
+	// Guarding against flex-box variability.
+	min-width: @icon-size-md;
+	min-height: @icon-size-md;
 	flex-basis: @icon-size-md;
 
 	// alignment
 	vertical-align: middle;
 	line-height: 0;
-	overflow: hidden;
+
+	// Overflow ellipsis.
+	.text-overflow( @visible: false );
 
 	// resetting styles for <button> elements
 	-moz-appearance: none;
@@ -67,7 +82,7 @@
 	padding: 0;
 
 	&:before {
-		.mixin-background-square();
+		.mixin-background-square( @icon-size-md );
 	}
 }
 
@@ -89,28 +104,44 @@
 }
 
 .mw-ui-icon-element {
+	border-radius: @border-radius-base;
 	padding: @icon-padding-md;
-	border-radius: @borderRadius;
+	// Use semi-colon if multiple arguments are needed!
+	// See https://stackoverflow.com/questions/11419741/less-css-mixins-with-variable-number-of-arguments
+	.transition( background-color @transition-duration-base; );
 
-	// screen-reader text. Not using `text-indent: -999px` because
-	// the inner :before element is `display: block` so text-indent has no effect.
-	line-height: 999px;
+	// Combined with nowrap & ellipsis from .mw-ui-icon, forms safe "screen-reader" text.
 	color: transparent;
 
 	&:focus, &:active, &:visited {
 		color: transparent;
 	}
 
-	&:hover {
-		background-color: rgba( 0, 0, 0, 0.03 );
+	// Assume a mobile device - and avoid tap state remaining after click (T233046).
+	&:active {
+		background-color: @icon-background-color--selected;
+	}
+}
+
+// When the user's device primary input is capable of hover, like a mouse,
+// use hover (T233046). Only on active elements.
+@media ( hover: hover ) {
+	.mw-ui-icon-element:not( .disabled ):hover {
+		background-color: @icon-background-color--selected;
 	}
 }
 
 .mw-ui-icon-small {
 	width: @icon-size-sm;
 	height: @icon-size-sm;
+	min-width: @icon-size-sm;
+	min-height: @icon-size-sm;
 	flex-basis: @icon-size-sm;
 	line-height: @icon-size-sm;
+
+	&:before {
+		.mixin-background-square( @icon-size-sm );
+	}
 }
 
 .mw-ui-icon-small.mw-ui-icon-element {
@@ -136,7 +167,6 @@
 	max-width: 100%;
 
 	&:before {
-		.mixin-background-square();
 		// sizing
 		display: inline-block;
 		font-size: initial;
@@ -145,11 +175,34 @@
 		min-height: @icon-size-md;
 
 		// alignment. Margin is added to separate accompanying text.
-		margin-right: @icon-padding-md;
+		margin-right: @margin-icon-md-labelled;
 		vertical-align: middle;
 	}
 
 	span {
 		vertical-align: middle;
+	}
+}
+
+@media all and ( min-width: @width-breakpoint-desktop ) {
+	.mw-ui-icon-with-label-desktop {
+		color: @icon-color;
+		width: auto;
+		line-height: inherit;
+		flex-basis: auto;
+
+		&:hover, &:focus, &:active, &:visited {
+			color: @icon-color;
+			text-decoration: none;
+		}
+
+		&:before {
+			width: auto;
+			display: inline-block;
+			// Don't use `@icon-padding-md` as we are adjacent to text.
+			margin-right: @margin-icon-md-labelled;
+			// Seems to be more visually centered than `middle`.
+			vertical-align: text-bottom;
+		}
 	}
 }

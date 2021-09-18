@@ -1,5 +1,7 @@
-const { iAmLoggedIntoTheMobileWebsite } = require( '../features/step_definitions/common_steps' ),
-	{ iVisitMyUserPage, iShouldBeOnMyUserPage, thereShouldBeALinkToMyUploads,
+'use strict';
+
+const { iAmUsingTheMobileSite } = require( '../features/step_definitions/common_steps' ),
+	{ iVisitMyUserPage, iShouldBeOnMyUserPage,
 		thereShouldBeALinkToMyContributions, thereShouldBeALinkToMyTalkPage
 	} = require( '../features/step_definitions/user_page_steps' );
 
@@ -7,7 +9,7 @@ const { iAmLoggedIntoTheMobileWebsite } = require( '../features/step_definitions
 describe( 'User:<username>', () => {
 
 	beforeEach( () => {
-		iAmLoggedIntoTheMobileWebsite();
+		iAmUsingTheMobileSite();
 		iVisitMyUserPage();
 	} );
 
@@ -16,6 +18,5 @@ describe( 'User:<username>', () => {
 		iShouldBeOnMyUserPage();
 		thereShouldBeALinkToMyTalkPage();
 		thereShouldBeALinkToMyContributions();
-		thereShouldBeALinkToMyUploads();
 	} );
 } );

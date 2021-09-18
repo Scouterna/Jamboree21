@@ -1,3 +1,5 @@
+'use strict';
+
 const {
 		pageExists, iAmOnAPageThatDoesNotExist,
 		iAmLoggedIntoTheMobileWebsite
@@ -17,7 +19,7 @@ describe( 'Wikitext Editor (Makes actual saves)', () => {
 	} );
 
 	// @editing @en.m.wikipedia.beta.wmflabs.org
-	it( 'Redirects', () => {
+	it.skip( 'Redirects', () => {
 		const title = 'Selenium wikitext editor test ' + Math.random();
 		pageExists( title );
 		iAmOnAPageThatDoesNotExist();

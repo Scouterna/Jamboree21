@@ -2,25 +2,27 @@
 
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MobileFrontend\Models\MobilePage;
 
 /**
  * @group MobileFrontend
- * @coversDefaultClass MobilePage
+ * @coversDefaultClass \MobileFrontend\Models\MobilePage
  * @covers ::__construct()
  */
 class MobilePageTest extends MediaWikiTestCase {
 	// Timestamp from MW format to Unix format
 	// TS_MW is '20181028200709' and to Unix gives
 	// '1540757229' using the wfTimestamp() function.
-	const TS_MW_TO_TS_UNIX = '1540757229';
+	private const TS_MW_TO_TS_UNIX = '1540757229';
 
 	// Example timestamp in MediaWiki format
-	const TS_MW = '20181028200709';
+	private const TS_MW = '20181028200709';
 
 	/**
 	 * Creates an instance of `File`.
 	 * By default, let the picture height be less than it's width.
 	 *
+	 * @param int $height
 	 * @return File
 	 */
 	private function mockFileFactory( $height ) {
@@ -52,7 +54,7 @@ class MobilePageTest extends MediaWikiTestCase {
 	/**
 	 * Mock the RevisionStore class
 	 * @param Title $title
-	 * @param TestUser $testUser
+	 * @param TestUser|null $testUser
 	 * @return RevisionStore
 	 */
 	private function mockRevisionStore( Title $title, TestUser $testUser = null ) {
@@ -102,6 +104,7 @@ class MobilePageTest extends MediaWikiTestCase {
 
 	/**
 	 * Mock RevisionStore class with title that returns null
+	 * @param Title $title
 	 * @return RevisionStore
 	 */
 	private function mockRevisionStoreWithTitleReturnNullRevision( $title ) {

@@ -3,143 +3,212 @@
  */
 module.exports = function ( mobile ) {
 	var
-		loader = mobile.rlModuleLoader,
-		loadingOverlay = mobile.loadingOverlay,
-		eventBus = mobile.eventBusSingleton,
-		PageGateway = mobile.PageGateway,
+		SKIN_MINERVA_TALK_SIMPLIFIED_CLASS = 'skin-minerva--talk-simplified',
+		toast = mobile.toast,
+		currentPage = mobile.currentPage(),
 		api = new mw.Api(),
-		gateway = new PageGateway( api ),
-		// eslint-disable-next-line no-jquery/no-global-selector
-		$talk = $( '.talk, [rel="discussion"]' ),
-		// use the plain return value here - T128273
-		title = $talk.attr( 'data-title' ),
 		overlayManager = mobile.OverlayManager.getSingleton(),
 		// FIXME: This dependency shouldn't exist
 		skin = mobile.Skin.getSingleton(),
-		inTalkNamespace = false,
-		pageTitle, talkTitle, talkNs, pageNs;
+		talkTitle = currentPage.titleObj.getTalkPage() ?
+			currentPage.titleObj.getTalkPage().getPrefixedText() :
+			undefined;
 
-	// T127190
-	if ( title ) {
-		title = decodeURIComponent( title );
-	}
+	/**
+	 * Render a type of talk overlay
+	 *
+	 * @param {string} className name of talk overlay to create
+	 * @param {Object} talkOptions
+	 * @return {Overlay|jQuery.Promise}
+	 */
+	function createOverlay( className, talkOptions ) {
+		// eslint-disable-next-line no-restricted-properties
+		var M = mw.mobileFrontend;
 
-	// sanity check: the talk namespace needs to have the next higher integer
-	// of the page namespace (the api should add topics only to the talk page of the current
-	// page)
-	// (https://www.mediawiki.org/wiki/Manual:Using_custom_namespaces#Creating_a_custom_namespace)
-	// The method to get associated namespaces will change later (maybe), see T487
-	pageTitle = mw.Title.newFromText( mw.config.get( 'wgRelevantPageName' ) );
-	talkTitle = title ? mw.Title.newFromText( title ) : pageTitle.getTalkPage();
-
-	// Check that there is a valid page and talk title
-	if ( !pageTitle || !talkTitle ||
-		// the talk link points to something other than the current page
-		// so we chose to leave this as a normal link
-		pageTitle.getMainText() !== talkTitle.getMainText() ) {
-		return;
-	}
-	talkNs = talkTitle.getNamespaceId();
-	pageNs = pageTitle.getNamespaceId();
-	inTalkNamespace = talkNs === pageNs;
-
-	if ( pageNs + 1 !== talkNs && !inTalkNamespace ) {
-		return;
+		return new ( M.require( 'mobile.talk.overlays/' + className ) )( talkOptions );
 	}
 
 	/**
-	 * Render a talk overlay for a given section
-	 * @param {string} id (a number e.g. '1' or the string 'new')
-	 * @param {Object} talkOptions
-	 * @return {Overlay}
+	 * Cleanup the listeners previously added in initTalkSection
+	 * so that events like clicking on a section) won't cause
+	 * scroll changes/things only needed for the simplified view.
+	 * Also restore ids for table of contents.
 	 */
-	function talkSectionOverlay( id, talkOptions ) {
-		var M = mw.mobileFrontend;
-		if ( id === 'new' ) {
-			return new ( M.require( 'mobile.talk.overlays/TalkSectionAddOverlay' ) )( talkOptions );
-		}
-		return new ( M.require( 'mobile.talk.overlays/TalkSectionOverlay' ) )( talkOptions );
+	function restoreSectionHeadings() {
+		// eslint-disable-next-line no-jquery/no-global-selector
+		$( '.section-heading' ).each( function () {
+			var $heading = $( this ),
+				$headline = $heading.find( '.mw-headline' );
+			$heading.off( 'click.talkSectionOverlay' );
+			// restore for table of contents:
+			$headline.attr( 'id', $headline.data( 'id' ) );
+		} );
 	}
 
-	overlayManager.add( /^\/talk\/?(.*)$/, function ( id ) {
-		var title = talkTitle.toText(),
-			talkOptions = {
+	/**
+	 * @param {jQuery.Element} $heading
+	 * @param {jQuery.Element} $headline
+	 * @param {string} sectionId
+	 * @return {jQuery.Promise} A promise that rejects if simplified mode is off.
+	 * A promise that resolves to the TalkSectionOverlay otherwise (unless a
+	 * network error occurs).
+	 */
+	function createTalkSectionOverlay( $heading, $headline, sectionId ) {
+		if ( !isSimplifiedViewEnabled() ) {
+			// If the simplified view is not enabled, we don't want to show the
+			// talk section overlay (e.g. when user clicks on a link in TOC)
+			return mobile.util.Deferred().reject();
+		}
+
+		return createOverlay( 'TalkSectionOverlay', {
+			id: sectionId,
+			section: new mobile.Section( {
+				// Strip out any HTML from the headline to avoid links in T243650.
+				line: $( '<span>' ).text( $( $headline ).text() )[ 0 ].outerHTML,
+				text: $heading.next().html()
+			} ),
+			// FIXME: Replace this api param with onSaveComplete
+			api: api,
+			title: talkTitle,
+			// T184273 using `currentPage` because 'wgPageName'
+			// contains underscores instead of spaces.
+			licenseMsg: skin.getLicenseMsg(),
+			onSaveComplete: function () {
+				toast.showOnPageReload( mw.message( 'minerva-talk-reply-success' ).text() );
+				window.location.reload();
+			}
+		} );
+	}
+
+	/**
+	 * Initializes code needed to display the TalkSectionOverlay
+	 */
+	function initTalkSection() {
+		// register route for each of the sub-headings
+		// eslint-disable-next-line no-jquery/no-global-selector
+		$( '.section-heading' ).each( function () {
+			var
+				sectionId,
+				$heading = $( this ),
+				$headline = $heading.find( '.mw-headline' ),
+				$editLink = $heading.find( '.mw-editsection a' ),
+				headlineId = $headline.attr( 'id' ),
+				// T238364: Before registering a route with OverlayManager, we need to
+				// encode the id first to ensure it forms a valid URI in case the id
+				// contains illegal URI characters as defined by RFC3986. This avoids
+				// inconsistencies with how different browsers encode illegal URI
+				// characters.
+				encodedHeadlineId = encodeURIComponent( headlineId );
+
+			if ( !$editLink.length ) {
+				// If section id couldn't be parsed, there is no point in continuing
+				return;
+			}
+			sectionId = mw.util.getParamValue( 'section', $editLink[ 0 ].href );
+
+			$heading.on( 'click.talkSectionOverlay', function ( ev ) {
+				ev.preventDefault();
+				window.location.hash = '#' + encodedHeadlineId;
+
+			} );
+
+			// remove the `id` to avoid conflicts with the overlay route.
+			// Without JS the id will still be present. With JS the overlay will open.
+			$headline.removeAttr( 'id' );
+			// however cache it to data for cooperation with the 'read as wiki page' button.
+			$headline.data( 'id', headlineId );
+
+			overlayManager.add( encodedHeadlineId, function () {
+				return createTalkSectionOverlay( $heading, $headline, sectionId );
+			} );
+		} );
+	}
+
+	/**
+	 * Initializes code needed to display the TalkSectionAddOverlay
+	 */
+	function initTalkSectionAdd() {
+		overlayManager.add( /^\/talk\/new$/, function () {
+			return createOverlay( 'TalkSectionAddOverlay', {
 				api: api,
-				title: title,
-				onSaveComplete: function () {
-					gateway.invalidatePage( title );
-					// navigate back. the overlay is done with so close it
-					overlayManager.router.back();
-					try {
-						overlayManager.replaceCurrent(
-							mobile.talk.overlay( title, gateway )
-						);
-						overlayManager.router.navigateTo( null, {
-							// This should be defined in Minerva.
-							path: '#/talk',
-							useReplaceState: true
-						} );
-					} catch ( e ) {
-						// the user came directly - there is no overlay to replace
-						// so no overlay to refresh
-					}
-					mw.notify( mw.msg( 'mobile-frontend-talk-topic-feedback' ) );
-				},
+				title: talkTitle,
 				// T184273 using `currentPage` because 'wgPageName'
 				// contains underscores instead of spaces.
-				currentPageTitle: mobile.currentPage().title,
 				licenseMsg: skin.getLicenseMsg(),
-				eventBus: eventBus,
-				id: id
-			};
 
-		// talk case
-		if ( id ) {
-			// If the module is already loaded return it instantly and synchronously.
-			// this avoids a flash of
-			// content when transitioning from mobile.talk.overlay to this overlay (T221978)
-			return mw.loader.getState( 'mobile.talk.overlays' ) === 'ready' ?
-				talkSectionOverlay( id, talkOptions ) :
-				// otherwise pull it from ResourceLoader async
-				loader.loadModule( 'mobile.talk.overlays' ).then( function () {
-					return talkSectionOverlay( id, talkOptions );
-				} );
-		} else {
-			return mobile.talk.overlay( title, gateway );
-		}
-	} );
-
-	/**
-	 * Create route '#/talk'
-	 * @ignore
-	 */
-	function init() {
-		$talk.on( 'click', function ( ev ) {
-			// eslint-disable-next-line no-jquery/no-class-state
-			if ( $talk.hasClass( 'add' ) ) {
-				window.location.hash = '#/talk/new';
-			} else {
-				window.location.hash = '#/talk';
-			}
-			// avoiding navigating to original URL
-			// DO NOT USE stopPropagation or you'll break click tracking in WikimediaEvents
-			ev.preventDefault();
+				currentPageTitle: currentPage.title,
+				onSaveComplete: function () {
+					toast.showOnPageReload( mw.message( 'minerva-talk-topic-feedback' ).text() );
+					window.location = currentPage.titleObj.getTalkPage().getUrl();
+				}
+			} );
 		} );
 	}
 
-	init();
-	if ( inTalkNamespace ) {
-		// reload the page after the new discussion was added
-		eventBus.on( 'talk-added-wo-overlay', function () {
-			var overlay = loadingOverlay();
+	/**
+	 * T230695: In the simplified view, we need to display a "Read as wikipage"
+	 * button which enables the user to switch from simplified mode to the regular
+	 * version of the mobile talk page (with TOC and sections that you can
+	 * expand/collapse).
+	 */
+	function renderReadAsWikiPageButton() {
+		$( '<button>' )
+			.addClass( 'minerva-talk-full-page-button' )
+			.text( mw.message( 'minerva-talk-full-page' ).text() )
+			.on( 'click', function () {
+				restoreSectionHeadings();
+				$( document.body ).removeClass( 'skin-minerva--talk-simplified' );
+				$( this ).remove();
+				// send user back up to top of page so they don't land awkwardly in
+				// middle of page when it expands
+				window.scrollTo( 0, 0 );
+			} )
+			.appendTo( '#content' );
+	}
 
-			window.location.hash = '';
-			// setTimeout to make sure, that loadingOverlay's overlayenabled class on html doesnt
-			// get removed by OverlayManager (who closes TalkSectionAddOverlay).
-			window.setTimeout( function () {
-				overlay.show();
-				window.location.reload();
-			}, 10 );
+	/**
+	 * @return {boolean}
+	 */
+	function isSimplifiedViewEnabled() {
+		// eslint-disable-next-line no-jquery/no-class-state
+		return $( document.body ).hasClass( SKIN_MINERVA_TALK_SIMPLIFIED_CLASS );
+	}
+
+	/**
+	 * Sets up necessary event handlers related to the talk page and talk buttons.
+	 * Also renders the "Read as wikipage" button for the simplified mode
+	 * (T230695).
+	 */
+	function init() {
+		var promise,
+			// eslint-disable-next-line no-jquery/no-global-selector
+			$addTalk = $( '.minerva-talk-add-button' );
+
+		$addTalk.on( 'click', function ( ev ) {
+			// avoid navigating to original URL in anchor element
+			ev.preventDefault();
+			window.location.hash = '#/talk/new';
 		} );
+
+		// We only want the talk section add overlay to show when the user is on the
+		// view action (default action) of the talk page and not when the user is on
+		// other actions of the talk page (e.g. like the history action)
+		if ( currentPage.titleObj.isTalkPage() && mw.config.get( 'wgAction' ) === 'view' ) {
+			promise = mw.loader.using( 'mobile.talk.overlays' )
+				.then( initTalkSectionAdd );
+		} else {
+			return;
+		}
+
+		// SkinMinerva sets a class on the body which effectively controls when this
+		// mode is on
+		if ( isSimplifiedViewEnabled() ) {
+			promise.then( initTalkSection )
+				.then( renderReadAsWikiPageButton );
+		}
+	}
+
+	if ( talkTitle ) {
+		init();
 	}
 };

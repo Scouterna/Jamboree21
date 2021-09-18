@@ -11,17 +11,15 @@ module.exports = function ( grunt ) {
 	grunt.initConfig( {
 		eslint: {
 			options: {
-				cache: true,
-				extensions: [ '.js', '.json' ],
-				maxWarnings: 0,
-				reportUnusedDisableDirectives: true
+				cache: true
 			},
 			all: [
 				'**/*.{js,json}',
 				'!docs/**',
 				'!libs/**',
 				'!node_modules/**',
-				'!vendor/**'
+				'!vendor/**',
+				'!tests/resource-loader-bundlesize.js'
 			]
 		},
 		stylelint: {
@@ -35,6 +33,7 @@ module.exports = function ( grunt ) {
 				'!vendor/**'
 			]
 		},
+		// eslint-disable-next-line es/no-object-assign
 		banana: Object.assign( {
 			options: { requireLowerCase: false }
 		}, conf.MessagesDirs ),

@@ -1,3 +1,5 @@
+'use strict';
+
 const { iSeeAnOverlay } = require( './common_steps' );
 const { ArticlePage } = require( '../support/world.js' );
 const ArticlePageWithOverlay = require( '../support/pages/article_page_with_overlay' );
@@ -8,20 +10,20 @@ const iClickTheSearchIcon = () => {
 
 const iTypeIntoTheSearchBox = ( term ) => {
 	const input = ArticlePageWithOverlay.overlay_element
-		.element( 'input' );
+		.$( 'input' );
 	input.waitForExist();
 	input.setValue( term );
 };
 
 const iSeeSearchResults = () => {
 	ArticlePageWithOverlay.overlay_element
-		.element( '.page-list' ).waitForExist( 5000 );
+		.$( '.page-list' ).waitForExist( 5000 );
 };
 
 const iClickASearchWatchstar = () => {
 	iSeeSearchResults();
 	const watchThisArticle = ArticlePageWithOverlay.overlay_element
-		.element( '.watch-this-article' );
+		.$( '.watch-this-article' );
 	watchThisArticle.waitForExist( 5000 );
 	watchThisArticle.click();
 };

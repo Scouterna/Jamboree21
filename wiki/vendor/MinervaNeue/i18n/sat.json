@@ -2,9 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Albinus",
+			"Fagunkoyel Hansdah",
 			"Manik Soren",
 			"Ramjit Tudu",
-			"Fagunkoyel Hansdah"
+			"ᱥᱟᱹᱜᱩᱱ ᱗"
 		]
 	},
 	"minerva-last-modified-date": "ᱢᱩᱪᱟᱹᱫ ᱥᱟᱯᱲᱟᱣ ᱟᱠᱟᱱ $1, $2 ᱨᱮ",
@@ -16,7 +17,7 @@
 	"mobile-frontend-editor-redlink-leave": "ᱵᱟᱝ, ᱥᱟᱨᱦᱟᱣ᱾",
 	"mobile-frontend-history": "ᱱᱚᱣᱟ ᱥᱟᱦᱴᱟ ᱨᱮᱱᱟᱜ ᱥᱟᱯᱲᱟᱣ ᱱᱟᱜᱟᱢ ᱧᱮᱞ ᱢᱮ᱾",
 	"mobile-frontend-home-button": "ᱚᱲᱟᱜ",
-	"mobile-frontend-language-article-heading": "ᱮᱴᱟᱜ ᱯᱟᱹᱨᱥᱤᱛᱮ ᱯᱟᱲᱦᱟᱣᱢᱮ",
+	"mobile-frontend-language-article-heading": "ᱯᱟᱹᱨᱥᱤ",
 	"mobile-frontend-languages-not-available": "ᱱᱚᱣᱟ ᱥᱟᱦᱴᱟ ᱮᱴᱟᱜ ᱯᱟᱹᱨᱥᱤᱛᱮ ᱵᱟᱱᱩᱜ-ᱟ᱾",
 	"mobile-frontend-main-menu-button-tooltip": "ᱢᱩᱬᱩᱛ ᱢᱮᱱᱩ ᱡᱷᱤᱡᱽ ᱢᱮ",
 	"mobile-frontend-main-menu-contributions": "ᱮᱱᱮᱢᱠᱩ",
@@ -37,6 +38,5 @@
 	"mobile-frontend-redirected-from": "\"[[$1]]\" ᱠᱷᱚᱱ ᱧᱟᱢ ᱟᱹᱜᱩᱭ",
 	"mobile-frontend-user-newmessages": "ᱟᱢᱟᱜ ᱨᱚᱲ ᱥᱟᱦᱴᱟᱨᱮ ᱱᱟᱣᱟ ᱠᱷᱚᱵᱚᱨ ᱦᱮᱡ ᱟᱠᱟᱱᱟ",
 	"mobile-frontend-user-page-contributions": "ᱮᱱᱮᱢᱠᱩ",
-	"mobile-frontend-user-page-talk": "ᱨᱚᱲ",
-	"mobile-frontend-user-page-uploads": "ᱞᱟᱫᱮ"
+	"mobile-frontend-user-page-talk": "ᱨᱚᱲ"
 }

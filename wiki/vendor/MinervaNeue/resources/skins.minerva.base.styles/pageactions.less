@@ -22,7 +22,7 @@
 	opacity: 0.25;
 }
 
-#page-actions {
+#page-actions { // stylelint-disable-line selector-max-id
 	position: relative;
 }
 
@@ -41,9 +41,16 @@
 
 .page-actions-menu__list-item {
 	display: flex;
-	flex-basis: 4em;
 	justify-content: flex-end;
 	align-items: center;
+	min-width: 0;
+	overflow: hidden;
+
+	> a {
+		// Special case outside of standard buttons styling due to surrounding
+		// interface elements, see T237019.
+		font-weight: 500;
+	}
 
 	li > *:hover {
 		box-shadow: none;
@@ -61,12 +68,6 @@
 // position the last icon with the edge of the content container
 .page-actions-menu__list-item:last-child {
 	margin-right: @contentPadding/-2;
-}
-
-.page-actions-overflow-list {
-	// The top of the menu is flush with the bottom of the page actions toolbar.
-	top: 100%;
-	right: -@icon-padding-md;
 }
 
 // Watchstar is hidden for anonymous no-js users
@@ -91,11 +92,11 @@
 // On small devices that don't support Javascript, hide the page actions bar
 @media all and ( max-width: @width-breakpoint-mobile - 1 ) {
 	.client-nojs {
-		#page-actions {
+		#page-actions { // stylelint-disable-line selector-max-id
 			display: none;
 		}
 
-		#section_0 {
+		#section_0 { // stylelint-disable-line selector-max-id
 			border: 0;
 		}
 	}

@@ -7,7 +7,9 @@
  */
 class ApiMobileViewConvertTitleTest extends ApiTestCase {
 
+	/** @var string */
 	private $simplifiedTitle = '天闻角川';
+	/** @var string */
 	private $traditionalTitle = '天聞角川';
 
 	protected function setUp() : void {
@@ -18,7 +20,7 @@ class ApiMobileViewConvertTitleTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers ApiMobileView::execute
+	 * @covers \MobileFrontend\Api\ApiMobileView::execute
 	 */
 	public function testRequestConverted() {
 		$result = $this->doApiRequest( [
@@ -37,7 +39,7 @@ class ApiMobileViewConvertTitleTest extends ApiTestCase {
 	}
 
 	/**
-	 * @covers ApiMobileView::execute
+	 * @covers \MobileFrontend\Api\ApiMobileView::execute
 	 */
 	public function testRequestNotConverted() {
 		$result = $this->doApiRequest( [

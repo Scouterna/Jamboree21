@@ -11,10 +11,11 @@ use MobileFrontend\ContentProviders\MwApiContentProvider;
  */
 class ContentProviderFactoryTest extends MediaWikiTestCase {
 	// Test HTML
-	const TEST_HTML = '<a>Anchor</a>';
+	private const TEST_HTML = '<a>Anchor</a>';
 
 	/**
 	 * Mock OutputPage class
+	 * @return OutputPage
 	 */
 	private function mockOutputPage() {
 		// Mock Title class
@@ -49,6 +50,7 @@ class ContentProviderFactoryTest extends MediaWikiTestCase {
 
 	/**
 	 * Mock the OutputPage class where title doesn't exist
+	 * @return OutputPage
 	 */
 	private function mockOutputPageWithNoTitle() {
 		// Mock Title class

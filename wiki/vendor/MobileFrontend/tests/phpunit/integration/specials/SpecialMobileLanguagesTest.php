@@ -121,10 +121,10 @@ class SpecialMobileLanguagesTest extends MediaWikiTestCase {
 	}
 
 	/**
-	 * @dataProvider providerProcessLanguages
 	 * @covers SpecialMobileLanguages::processLanguages
 	 * @covers SpecialMobileLanguages::__construct
 	 * @covers SpecialMobileLanguages::isLanguageObjectValid
+	 * @dataProvider providerProcessLanguages
 	 */
 	public function testProcessLanguages( $langlinks, $expected ) {
 		$apiResult = [
@@ -132,7 +132,11 @@ class SpecialMobileLanguagesTest extends MediaWikiTestCase {
 				'langlinks' => $langlinks
 			]
 		];
-		$sp = new SpecialMobileLanguages();
+		$services = MediaWikiServices::getInstance();
+		$sp = new SpecialMobileLanguages(
+			$services->getLanguageConverterFactory(),
+			$services->getLanguageNameUtils()
+		);
 		$class = new ReflectionClass( SpecialMobileLanguages::class );
 		$method = $class->getMethod( 'processLanguages' );
 		$method->setAccessible( true );

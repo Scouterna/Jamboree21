@@ -1,3 +1,5 @@
+'use strict';
+
 const { iAmViewingAnUnwatchedPage } = require( '../features/step_definitions/create_page_api_steps' ),
 	{
 		iShouldSeeAToastNotificationWithMessage,
@@ -17,7 +19,7 @@ describe( 'Manage Watchlist', () => {
 	it( 'Add an article to the watchlist', () => {
 		iAmViewingAnUnwatchedPage();
 		iClickTheWatchstar();
-		iShouldSeeAToastNotificationWithMessage( 'Added' );
+		iShouldSeeAToastNotificationWithMessage( 'added' );
 		theWatchstarShouldBeSelected();
 	} );
 } );

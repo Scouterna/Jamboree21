@@ -9,6 +9,7 @@
 
 	/**
 	 * Helper function to retrieve the Android version
+	 *
 	 * @ignore
 	 * @param {string} userAgent User Agent
 	 * @return {number|false} An integer.
@@ -20,6 +21,7 @@
 
 	/**
 	 * Helper function to retrieve the Chrome/Chromium version
+	 *
 	 * @ignore
 	 * @param {string} userAgent User Agent
 	 * @return {number|false} An integer.
@@ -39,7 +41,7 @@
 	 * @param {string} userAgent User agent
 	 * @param {number[]} supportedNamespaces where printing is possible
 	 * @return {boolean}
-	*/
+	 */
 	function isAvailable( windowObj, page, userAgent, supportedNamespaces ) {
 		var androidVersion = getAndroidVersion( userAgent ),
 			chromeVersion = getChromeVersion( userAgent );
@@ -66,6 +68,7 @@
 	}
 	/**
 	 * onClick handler for button that invokes print function
+	 *
 	 * @param {Icon} icon
 	 * @param {Icon} spinner
 	 */
@@ -106,7 +109,7 @@
 	 * Expects to be run in the context of an icon using `Function.bind`
 	 *
 	 * @param {Icon} spinner
-	 * @returns {function}
+	 * @return {Function}
 	 */
 	function getOnClickHandler( spinner ) {
 		return function () {
@@ -122,11 +125,11 @@
 	 * @param {number[]} supportedNamespaces
 	 * @param {Window} [windowObj] window object
 	 * @param {boolean} [hasText] Use icon + button style.
-	 * @returns {jQuery.Object|null}
+	 * @return {jQuery.Object|null}
 	 */
 	function downloadPageAction( page, supportedNamespaces, windowObj, hasText ) {
 		var
-			modifier = hasText ? 'toggle-list-item__anchor toggle-list-item__label' : 'mw-ui-icon-element',
+			modifier = hasText ? 'toggle-list-item__anchor toggle-list-item__label' : 'mw-ui-icon-element mw-ui-icon-with-label-desktop',
 			icon,
 			spinner = icons.spinner( {
 				hasText: hasText,
@@ -166,4 +169,6 @@
 			getOnClickHandler: getOnClickHandler
 		}
 	};
+
+// eslint-disable-next-line no-restricted-properties
 }( mw.mobileFrontend, mw.track, mw.msg ) );

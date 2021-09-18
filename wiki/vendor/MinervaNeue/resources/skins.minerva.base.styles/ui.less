@@ -10,19 +10,16 @@ body {
 }
 
 html {
-	// FIXME: Still from Eric Meyer's reset, that should be better fine-grained.
-	font-size: 100%;
+	font-size: @font-size-root;
 	// Support Safari: Prevent font scaling in landscape
 	-webkit-text-size-adjust: none;
 }
 
 body {
-	background-color: @skinContentBgColor;
+	background-color: @background-color-base;
 	color: @colorGray2;
 	// Support All Browsers: Remove `margin` (normalized)
 	margin: 0;
-	// FIXME: Still from Eric Meyer's reset, that should be good to go.
-	line-height: 1;
 }
 
 main {
@@ -30,16 +27,15 @@ main {
 	display: block;
 }
 
-// FIXME: should we use .mw-body here instead?
-#content {
+.mw-body {
 	// avoid margin collapsing (see T147956)
 	border-top: 1px solid transparent;
 	padding-bottom: 32px;
 }
 
 .overlay-enabled,
-#content {
-	background-color: @skinContentBgColor;
+.mw-body {
+	background-color: @background-color-base;
 }
 
 .header-container {
@@ -53,20 +49,12 @@ main {
 	}
 }
 
-// if footer has last modified line hide it (T173545)
+// If footer has last modified list item (Desktop MinervaNeue ?useformat=desktop&useskin=minerva),
+// hide it (T173545).
+// stylelint-disable-next-line selector-max-id
+.navigation-drawer--loading,
 #footer-info-lastmod {
 	display: none;
-}
-
-.last-modified-bar {
-	a,
-	a:visited {
-		color: @colorGray5;
-		// If browser supports
-		&:nth-child( 1 ) {
-			font-weight: bold;
-		}
-	}
 }
 
 .header {
@@ -80,7 +68,8 @@ main {
 	border-top: 1px solid @colorGray12;
 	margin-top: @headerMarginTop;
 
-	> div {
+	> div,
+	> .navigation-drawer {
 		position: relative;
 		vertical-align: middle;
 		display: table-cell;
@@ -93,6 +82,7 @@ main {
 
 	.branding-box {
 		width: auto;
+		opacity: @opacity-icon-subtle; // T251135
 
 		// TODO: Remove `h1` after T198947 HTML changes expire from cache.
 		h1,
@@ -131,7 +121,7 @@ main {
 	}
 }
 
-#searchInput {
+#searchInput { // stylelint-disable-line selector-max-id
 	cursor: text;
 }
 
@@ -144,27 +134,27 @@ main {
 
 /* Search */
 .search-box .search {
-	@border-width-base: 1px;
-	@searchIconSize: 18px;
-	@searchIconGutter: 6px;
+	@size-icon-search: unit( 18 / @font-size-browser, em );
+	@size-icon-search-gutter: unit( 8 / @font-size-browser, em );
+	@size-modifier-border: unit( 1 / @font-size-browser, em );
 	@padding-vertical-search: 8px - @border-width-base;
-	@padding-start-search-icon: @searchIconSize + ( 2 * @searchIconGutter ) - @border-width-base;
+	@padding-start-search-icon: @size-icon-search + ( 2 * @size-icon-search-gutter ) - @size-modifier-border;
 	background-color: #fff; // Support Fennec, Opera Mini: Remove default background, see T38490.
-	background-position: left @searchIconGutter center;
+	background-position: left @size-icon-search-gutter center;
 	background-repeat: no-repeat;
-	background-size: @searchIconSize;
+	background-size: @size-icon-search;
 	// Support Safari: Get rid of rounded corners.
 	-webkit-appearance: none;
 	width: 100%;
 	margin-top: 0;
 	height: 2.25em;
 	border: @border-width-base solid #fff;
-	border-radius: @borderRadius;
+	border-radius: @border-radius-base;
 	padding: @padding-vertical-search 0 @padding-vertical-search @padding-start-search-icon;
 	box-shadow: 0 1px 1px rgba( 0, 0, 0, 0.05 );
 	// Keyboard focus is taken care of below at `.search-box .search:focus`.
 	outline: 0;
-	.transition( ~'border-color 250ms, box-shadow 250ms' );
+	.transition( border-color @transition-duration-medium, box-shadow @transition-duration-medium; );
 }
 
 // Provide focus styles only in non-JS and overlay to prevent double transition.
@@ -225,6 +215,11 @@ input.search {
 			display: table-cell;
 			vertical-align: middle;
 		}
+
+		> .mw-editsection > .mw-ui-icon-element {
+			margin-top: -0.75em;
+			margin-bottom: -0.75em;
+		}
 	}
 }
 
@@ -235,6 +230,7 @@ input.search {
 	}
 }
 
+// stylelint-disable selector-max-id
 #page-secondary-actions {
 	// Clears floating on table of contents on stub pages.
 	clear: both;
@@ -242,15 +238,6 @@ input.search {
 	a {
 		margin: 10px 2px 2px 0;
 	}
-}
-
-.transparent-shield {
-	position: absolute;
-	background: @semiTransparent;
-	z-index: @z-indexAboveContent;
-	// don't use display: none because it's not animatable
-	visibility: hidden;
-	.transition( opacity 0.25s ease-in-out );
 }
 
 // It may be better to express these in a single class
@@ -263,7 +250,6 @@ input.search {
 .page-list li,
 .topic-title-list li,
 .site-link-list li,
-.pointer-overlay,
 .drawer,
 .messagebox,
 .errorbox,
@@ -276,7 +262,6 @@ input.search {
 }
 
 .talk-overlay .comment .comment-content,
-.backtotop,
 .image-list,
 .pre-content,
 /* Form only pages e.g Special:MobileOptions */
@@ -287,6 +272,7 @@ input.search {
 .post-content {
 	margin: 0 @contentMargin;
 }
+// stylelint-enable selector-max-id
 
 // T217197
 .minerva__subtitle {
@@ -314,3 +300,4 @@ input.search {
 		padding-right: @contentPaddingTablet;
 	}
 }
+/* stylelint-enable no-descending-specificity */

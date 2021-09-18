@@ -9,9 +9,9 @@ use MobileFrontend\ContentProviders\MwApiContentProvider;
  * @covers ::__construct
  */
 class MwApiContentProviderTest extends MediaWikiTestCase {
-	const BASE_URL = '/w/api.php';
-	const SKIN_NAME = 'testSkin';
-	const REV_ID = 1;
+	private const BASE_URL = '/w/api.php';
+	private const SKIN_NAME = 'testSkin';
+	private const REV_ID = 1;
 
 	/**
 	 * Create an object of the MwApiContentProvider class
@@ -53,6 +53,7 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 
 	/**
 	 * Mock bad HTTP factory so ->isOK() returns false
+	 * @param string $rawResponse
 	 * @return HttpRequestFactory
 	 */
 	private function mockBadHTTPFactory( $rawResponse ) {
@@ -206,7 +207,7 @@ class MwApiContentProviderTest extends MediaWikiTestCase {
 		$this->assertSame( 'Some text', $actual );
 
 		// Also, this should be in sync with the $rawResponse above (langlinks)
-		$this->assertContains( ':test:MF', $mockOutputPage->getLanguageLinks() );
+		$this->assertContains( 'test:MF', $mockOutputPage->getLanguageLinks() );
 		$this->assertSame( 'No desc', $mockOutputPage->getProperty( 'wgMFDescription' ) );
 	}
 }

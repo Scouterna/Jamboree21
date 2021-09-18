@@ -7,6 +7,7 @@
 
 	/**
 	 * IssueList
+	 *
 	 * @class IssueList
 	 * @extends View
 	 *
@@ -30,4 +31,6 @@
 	} );
 
 	module.exports = IssueList;
+
+// eslint-disable-next-line no-restricted-properties
 }( mw.mobileFrontend ) );

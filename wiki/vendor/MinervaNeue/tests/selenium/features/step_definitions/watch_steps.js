@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require( 'assert' );
 const { ArticlePage } = require( '../support/world.js' );
 
@@ -10,7 +12,7 @@ const theWatchstarShouldNotBeSelected = () => {
 const theWatchstarShouldBeSelected = () => {
 	ArticlePage.watched_element.waitForExist();
 	const watchstar = ArticlePage.watched_element;
-	assert.strictEqual( watchstar.isVisible(), true );
+	assert.strictEqual( watchstar.isDisplayed(), true );
 };
 
 const iClickTheWatchstar = () => {
@@ -21,8 +23,8 @@ const iClickTheWatchstar = () => {
 
 const iClickTheUnwatchStar = () => {
 	ArticlePage.waitUntilResourceLoaderModuleReady( 'skins.minerva.scripts' );
-	ArticlePage.watch_element.waitForExist();
-	ArticlePage.watch_element.click();
+	ArticlePage.watched_element.waitForExist();
+	ArticlePage.watched_element.click();
 };
 
 module.exports = {

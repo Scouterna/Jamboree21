@@ -24,8 +24,6 @@
 	//   color:red;
 	// }
 	// </code>
-	//
-	// Styleguide 1.6.
 
 	// Preformatted text
 	//
@@ -39,13 +37,11 @@
 	// </pre>
 	//
 	// Note .mw-code is not added here as it is assumed that will be used with a suitable tag
-	// tt is a non-standard element so is not included in the selector.
-	// Styleguide 1.7.
 	kbd,
 	samp,
 	code,
 	pre {
-		font-family: @fontFamilyMonospace;
+		font-family: @font-family-monospace;
 		border: solid 1px @colorGray12;
 		white-space: pre-wrap;
 	}
@@ -66,11 +62,23 @@ strong {
 
 blockquote {
 	border-left: 3px solid @colorGray12;
-	font-family: @fontFamilyHeading;
+	padding: @padding-vertical-blockquote @padding-end-blockquote @padding-vertical-blockquote @padding-start-blockquote;
+	font-family: @font-family-serif;
 	font-size: 1.1em;
-	padding: 1em @blockquotePaddingRight 1em @blockquotePaddingLeft;
-	position: relative;
-	overflow: hidden;
+
+	// Ensure not to inherit whitespace mashing margins on child elements.
+	> :first-child {
+		margin-top: 0;
+	}
+
+	> :last-child {
+		margin-bottom: 0;
+	}
+
+	> :only-child {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
 }
 
 em,

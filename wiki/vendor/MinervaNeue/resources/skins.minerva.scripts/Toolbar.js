@@ -2,7 +2,6 @@
 	var
 		mobile = M.require( 'mobile.startup' ),
 		ToggleList = require( '../../components/ToggleList/ToggleList.js' ),
-		downloadPageAction = require( './downloadPageAction.js' ).downloadPageAction,
 		Icon = mobile.Icon,
 		page = mobile.currentPage(),
 		/** The top level menu. */
@@ -54,12 +53,12 @@
 			//       enabledEditIcon, enabledEditIcon, and disabledClass and
 			//       a number of other places in the code base.
 			disabledEditIcon = new Icon( {
-				name: 'edit',
-				glyphPrefix: 'minerva'
+				name: 'editLock-base20',
+				glyphPrefix: 'wikimedia'
 			} ),
 			enabledEditIcon = new Icon( {
-				name: 'edit-enabled',
-				glyphPrefix: 'minerva'
+				name: 'edit-base20',
+				glyphPrefix: 'wikimedia'
 			} ),
 			enabledClass = enabledEditIcon.getGlyphClassName(),
 			disabledClass = disabledEditIcon.getGlyphClassName();
@@ -78,13 +77,15 @@
 	 * There are many restrictions when we can show the download button, this function should handle
 	 * all device/os/operating system related checks and if device supports printing it will inject
 	 * the Download icon
+	 *
 	 * @param {Window} window
 	 * @param {Element|null} overflowList
 	 * @return {void}
 	 */
 	function renderDownloadButton( window, overflowList ) {
-		var $downloadAction = downloadPageAction( page,
-			mw.config.get( 'wgMinervaDownloadNamespaces', [] ), window, !!overflowList );
+		var downloadPageAction = require( './downloadPageAction.js' ).downloadPageAction,
+			$downloadAction = downloadPageAction( page,
+				mw.config.get( 'wgMinervaDownloadNamespaces', [] ), window, !!overflowList );
 
 		if ( $downloadAction ) {
 			if ( overflowList ) {
@@ -104,4 +105,6 @@
 		bind: bind,
 		render: render
 	};
+
+// eslint-disable-next-line no-restricted-properties
 }( mw.mobileFrontend ) );

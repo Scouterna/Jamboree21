@@ -1,18 +1,18 @@
 ( function ( M ) {
 	/**
 	 * @typedef PageIssue
-	 * @prop {string} severity A SEVERITY_LEVEL key.
-	 * @prop {boolean} grouped True if part of a group of multiple issues, false if singular.
-	 * @prop {Icon} icon
+	 * @property {string} severity A SEVERITY_LEVEL key.
+	 * @property {boolean} grouped True if part of a group of multiple issues, false if singular.
+	 * @property {Icon} icon
 	 */
 	/**
 	 * @typedef {Object} IssueSummary
-	 * @prop {PageIssue} issue
-	 * @prop {jQuery.Object} $el where the issue was extracted from
-	 * @prop {string} iconString a string representation of icon.
+	 * @property {PageIssue} issue
+	 * @property {jQuery.Object} $el where the issue was extracted from
+	 * @property {string} iconString a string representation of icon.
 	 *  This is kept for template compatibility (our views do not yet support composition).
-	 * @prop {string} text HTML string.
-	*/
+	 * @property {string} text HTML string.
+	 */
 
 	var Icon = M.require( 'mobile.startup' ).Icon,
 		// Icons are matching the type selector below use a TYPE_* icon. When unmatched, the icon is
@@ -175,6 +175,8 @@
 			grouped: parseGroup( box ),
 			icon: new Icon( {
 				glyphPrefix: 'minerva',
+				// Only applies to the page issues overlay
+				additionalClassNames: 'mw-ui-icon-flush-top',
 				name: iconName( box, severity )
 			} )
 		};
@@ -183,6 +185,7 @@
 	/**
 	 * Extract a summary message from a cleanup template generated element that is
 	 * friendly for mobile display.
+	 *
 	 * @param {Object} $box element to extract the message from
 	 * @return {IssueSummary}
 	 */
@@ -212,9 +215,6 @@
 		};
 	}
 
-	/**
-	 * @module skins.minerva.scripts/utils
-	 */
 	module.exports = {
 		extract: extract,
 		parse: parse,
@@ -227,4 +227,5 @@
 		}
 	};
 
+// eslint-disable-next-line no-restricted-properties
 }( mw.mobileFrontend ) );

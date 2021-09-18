@@ -9,6 +9,7 @@ use MediaWiki\Minerva\Permissions\MinervaPagePermissions;
 use MediaWiki\Minerva\SkinOptions;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWikiTestCase;
+use RequestContext;
 use Title;
 use User;
 
@@ -27,13 +28,7 @@ class MinervaPagePermissionsTest extends MediaWikiTestCase {
 		$hasOtherLanguagesOrVariants = false,
 		$alwaysShowLanguageButton = true
 	) {
-		$languageHelper = $this->getMock(
-			LanguagesHelper::class,
-			[ 'doesTitleHasLanguagesOrVariants' ],
-			[],
-			'',
-			false
-		);
+		$languageHelper = $this->createMock( LanguagesHelper::class );
 		$languageHelper->expects( $this->any() )
 			->method( 'doesTitleHasLanguagesOrVariants' )
 			->willReturn( $hasOtherLanguagesOrVariants );
@@ -52,20 +47,21 @@ class MinervaPagePermissionsTest extends MediaWikiTestCase {
 			$skinOptions->setMultiple( $options );
 		}
 
-		return new MinervaPagePermissions(
-			$title,
-			new \HashConfig( [
-				'MinervaPageActions' => $actions,
-				'MinervaAlwaysShowLanguageButton' => $alwaysShowLanguageButton
-			] ),
-			$user,
+		$context = new RequestContext();
+		$context->setTitle( $title );
+		$context->setConfig( new \HashConfig( [
+			'MinervaPageActions' => $actions,
+			'MinervaAlwaysShowLanguageButton' => $alwaysShowLanguageButton
+		] ) );
+		$context->setUser( $user );
+
+		return ( new MinervaPagePermissions(
 			$skinOptions,
-			$contentHandler,
 			$languageHelper,
 			$this->getMockBuilder( PermissionManager::class )
 				->disableOriginalConstructor()
 				->getMock()
-		);
+		) )->setContext( $context, $contentHandler );
 	}
 
 	/**
@@ -196,7 +192,7 @@ class MinervaPagePermissionsTest extends MediaWikiTestCase {
 		$minervaAlwaysShowLanguageButton,
 		$expected
 	) {
-		$title = $this->getMock( Title::class, [ 'isMainPage' ] );
+		$title = $this->createMock( Title::class );
 		$title->expects( $this->once() )
 			->method( 'isMainPage' )
 			->willReturn( false );
@@ -243,7 +239,7 @@ class MinervaPagePermissionsTest extends MediaWikiTestCase {
 	 * @covers ::isAllowed
 	 */
 	public function testCannotWatchNotWatchableTitle() {
-		$title = $this->getMock( Title::class, [ 'isMainPage', 'isWatchable' ] );
+		$title = $this->createMock( Title::class );
 		$title->expects( $this->once() )
 			->method( 'isMainPage' )
 			->willReturn( false );
@@ -252,7 +248,7 @@ class MinervaPagePermissionsTest extends MediaWikiTestCase {
 			->willReturn( false );
 
 		$permissions = $this->buildPermissionsObject( $title );
-		$this->assertEquals( false, $permissions->isAllowed( IMinervaPagePermissions::WATCH ) );
+		$this->assertFalse( $permissions->isAllowed( IMinervaPagePermissions::WATCH ) );
 	}
 
 }
