@@ -8,7 +8,7 @@
 	"action-masseditregex": "eseguire una modifica in massa",
 	"masseditregex": "Modifiche in massa utilizzando le espressioni regolari",
 	"masseditregex-desc": "Consente di utilizzare le espressioni regolari per [[Special:MassEditRegex|modificare molte pagine con una sola operazione]]",
-	"masseditregextext": "Inserire una o più espressioni regolari (uno per riga) per la corrispondenza e una o più espressioni con cui sostituire ogni corrispondenza.\nLa prima espressione di corrispondenza, se avrà successo, sarà sostituito con la prima espressione di sostituzione e così via.\nPer dettagli, vedere [http://php.net/manual/en/function.preg-replace.php il PHP funzione preg_replace()].",
+	"masseditregextext": "Inserire una o più espressioni regolari (uno per riga) per la corrispondenza e una o più espressioni con cui sostituire ogni corrispondenza.\nLa prima espressione di corrispondenza, se avrà successo, sarà sostituito con la prima espressione di sostituzione e così via.\nPer dettagli, vedi [https://php.net/function.preg-replace la funzione PHP preg_replace()].",
 	"masseditregex-pagelisttxt": "Pagine da modificare:",
 	"masseditregex-matchtxt": "Cerca per:",
 	"masseditregex-replacetxt": "Sostituisci con:",

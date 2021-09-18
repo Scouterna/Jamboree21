@@ -1,5 +1,7 @@
 {
-	"@metadata": [],
+	"@metadata": {
+		"authors": []
+	},
 	"masseditregex-matchtxt": "Najít:",
 	"masseditregex-replacetxt": "Nahradit za:",
 	"masseditregex-before": "Před",

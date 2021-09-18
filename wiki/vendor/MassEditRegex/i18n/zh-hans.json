@@ -1,19 +1,20 @@
 {
 	"@metadata": {
 		"authors": [
+			"Duolaimi",
+			"Hudafu",
 			"Hydra",
+			"Liuxinyu970226",
 			"Qiyue2001",
 			"Xiaomingyan",
 			"Yfdyh000",
-			"Liuxinyu970226",
-			"Duolaimi",
-			"Hudafu"
+			"沈澄心"
 		]
 	},
 	"action-masseditregex": "执行批量编辑",
 	"masseditregex": "使用正则表达式进行批量编辑",
 	"masseditregex-desc": "允许使用正则表达式[[Special:MassEditRegex|一次编辑多个页面]]",
-	"masseditregextext": "请输入一个或多个正则表达式以供匹配（每行一个），并输入一个或多个表达式以替换匹配的内容。\n首个匹配表达式若成功，将使用首个替换表达式替换，以此类推。\n参看[http://php.net/manual/en/function.preg-replace.php PHP的preg_replace()函数]了解细节。",
+	"masseditregextext": "请输入一个或多个正则表达式以供匹配（每行一个），并输入一个或多个表达式以替换匹配的内容。\n首个匹配表达式若成功，将使用首个替换表达式替换，以此类推。\n参看[https://php.net/function.preg-replace the PHP function preg_replace() PHP的preg_replace()函数]了解细节。",
 	"masseditregex-extensionname": "使用正则表达式进行批量编辑",
 	"masseditregex-pagelisttxt": "要编辑的页面：",
 	"masseditregex-matchtxt": "查找：",

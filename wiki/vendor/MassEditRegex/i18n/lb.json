@@ -29,7 +29,7 @@
 	"masseditregex-listtype-categories": "Kategoriennimm (all Säit an dëse Kategorien änneren)",
 	"masseditregex-listtype-backlinks": "Linken heihinn (Säiten änneren déi op dës linken)",
 	"masseditregex-exprnomatch": "Den Ausdrock \"$1\" huet keng Resultater erginn.",
-	"masseditregex-editfailed": "Feeler beim änneren:",
+	"masseditregex-editfailed": "Feeler beim Änneren:",
 	"masseditregex-tooltip-execute": "Dës Ännerungen op all Säit uwenden",
 	"masseditregex-editall": "All änneren",
 	"masseditregex-norevisions": "Keng Versioune fonnt fir z'änneren",
@@ -40,5 +40,5 @@
 	"masseditregex-js-pagenotexist": "$1 gëtt et net",
 	"masseditregex-js-mwapi-api-error": "Feeler: MediaWiki API huet de Feelercode $1 zréckginn: $2",
 	"masseditregex-js-mwapi-general-error": "Feeler: Onbe kannt Resultat vu MediaWiki API",
-	"masseditregex-js-mwapi-unknown-error": "Feeler: Onbekannte Feeler während enger Ufro un de MediaWiki-API"
+	"masseditregex-js-mwapi-unknown-error": "Feeler: Onbekannte Feeler wärend enger Ufro un der MediaWiki-API"
 }

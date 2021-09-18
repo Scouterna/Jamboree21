@@ -13,7 +13,7 @@
 	"action-masseditregex": "eine Sammelbearbeitung mithilfe regulärer Ausdrücke durchzuführen",
 	"masseditregex": "Sammelbearbeitung mithilfe regulärer Ausdrücke",
 	"masseditregex-desc": "Ermöglicht die Nutzung regulärer Ausdrücke zur [[Special:MassEditRegex|gesammelten Bearbeitung vieler Seiten]]",
-	"masseditregextext": "Gib einen oder mehrere reguläre Ausdrücke (einen pro Zeile) für die Suche sowie einen oder mehrere Ausdrücke (einen pro Zeile) für die Ersetzung im Fall eines Treffers an. Der erste Suchausdruck wird bei Übereinstimmung durch den ersten Ersatzausdruck ersetzt, und so weiter. Siehe hierzu auch die Dokumentation der [http://php.net/manual/de/function.preg-replace.php PHP-Funktion <code>preg_replace ()</code>] für weitere Einzelheiten.",
+	"masseditregextext": "Gib einen oder mehrere reguläre Ausdrücke (einen pro Zeile) für die Suche sowie einen oder mehrere Ausdrücke (einen pro Zeile) für die Ersetzung im Fall eines Treffers an. Der erste Suchausdruck wird bei Übereinstimmung durch den ersten Ersatzausdruck ersetzt, und so weiter. Siehe hierzu auch die Dokumentation der [https://php.net/function.preg-replace PHP-Funktion <code>preg_replace ()</code>] für weitere Einzelheiten.",
 	"masseditregex-extensionname": "MassEditRegex",
 	"masseditregex-pagelisttxt": "Zu bearbeitende Seiten:",
 	"masseditregex-matchtxt": "Suchen nach:",

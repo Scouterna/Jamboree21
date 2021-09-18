@@ -18,69 +18,17 @@
  * @license GPL-2.0-or-later
  */
 
-// Ensure that the script cannot be executed outside of MediaWiki
-if ( !defined( 'MEDIAWIKI' ) ) {
-   die( 'This is an extension to MediaWiki and cannot be run standalone.' );
+if ( function_exists( 'wfLoadExtension' ) ) {
+	wfLoadExtension( 'MassEditRegex' );
+	// Keep i18n globals so mergeMessageFileList.php doesn't break
+	$wgMessagesDirs['MassEditRegex'] = __DIR__ . '/i18n';
+	$wgExtensionMessagesFiles['MassEditRegexAlias'] = __DIR__ . '/MassEditRegex.alias.php';
+	wfWarn(
+		'Deprecated PHP entry point used for the MassEditRegex extension. ' .
+		'Please use wfLoadExtension instead, ' .
+		'see https://www.mediawiki.org/wiki/Extension_registration for more details.'
+	);
+	return;
+} else {
+	die( 'This version of the MassEditRegex extension requires MediaWiki 1.25+' );
 }
-
-// Register extension with MediaWiki
-$wgExtensionCredits['specialpage'][] = [
-	'path' => __FILE__,
-	'name' => 'MassEditRegex',
-	'namemsg' => 'masseditregex-extensionname',
-	'version' => '8.3.0',
-	'author' => [
-		'Adam Nielsen',
-		'...'
-		],
-	'url' => 'https://www.mediawiki.org/wiki/Extension:MassEditRegex',
-	'descriptionmsg' => 'masseditregex-desc',
-	'license-name' => 'GPL-2.0-or-later'
-];
-
-// Register extension messages and other localisation
-$wgMessagesDirs['MassEditRegex'] = __DIR__ . '/i18n';
-$wgExtensionMessagesFiles['MassEditRegexAlias'] = __DIR__ . '/MassEditRegex.alias.php';
-
-// Register extension classes
-$wgAutoloadClasses['MassEditRegex'] = __DIR__ . '/MassEditRegex.class.php';
-$wgAutoloadClasses['MassEditRegexSpecialPage'] = __DIR__ . '/MassEditRegex.special.php';
-$wgAutoloadClasses['MassEditRegexAPI'] = __DIR__ . '/MassEditRegex.api.php';
-
-// Register special page into MediaWiki
-$wgSpecialPages['MassEditRegex'] = 'MassEditRegexSpecialPage';
-
-// Create new right to use Special:MassEditRegex
-$wgAvailableRights[] = 'masseditregex';
-
-// Register hooks
-$wgHooks['SkinTemplateNavigation::Universal'][] = 'MassEditRegexSpecialPage::efSkinTemplateNavigationUniversal';
-$wgHooks['BaseTemplateToolbox'][] = 'MassEditRegexSpecialPage::efBaseTemplateToolbox';
-
-// Register ResourcesLoaderModules
-$wgResourceModules['MassEditRegex'] = [
-	'position' => 'top',
-	'scripts' => [
-		'MassEditRegex.js'
-	],
-	'dependencies' => [
-		'mediawiki.jqueryMsg',
-		'jquery.ui.dialog'
-	],
-	'group' => 'MassEditRegex',
-	'localBasePath' => __DIR__,
-	'remoteExtPath' => 'MassEditRegex',
-	'messages' => [
-		'masseditregex-js-execution',
-		'masseditregex-js-jobdone',
-		'masseditregex-num-changes',
-		'masseditregex-js-working',
-		'masseditregex-js-pagenotexist',
-		'masseditregex-js-mwapi-api-error',
-		'masseditregex-js-mwapi-general-error',
-		'masseditregex-js-mwapi-unknown-error',
-	]
-];
-
-// AJAX
-$wgAjaxExportList[] = 'MassEditRegexAPI::edit';

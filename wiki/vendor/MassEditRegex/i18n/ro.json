@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Andreyyshore",
 			"Firilacroco",
 			"Stelistcristi"
 		]
@@ -13,5 +14,5 @@
 	"masseditregex-hint-headmatch": "Potrivire",
 	"masseditregex-hint-headreplace": "Înlocuiește",
 	"masseditregex-hint-headeffect": "Efect",
-	"masseditregex-editfailed": "Editare eşuată"
+	"masseditregex-editfailed": "Editare eșuată:"
 }

@@ -1,20 +1,21 @@
 {
 	"@metadata": {
 		"authors": [
+			"Element303",
 			"Gomoko",
 			"IAlex",
 			"Peter17",
 			"PieRRoMaN",
 			"Quentinv57",
 			"Urhixidur",
-			"Zetud",
-			"Element303"
+			"Wladek92",
+			"Zetud"
 		]
 	},
 	"action-masseditregex": "effectuer une modification en masse",
 	"masseditregex": "Modification en masse à l'aide des expressions rationnelles",
 	"masseditregex-desc": "Permet d’utiliser des expressions rationnelles pour [[Special:MassEditRegex|modifier de nombreuses pages en une opération]]",
-	"masseditregextext": "Entrer une ou plusieurs expressions rationnelles (une par ligne) à rechercher, et une ou plusieurs expressions par lesquelles remplacer les résultats. La première expression trouvée sera remplacée par la première expression de remplacement, et ainsi de suite. Voir la description de la [http://php.net/manual/en/function.preg-replace.php fonction PHP preg_replace()] pour plus de détails.",
+	"masseditregextext": "Entrer une ou plusieurs expressions régulières (une par ligne) à rechercher, et une ou plusieurs expressions par lesquelles remplacer les résultats. \nLa première expression trouvée sera remplacée par la première expression de remplacement, et ainsi de suite. \nVoir la description de la [https://php.net/function.preg-replace fonction PHP preg_replace()] pour plus de détails.",
 	"masseditregex-extensionname": "Modification en masse via des expressions rationnelles",
 	"masseditregex-pagelisttxt": "Pages à modifier :",
 	"masseditregex-matchtxt": "Rechercher :",

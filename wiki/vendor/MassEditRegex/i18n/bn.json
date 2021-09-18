@@ -1,19 +1,23 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aftabuzzaman",
 			"Wikitanvir",
-			"Aftabuzzaman"
+			"আফতাবুজ্জামান"
 		]
 	},
+	"action-masseditregex": "গণ সম্পাদনা করার",
 	"masseditregex": "রেগুলার এক্সপ্রেশন ব্যবহার করে গণ সম্পাদনা",
 	"masseditregex-extensionname": "রেগুলার এক্সপ্রেশনের সাহায্যে গণ সম্পাদনা",
 	"masseditregex-matchtxt": "অনুসন্ধান:",
 	"masseditregex-replacetxt": "যা দিয়ে প্রতিস্থাপিত হবে:",
-	"masseditregex-executebtn": "এক্সকিউট",
+	"masseditregex-executebtn": "কার্যকর করুন",
 	"masseditregex-err-nopages": "আপনাকে অবশ্যই পরিবর্তনের জন্য কমপক্ষে একটি পাতা নির্বাচন করতে হবে।",
 	"masseditregex-before": "পূর্বে",
 	"masseditregex-after": "পরে",
-	"masseditregex-view-full-summary": "সম্পূর্ণ সম্পাদনা সারাংশ পরিদর্শন",
+	"masseditregex-num-changes": "$1: $2টি {{PLURAL:$2|পরিবর্তন}}",
+	"masseditregex-num-articles-changed": "$1টি {{PLURAL:$1|পাতা}} সম্পাদিত হয়েছে",
+	"masseditregex-view-full-summary": "সম্পূর্ণ সম্পাদনা সারাংশ দেখুন",
 	"masseditregex-hint-headmatch": "সাদৃশ্য",
 	"masseditregex-hint-headreplace": "প্রতিস্থাপিত",
 	"masseditregex-hint-headeffect": "প্রভাব",
@@ -21,5 +25,9 @@
 	"masseditregex-listtype-pagenames": "পাতার নাম (এই পাতাগুলি সম্পাদনা করুন)",
 	"masseditregex-badregex": "ত্রুটিপূর্ণ রিজেক্স:",
 	"masseditregex-editfailed": "সম্পাদনা ব্যর্থ:",
-	"masseditregex-tooltip-execute": "প্রতিটি পাতায় এই পরিবর্তন প্রয়োগ করো"
+	"masseditregex-tooltip-execute": "প্রতিটি পাতায় এই পরিবর্তন প্রয়োগ করো",
+	"masseditregex-editall": "সব সম্পাদনা করুন",
+	"masseditregex-js-jobdone": "সম্পন্ন",
+	"masseditregex-js-working": "প্রক্রিয়াকরণ হচ্ছে... ($1টি বাকি)",
+	"masseditregex-js-pagenotexist": "$1 পাতাটির অস্তিত্ব নেই।"
 }

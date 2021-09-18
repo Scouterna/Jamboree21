@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Abbas dhothar",
 			"BukhariSaeed"
 		]
 	},
-	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|تبدیلی|تبدیلیاں}}"
+	"masseditregex-replacetxt": "ایہدے نال بدلو:",
+	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|تبدیلی|تبدیلیاں}}",
+	"masseditregex-hint-headreplace": "نوں تبدیل"
 }

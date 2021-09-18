@@ -1,5 +1,14 @@
 <?php
+
 class MassEditRegexAPI {
+	/**
+	 * @param int $pageid
+	 * @param string $search
+	 * @param string $replace
+	 * @param string $summary
+	 *
+	 * @return string|false
+	 */
 	public static function edit( $pageid, $search, $replace, $summary ) {
 		$massEditRegex = new MassEditRegex( $search, $replace, $summary );
 

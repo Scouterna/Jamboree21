@@ -27,9 +27,9 @@ class MassEditRegex {
 	private $user;
 
 	/**
-	 * @param $search string newline delimited string of search regexes
-	 * @param $replace string newline delimited string of replacements
-	 * @param $summary string
+	 * @param string $search newline delimited string of search regexes
+	 * @param string $replace newline delimited string of replacements
+	 * @param string $summary
 	 * @param User|null $user
 	 */
 	function __construct( $search, $replace, $summary, \User $user = null ) {
@@ -47,10 +47,9 @@ class MassEditRegex {
 	 * @param Title $title
 	 *   Page to alter
 	 *
-	 * @return number of changes performed on given title
+	 * @return int number of changes performed on given title
 	 */
 	public function editPage( \Title $title ) {
-		$article = new Article( $title );
 		$rev = $this->getRevision( $title );
 		$content = $this->getContent( $rev );
 		$curText = $content->getNativeData();
@@ -58,9 +57,12 @@ class MassEditRegex {
 
 		if ( strcmp( $curText, $newText ) != 0 ) {
 			$newContent = new WikitextContent( $newText );
-			$article->doEditContent( $newContent, $this->summary,
+			WikiPage::factory( $title )->doEditContent(
+				$newContent,
+				$this->summary,
 				EDIT_UPDATE | EDIT_FORCE_BOT | EDIT_DEFER_UPDATES,
-				$rev->getId() );
+				$rev->getId()
+			);
 		}
 
 		return $changes;
@@ -91,8 +93,8 @@ class MassEditRegex {
 	/**
 	 * Main regex transform function.
 	 *
-	 * @param $input
-	 * @return mixed
+	 * @param string $input
+	 * @return array
 	 * @throws MWException
 	 */
 	private function replaceText( $input ) {
@@ -112,8 +114,7 @@ class MassEditRegex {
 				$input = $result;
 			} else {
 				throw new MWException( wfMessage( 'masseditregex-badregex' )->text()
-					. ' <b>' . htmlspecialchars( $strMatch ) . '</b>',
-					'masseditregex-badregex' );
+					. ' <b>' . htmlspecialchars( $strMatch ) . '</b>' );
 			}
 		}
 		return [ $input, $changes ];
@@ -133,11 +134,10 @@ class MassEditRegex {
 	}
 
 	/**
-	 * @param $rev
-	 * @return mixed
+	 * @param Revision $rev
+	 * @return Content
 	 * @throws PermissionsError
 	 */
-
 	private function getContent( $rev ) {
 		$content = $rev->getContent( Revision::FOR_THIS_USER, $this->user );
 		if ( !$content ) {
@@ -192,7 +192,7 @@ class MassEditRegex {
 	 * @param \User|null $user
 	 */
 	public function setUser( $user = null ) {
-		if ( is_null( $user ) ) {
+		if ( $user === null ) {
 			$user = User::newFromSession();
 		}
 		$this->user = $user;

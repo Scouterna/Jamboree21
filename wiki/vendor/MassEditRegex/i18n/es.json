@@ -1,23 +1,24 @@
 {
 	"@metadata": {
 		"authors": [
+			"ArenaL5",
 			"Armando-Martin",
+			"Awesomecat5",
 			"Crazymadlover",
 			"Dferg",
+			"Fitoschido",
+			"Indiralena",
+			"JasterTDC",
+			"Macofe",
 			"MarcoAurelio",
 			"Ovruni",
-			"Translationista",
-			"JasterTDC",
-			"Fitoschido",
-			"Macofe",
-			"Awesomecat5",
-			"Indiralena"
+			"Translationista"
 		]
 	},
 	"action-masseditregex": "realizar ediciones en bloque",
 	"masseditregex": "Edición en masa usando expresiones regulares",
 	"masseditregex-desc": "Permite usar expresiones regulares para [[Special:MassEditRegex|editar varias páginas en una sola operación]]",
-	"masseditregextext": "Escribe una o más expresiones regulares (una por renglón) para realizar coincidencias, y una o más expresiones con las que sustituir cada coincidencia.\nSi se realiza correctamente, la primera expresión de coincidencia se reemplazará por la primera expresión de sustitución, y así sucesivamente.\nPara obtener más detalles, consulta [http://php.net/manual/es/function.preg-replace.php la función PHPpreg_replace()].",
+	"masseditregextext": "Escribe una o más expresiones regulares (una por renglón) para realizar coincidencias, y una o más expresiones con las que sustituir cada coincidencia.\nSi se realiza correctamente, la primera expresión de coincidencia se reemplazará por la primera expresión de sustitución, y así sucesivamente.\nPara obtener más detalles, consulta [https://php.net/function.preg-replace la función PHPpreg_replace()].",
 	"masseditregex-extensionname": "Edición en masa mediante expresiones regulares",
 	"masseditregex-pagelisttxt": "Páginas a editar:",
 	"masseditregex-matchtxt": "Buscar:",

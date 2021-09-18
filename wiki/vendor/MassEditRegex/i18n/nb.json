@@ -2,14 +2,15 @@
 	"@metadata": {
 		"authors": [
 			"Event",
-			"Nghtwlkr",
-			"Jon Harald Søby"
+			"Jon Harald Søby",
+			"Nghtwlkr"
 		]
 	},
 	"action-masseditregex": "utfør en masseredigering",
 	"masseditregex": "Masseredigering ved bruk av regulære uttrykk",
 	"masseditregex-desc": "Gjør det mulig å bruke regulære uttrykk til å [[Special:MassEditRegex|redigere mange sider på én gang]]",
-	"masseditregextext": "Skriv inn ett eller fler regulære uttrykk (en per linje) for treff, og ett eller flere uttrykk å erstatte hvert treff med.\nDet første treff-uttrykket, om vellykket, vil bli erstattet med det første erstatt-uttrykket, og så videre.\nSe [http://php.net/manual/en/function.preg-replace.php PHP-funksjonen preg_replace()] for detaljer.",
+	"masseditregextext": "Skriv inn ett eller fler regulære uttrykk (en per linje) for treff, og ett eller flere uttrykk å erstatte hvert treff med.\nDet første treff-uttrykket, om vellykket, vil bli erstattet med det første erstatt-uttrykket, og så videre.\nSe [http://php.net/function.preg-replace.php PHP-funksjonen preg_replace()] for detaljer.",
+	"masseditregex-extensionname": "Masseredigering via regulære uttrykk",
 	"masseditregex-pagelisttxt": "Sider å redigere:",
 	"masseditregex-matchtxt": "Søk etter:",
 	"masseditregex-replacetxt": "Erstatt med:",

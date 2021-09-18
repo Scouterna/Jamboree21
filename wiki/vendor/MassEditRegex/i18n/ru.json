@@ -2,12 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Eleferen",
+			"Facenapalm",
 			"Kaganer",
 			"Okras",
 			"Rubin",
 			"Rubin16",
-			"Александр Сигачёв",
-			"Facenapalm"
+			"Александр Сигачёв"
 		]
 	},
 	"action-masseditregex": "выполнить массовое изменение",

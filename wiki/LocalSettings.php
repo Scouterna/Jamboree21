@@ -185,7 +185,7 @@ wfLoadExtension( 'MobileFrontend' );
 wfLoadExtension( 'Auth_remoteuser' );
 
 # install masseditregex
-require_once "$IP/extensions/MassEditRegex/MassEditRegex.php";
+wfLoadExtension( 'MassEditRegex' );
 $wgGroupPermissions['masseditregexeditor']['masseditregex'] = true;
 $wgGroupPermissions['sysop']['masseditregex'] = true;
 
