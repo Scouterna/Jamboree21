@@ -69,11 +69,16 @@ spec:
           name: wiki
           volumeMounts:
             - mountPath: /var/www/html/images
+              name: imagedisk
+            - mountPath: /var/www/data
               name: images
       volumes:
         - name: images
           persistentVolumeClaim:
             claimName: wikiimages
+        - name: imagedisk
+          persistentVolumeClaim:
+            claimName: wikiimagedisk
 ---
 apiVersion: apps/v1
 kind: Deployment
