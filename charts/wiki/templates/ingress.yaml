@@ -8,38 +8,22 @@ metadata:
   name: mediawiki
 spec:
   rules:
-  - host: {{ .Values.domain }}
+  {{ range .Values.domains }}
+  - host: {{ . }}
     http:
-      paths:
-      - backend:
-          serviceName: parsoid
-          servicePort: 8142
-        path: /parsoid
-      - backend:
-          serviceName: mediawiki
-          servicePort: 80
-        path: /
-    {{ if .Values.ingress.extraHostNames }}
-    {{ range .Values.ingress.extraHostNames }}
-    - host: {{ . }}
-      http:
-      - backend:
-          serviceName: parsoid
-          servicePort: 8142
-        path: /parsoid
-      - backend:
-          serviceName: mediawiki
-          servicePort: 80
-        path: /
-    {{- end }}
-    {{- end }}
+    - backend:
+        serviceName: parsoid
+        servicePort: 8142
+      path: /parsoid
+    - backend:
+        serviceName: mediawiki
+        servicePort: 80
+      path: /
+  {{- end }}
   tls:
   - hosts:
-    - {{ .Values.domain }}
-    {{ if .Values.ingress.extraHostNames }}
-    {{ range .Values.ingress.extraHostNames }}
+    {{ range .Values.domains }}
     - {{ . }}
-    {{- end }}
     {{- end }}
     secretName: wiki-tls
 ---
