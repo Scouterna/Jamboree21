@@ -23,3 +23,15 @@ spec:
     requests:
       storage: {{ .Values.storage.images.capacity | default "1Gi" }}
   storageClassName: {{ .Values.storage.images.className | default "azurefile" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations: {}
+  name: wikiimagedisk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.images.capacity | default "1Gi" }}

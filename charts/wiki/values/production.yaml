@@ -5,4 +5,4 @@ storage:
   data:
     capacity: 16Gi
   images:
-    capacity: 1Gi
+    capacity: 32Gi
