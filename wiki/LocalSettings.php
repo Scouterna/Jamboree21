@@ -235,3 +235,6 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
 
 # Load SMW
 enableSemantics(getenv('MEDIAWIKI_BASE_URL'));
+
+# Test upload file size
+$wgMaxUploadSize = 1024*1024*100;
