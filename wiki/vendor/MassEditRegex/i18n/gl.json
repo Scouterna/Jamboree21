@@ -1,12 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Toliño",
-			"Fisterraeomar",
 			"Banjo",
 			"Elisardojm",
-			"Navhy",
-			"Iváns"
+			"Fisterraeomar",
+			"Iváns",
+			"Toliño"
 		]
 	},
 	"action-masseditregex": "realizar edicións en masa",

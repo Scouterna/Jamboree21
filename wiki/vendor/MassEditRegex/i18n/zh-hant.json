@@ -1,18 +1,18 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cwlin0416",
+			"Kly",
+			"LNDDYL",
 			"Mark85296341",
 			"Simon Shek",
-			"Cwlin0416",
-			"LNDDYL",
-			"Wwycheuk",
-			"Kly"
+			"Wwycheuk"
 		]
 	},
 	"action-masseditregex": "執行批次編輯",
 	"masseditregex": "使用正規表示法進行批次編輯",
 	"masseditregex-desc": "允許使用正規表示法來[[Special:MassEditRegex|一次編輯多個頁面]]",
-	"masseditregextext": "輸入一個或多個正規表示法 (一筆一行) 用來進行比對，並輸入一筆或多筆表示法用來取代符合的資料。\n若符合第一個比對的表示法，將會使用第一個取代表示法取代，並以此類推。\n請參考 [http://php.net/manual/en/function.preg-replace.php the PHP function preg_replace()] 取得詳細資料。",
+	"masseditregextext": "輸入一個或多個正規表示法 (一筆一行) 用來進行比對，並輸入一筆或多筆表示法用來取代符合的資料。\n若符合第一個比對的表示法，將會使用第一個取代表示法取代，並以此類推。\n請參考 [https://php.net/function.preg-replace PHP 函式 preg_replace()] 取得詳細資料。",
 	"masseditregex-pagelisttxt": "要編輯的頁面：",
 	"masseditregex-matchtxt": "搜尋：",
 	"masseditregex-replacetxt": "取代為：",

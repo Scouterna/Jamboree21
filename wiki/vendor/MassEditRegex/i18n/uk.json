@@ -2,15 +2,16 @@
 	"@metadata": {
 		"authors": [
 			"Andriykopanytsia",
-			"Тест",
+			"Dars",
+			"Piramidion",
 			"Ата",
-			"Dars"
+			"Тест"
 		]
 	},
-	"action-masseditregex": "виконати масове редагування",
+	"action-masseditregex": "виконання масових редагувань",
 	"masseditregex": "Масове редагування з допомогою регулярних виразів",
 	"masseditregex-desc": "Дозвіл на використання регулярних виразів до [[Special:MassEditRegex|виправлення багатьох сторінок однією дією]]",
-	"masseditregextext": "Введіть один або декілька регулярних виразів (по одному на рядок) для пошуку відповідностей, а також один або кілька виразів для заміни відповідностей.\nЗбіги для першого виразу, якщо такі знайдуться, будуть замінені на перший вираз для заміни і т. д.\nДетальніше див. [http://php.net/manual/en/function.preg-replace.php опис PHP-функції preg_replace()].",
+	"masseditregextext": "Введіть один або декілька регулярних виразів (по одному на рядок) для пошуку відповідностей, а також один або кілька виразів для заміни відповідностей.\nЗбіги для першого виразу, якщо такі знайдуться, будуть замінені на перший вираз для заміни і т. д.\nДетальніше див. [https://php.net/manual/en/function.preg-replace опис PHP-функції preg_replace()].",
 	"masseditregex-extensionname": "Масове редагування за допомогою регулярних виразів",
 	"masseditregex-pagelisttxt": "Сторінки для редагування:",
 	"masseditregex-matchtxt": "Шукати:",
@@ -42,7 +43,7 @@
 	"masseditregex-editfailed": "Невдале редагування:",
 	"masseditregex-tooltip-execute": "Застосувати ці зміни на кожній сторінці",
 	"masseditregex-editall": "Редагувати все",
-	"right-masseditregex": "Замінити вміст сторінки за допомогою регулярних виразів",
+	"right-masseditregex": "Заміна вмісту сторінок за допомогою регулярних виразів",
 	"masseditregex-noaccess": "У Вас немає доступу до MassEditRegex",
 	"masseditregex-norevisions": "Не знайдено версій для редагування",
 	"masseditregex-blocked": "Ваш обліковий запис користувача заблоковано",

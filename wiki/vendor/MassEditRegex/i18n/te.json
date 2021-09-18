@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Chaduvari",
 			"RanjithSutari",
 			"Veeven"
 		]
@@ -11,5 +12,6 @@
 	"masseditregex-num-changes": "$1: $2 {{PLURAL:$2|మార్పు|మార్పులు}}",
 	"masseditregex-page-not-exists": "$1 లేనే లేదు",
 	"masseditregex-num-articles-changed": "$1 {{PLURAL:$1|పేజీని|పేజీలను}} మార్చారు",
+	"masseditregex-hint-intro": "సర్వసాధారణమైన పనులు ఎలా చెయ్యాలో కొన్ని ఉదాహరణలు చూడండి:",
 	"masseditregex-listtype-pagenames": "పుటల పేర్లు (ఈ పుటలని మార్చండి)"
 }

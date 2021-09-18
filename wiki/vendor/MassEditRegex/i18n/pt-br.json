@@ -2,18 +2,19 @@
 	"@metadata": {
 		"authors": [
 			"Cainamarques",
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad",
+			"Fasouzafreitas",
 			"Giro720",
 			"Luckas",
 			"Luckas Blade",
-			"Fasouzafreitas",
-			"Macofe",
-			"Eduardo Addad de Oliveira"
+			"Macofe"
 		]
 	},
 	"action-masseditregex": "realiza edições em massa",
 	"masseditregex": "Edições em massa usando expressões regulares",
 	"masseditregex-desc": "Permite o uso de expressões regulares para [[Special:MassEditRegex|editar várias páginas numa única operação]]",
-	"masseditregextext": "Introduza uma ou várias (uma por linha) expressões regulares de busca e uma ou várias expressões de troca correspondentes.\nCada ocorrência da primeira expressão-de-busca será substituída pela primeira expressão-de-troca e assim por diante.\nConsulte [http://php.net/manual/en/function.preg-replace.php a função PHP ''preg_replace()''] para mais detalhes.",
+	"masseditregextext": "Introduza uma ou várias (uma por linha) expressões regulares de busca e uma ou várias expressões de troca correspondentes.\nCada ocorrência da primeira expressão-de-busca será substituída pela primeira expressão-de-troca e assim por diante.\nConsulte [https://php.net/function.preg-replace a função PHP ''preg_replace()''] para mais detalhes.",
 	"masseditregex-extensionname": "Edição em massa usando expressões regulares",
 	"masseditregex-pagelisttxt": "Páginas a editar:",
 	"masseditregex-matchtxt": "Expressão-de-busca:",

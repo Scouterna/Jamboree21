@@ -73,6 +73,16 @@ $specialPageAliases['nl'] = [
 	'MassEditRegex' => [ 'BulkRegexBewerken' ],
 ];
 
+/** Serbian Cyrillic (српски (ћирилица)) */
+$specialPageAliases['sr-ec'] = [
+	'MassEditRegex' => [ 'Масовно_уређивање_регуларних_израза' ],
+];
+
+/** Serbian Latin (srpski (latinica)) */
+$specialPageAliases['sr-el'] = [
+	'MassEditRegex' => [ 'Masovno_uređivanje_regularnih_izraza' ],
+];
+
 /** Simplified Chinese (中文（简体）‎) */
 $specialPageAliases['zh-hans'] = [
 	'MassEditRegex' => [ '批量正则编辑' ],

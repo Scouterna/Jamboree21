@@ -1,0 +1,73 @@
+{
+	"name": "MassEditRegex",
+	"namemsg": "masseditregex-extensionname",
+	"version": "8.4.0",
+	"author": [
+		"Adam Nielsen",
+		"..."
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:MassEditRegex",
+	"descriptionmsg": "masseditregex-desc",
+	"license-name": "GPL-2.0-or-later",
+	"type": "specialpage",
+	"requires": {
+		"MediaWiki": ">= 1.29.0"
+	},
+	"AvailableRights": [
+		"masseditregex"
+	],
+	"SpecialPages": {
+		"MassEditRegex": "MassEditRegexSpecialPage"
+	},
+	"MessagesDirs": {
+		"MassEditRegex": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"MassEditRegexAlias": "MassEditRegex.alias.php"
+	},
+	"AutoloadClasses": {
+		"MassEditRegex": "MassEditRegex.class.php",
+		"MassEditRegexSpecialPage": "MassEditRegex.special.php",
+		"MassEditRegexAPI": "MassEditRegex.api.php"
+	},
+	"ResourceModules": {
+		"MassEditRegex": {
+			"scripts": [
+				"MassEditRegex.js"
+			],
+			"dependencies": [
+				"mediawiki.jqueryMsg",
+				"jquery.ui"
+			],
+			"group": "MassEditRegex",
+			"messages": [
+				"masseditregex-js-execution",
+				"masseditregex-js-jobdone",
+				"masseditregex-num-changes",
+				"masseditregex-js-working",
+				"masseditregex-js-pagenotexist",
+				"masseditregex-js-mwapi-api-error",
+				"masseditregex-js-mwapi-general-error",
+				"masseditregex-js-mwapi-unknown-error"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "MassEditRegex"
+	},
+	"Hooks": {
+		"SkinTemplateNavigation::Universal": "MassEditRegexSpecialPage::efSkinTemplateNavigationUniversal",
+		"BaseTemplateToolbox": "MassEditRegexSpecialPage::efBaseTemplateToolbox"
+	},
+	"config": {
+		"AjaxExportList": {
+			"value": [
+				"MassEditRegexAPI::edit"
+			]
+		}
+	},
+	"manifest_version": 2
+}

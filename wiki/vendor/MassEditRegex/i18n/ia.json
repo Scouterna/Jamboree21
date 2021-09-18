@@ -7,7 +7,7 @@
 	"action-masseditregex": "exequer un modification in massa",
 	"masseditregex": "Modification in massa con expressiones regular",
 	"masseditregex-desc": "Permitte usar expressiones regular pro [[Special:MassEditRegex|modificar multe paginas in un sol operation]]",
-	"masseditregextext": "Entra un o plus expressiones regular (un per linea) a cercar, e un o plus expressiones pro reimplaciar cata resultato.\nLe prime expression a cercar, si trovate, essera reimplaciate per le prime expression de reimplaciamento, et cetera.\nVide [http://php.net/manual/en/function.preg-replace.php le function PHP preg_replace()] pro detalios.",
+	"masseditregextext": "Insere un o plus expressiones regular a cercar (un per linea), e un o plus expressiones per le quales reimplaciar cata resultato.\nLe prime expression a cercar, si trovate, essera reimplaciate per le prime expression de reimplaciamento, et cetera.\nVide [https://php.net/function.preg-replace le function PHP preg_replace()] pro detalios.",
 	"masseditregex-pagelisttxt": "Paginas a modificar:",
 	"masseditregex-matchtxt": "Cercar:",
 	"masseditregex-replacetxt": "Reimplaciar per:",

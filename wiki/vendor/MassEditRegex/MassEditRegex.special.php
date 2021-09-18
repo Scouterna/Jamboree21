@@ -14,23 +14,48 @@
  * @license GPL-2.0-or-later
  */
 
+use MediaWiki\MediaWikiServices;
+
 /// Maximum number of pages/diffs to display when previewing the changes
 define( 'MER_MAX_PREVIEW_DIFFS', 20 );
 
 /// Maximum number of pages to edit.
 define( 'MER_MAX_EXECUTE_PAGES', 1000 );
 
-/** Main class that define a new special page*/
+/** Main class that define a new special page */
 class MassEditRegexSpecialPage extends SpecialPage {
-	private $aPageList;       ///< Array of string - user-supplied page titles
-	private $strPageListType; ///< Type of titles (categories, backlinks, etc.)
-	private $strMatch;        ///< Match regex from form
-	private $strReplace;      ///< Substitution regex from form
-	private $isClientSide;    ///< Is the client-side checkbox ticked?
-	private $sk;              ///< Skin instance
+	/**
+	 * @var string[]|null User-supplied page titles
+	 */
+	private $aPageList;
 
 	/**
-	 * @var \MassEditRegex
+	 * @var string|null Type of titles (categories, backlinks, etc.)
+	 */
+	private $strPageListType;
+
+	/**
+	 * @var string|null Match regex from form
+	 */
+	private $strMatch;
+
+	/**
+	 * @var string|null Substitution regex from form
+	 */
+	private $strReplace;
+
+	/**
+	 * @var bool|null Is the client-side checkbox ticked?
+	 */
+	private $isClientSide;
+
+	/**
+	 * @var Skin|null
+	 */
+	private $sk;
+
+	/**
+	 * @var \MassEditRegex|null
 	 */
 	private $massEditRegex;
 
@@ -90,7 +115,7 @@ class MassEditRegexSpecialPage extends SpecialPage {
 						foreach ( $titles as $title ) {
 							$t = Title::newFromText( $title );
 							if ( !$t ) {
-								$errors[] = wfMessage( 'masseditregex-page-not-exists', $title )->escaped();
+								$errors[] = $this->msg( 'masseditregex-page-not-exists', $title )->escaped();
 							} else {
 								$titleArray[] = $t;
 							}
@@ -161,14 +186,14 @@ class MassEditRegexSpecialPage extends SpecialPage {
 		}
 
 		if ( ( $iArticleCount == 0 ) && empty( $errors ) ) {
-			$errors[] = wfMessage( 'masseditregex-err-nopages' )->escaped();
+			$errors[] = $this->msg( 'masseditregex-err-nopages' )->escaped();
 			// Force a preview if there was nothing to do
 			$isPreview = true;
 		}
 
 		if ( !empty( $errors ) ) {
 			$out->addHTML( '<div class="errorbox">' );
-			$out->addHTML( wfMessage( 'masseditregex-editfailed' )->escaped() );
+			$out->addHTML( $this->msg( 'masseditregex-editfailed' )->escaped() );
 
 			$out->addHTML( '<ul><li>' );
 			$out->addHTML( implode( '</li><li> ', $errors ) );
@@ -185,18 +210,18 @@ class MassEditRegexSpecialPage extends SpecialPage {
 		} else {
 			$out->addWikiMsg( 'masseditregex-num-articles-changed', $iArticleCount );
 			$out->addHTML(
-				Linker::link(
+				Linker::linkKnown(
 					SpecialPage::getSafeTitleFor( 'Contributions', $getuser->getName() ),
-					$this->msg( 'masseditregex-view-full-summary' )->escaped(),
-					[],
-					[],
-					[ 'known' ]
+					$this->msg( 'masseditregex-view-full-summary' )->escaped()
 				)
 			);
 		}
 	}
 
-	/// Display the special page, and run the regexes if a form is being submitted
+	/**
+	 * Display the special page, and run the regexes if a form is being submitted
+	 * @param string|null $par
+	 */
 	public function execute( $par ) {
 		$out = $this->getOutput();
 		$getuser = $this->getUser();
@@ -211,9 +236,7 @@ class MassEditRegexSpecialPage extends SpecialPage {
 		}
 
 		// Show a message if the database is in read-only mode
-		if ( wfReadOnly() ) {
-			throw new ReadOnlyError;
-		}
+		$this->checkReadOnly();
 
 		// If user is blocked, s/he doesn't need to access this page
 		if ( $getuser->isBlocked() ) {
@@ -222,33 +245,35 @@ class MassEditRegexSpecialPage extends SpecialPage {
 
 		$this->outputHeader();
 
-		$wgRequest = $this->getRequest();
-		$strPageList = $wgRequest->getText( 'wpPageList', 'Sandbox' );
+		$request = $this->getRequest();
+		$strPageList = $request->getText( 'wpPageList', 'Sandbox' );
 		$this->aPageList = explode( "\n", trim( $strPageList ) );
-		$this->strPageListType = $wgRequest->getText( 'wpPageListType', 'pagenames' );
+		$this->strPageListType = $request->getText( 'wpPageListType', 'pagenames' );
 
 		$this->sk = $this->getSkin();
 
-		$this->strMatch = $wgRequest->getText( 'wpMatch', '/hello (.*)\n/' );
+		$this->strMatch = $request->getText( 'wpMatch', '/hello (.*)\n/' );
 
-		$this->strReplace = $wgRequest->getText( 'wpReplace', 'goodbye $1' );
+		$this->strReplace = $request->getText( 'wpReplace', 'goodbye $1' );
 
-		$summary = $wgRequest->getText( 'wpSummary', '' );
-		$this->isClientSide = $wgRequest->getVal( 'wpClientSide', false ) == 1;
+		$summary = $request->getText( 'wpSummary', '' );
+		$this->isClientSide = $request->getVal( 'wpClientSide', false ) == 1;
 
 		$this->massEditRegex = new MassEditRegex(
 			$this->strMatch, $this->strReplace, $summary, $getuser
 		);
 
-		if ( $wgRequest->wasPosted() ) {
-			$this->perform( !$wgRequest->getCheck( 'wpSave' ) );
+		if ( $request->wasPosted() ) {
+			$this->perform( !$request->getCheck( 'wpSave' ) );
 		} else {
 			$this->showForm();
 			$this->showHints();
 		}
 	}
 
-	/// Display the form requesting the regexes from the user.
+	/**
+	 * Display the form requesting the regexes from the user.
+	 */
 	function showForm() {
 		$out = $this->getOutput();
 		$getuser = $this->getUser();
@@ -263,14 +288,14 @@ class MassEditRegexSpecialPage extends SpecialPage {
 				'action' => $titleObj->getLocalURL( 'action=submit' )
 			] ) .
 			Xml::element( 'p',
-				null, wfMessage( 'masseditregex-pagelisttxt' )->text()
+				null, $this->msg( 'masseditregex-pagelisttxt' )->text()
 			) .
 			Xml::textarea(
 				'wpPageList',
 				implode( "\n", $this->aPageList )
 			) .
 			Xml::element( 'span',
-				null, wfMessage( 'masseditregex-listtype-intro' )->text()
+				null, $this->msg( 'masseditregex-listtype-intro' )->text()
 			) .
 			Xml::openElement( 'ul', [
 				'style' => 'list-style: none' // don't want any bullets for radio btns
@@ -290,7 +315,7 @@ class MassEditRegexSpecialPage extends SpecialPage {
 				// masseditregex-listtype-pagenames, masseditregex-listtype-pagename-prefixes,
 				// masseditregex-listtype-categories, masseditregex-listtype-backlinks
 				Xml::radioLabel(
-					wfMessage( 'masseditregex-listtype-' . $strValue )->text(),
+					$this->msg( 'masseditregex-listtype-' . $strValue )->text(),
 					'wpPageListType',
 					$strValue,
 					'masseditregex-radio-' . $strValue,
@@ -310,7 +335,7 @@ class MassEditRegexSpecialPage extends SpecialPage {
 			] ) .
 				Xml::openElement( 'tr' ) .
 					Xml::openElement( 'td' ) .
-						Xml::element( 'p', null, wfMessage( 'masseditregex-matchtxt' )->text() ) .
+						Xml::element( 'p', null, $this->msg( 'masseditregex-matchtxt' )->text() ) .
 						Xml::textarea(
 							'wpMatch',
 							$this->strMatch  // use original value
@@ -318,7 +343,7 @@ class MassEditRegexSpecialPage extends SpecialPage {
 						Xml::closeElement( 'textarea' ) .
 					Xml::closeElement( 'td' ) .
 					Xml::openElement( 'td' ) .
-						Xml::element( 'p', null, wfMessage( 'masseditregex-replacetxt' )->text() ) .
+						Xml::element( 'p', null, $this->msg( 'masseditregex-replacetxt' )->text() ) .
 						Xml::textarea(
 							'wpReplace',
 							$this->strReplace  // use original value
@@ -342,7 +367,7 @@ class MassEditRegexSpecialPage extends SpecialPage {
 				],
 				Xml::tags( 'label', [
 					'for' => 'wpSummary'
-				], wfMessage( 'summary' )->escaped() )
+				], $this->msg( 'summary' )->escaped() )
 			) . ' ' .
 
 			Xml::input( 'wpSummary',
@@ -364,21 +389,23 @@ class MassEditRegexSpecialPage extends SpecialPage {
 
 			// Display the preview + execute buttons
 			Xml::element( 'input', [
-				'id'        => 'wpSave',
-				'name'      => 'wpSave',
-				'type'      => 'submit',
-				'value'     => wfMessage( 'masseditregex-executebtn' )->text(),
-				'accesskey' => wfMessage( 'accesskey-save' )->text(),
-				'title'     => wfMessage( 'masseditregex-tooltip-execute' )->text() . ' [' . wfMessage( 'accesskey-save' )->text() . ']',
+				'id' => 'wpSave',
+				'name' => 'wpSave',
+				'type' => 'submit',
+				'value' => $this->msg( 'masseditregex-executebtn' )->text(),
+				'accesskey' => $this->msg( 'accesskey-save' )->text(),
+				'title' => $this->msg( 'masseditregex-tooltip-execute' )->text() .
+					' [' . $this->msg( 'accesskey-save' )->text() . ']',
 			] ) .
 
 			Xml::element( 'input', [
-				'id'        => 'wpPreview',
-				'name'      => 'wpPreview',
-				'type'      => 'submit',
-				'value'     => wfMessage( 'showpreview' )->text(),
-				'accesskey' => wfMessage( 'accesskey-preview' )->text(),
-				'title'     => wfMessage( 'tooltip-preview' )->text() . ' [' . wfMessage( 'accesskey-preview' )->text() . ']',
+				'id' => 'wpPreview',
+				'name' => 'wpPreview',
+				'type' => 'submit',
+				'value' => $this->msg( 'showpreview' )->text(),
+				'accesskey' => $this->msg( 'accesskey-preview' )->text(),
+				'title' => $this->msg( 'tooltip-preview' )->text() .
+					' [' . $this->msg( 'accesskey-preview' )->text() . ']',
 			] ) .
 
 			Xml::tags( 'span',
@@ -386,12 +413,12 @@ class MassEditRegexSpecialPage extends SpecialPage {
 					'style' => 'margin-left: 1em;'
 				],
 				Xml::checkLabel(
-					wfMessage( 'masseditregex-js-clientside' )->text(),
+					$this->msg( 'masseditregex-js-clientside' )->text(),
 					'wpClientSide',
 					'wpClientSide',
 					$this->isClientSide,
 					[
-						'title' => wfMessage( 'masseditregex-js-execution' )->text(),
+						'title' => $this->msg( 'masseditregex-js-execution' )->text(),
 					]
 				)
 			)
@@ -401,13 +428,15 @@ class MassEditRegexSpecialPage extends SpecialPage {
 		$out->addModules( 'MassEditRegex' );
 	}
 
-	/// Show a short table of regex examples.
+	/**
+	 * Show a short table of regex examples.
+	 */
 	function showHints() {
 		$out = $this->getOutput();
 		$getuser = $this->getUser();
 
 		$out->addHTML(
-			Xml::element( 'p', null, wfMessage( 'masseditregex-hint-intro' )->text() )
+			Xml::element( 'p', null, $this->msg( 'masseditregex-hint-intro' )->text() )
 		);
 		$out->addHTML( Xml::buildTable(
 
@@ -416,29 +445,29 @@ class MassEditRegexSpecialPage extends SpecialPage {
 				[
 					'/$/',
 					'abc',
-					wfMessage( 'masseditregex-hint-toappend' )->text()
+					$this->msg( 'masseditregex-hint-toappend' )->text()
 				],
 				[
 					'/$/',
 					'\\n[[Category:New]]',
 					// Since we can't pass "rowspan=2" to the hint text above, we'll
 					// have to display it again
-					wfMessage( 'masseditregex-hint-toappend' )->text()
+					$this->msg( 'masseditregex-hint-toappend' )->text()
 				],
 				[
 					'/{{OldTemplate}}/',
 					'',
-					wfMessage( 'masseditregex-hint-remove' )->text()
+					$this->msg( 'masseditregex-hint-remove' )->text()
 				],
 				[
 					'/\\[\\[Category:[^]]+\]\]/',
 					'',
-					wfMessage( 'masseditregex-hint-removecat' )->text()
+					$this->msg( 'masseditregex-hint-removecat' )->text()
 				],
 				[
 					'/(\\[\\[[^]]*\\|[^]]*)AAA(.*\\]\\])/',
 					'$1BBB$2',
-					wfMessage( 'masseditregex-hint-renamelink' )->text()
+					$this->msg( 'masseditregex-hint-renamelink' )->text()
 				],
 			],
 
@@ -449,15 +478,21 @@ class MassEditRegexSpecialPage extends SpecialPage {
 
 			// Table headings
 			[
-				wfMessage( 'masseditregex-hint-headmatch' )->text(), // really needs width 12em
-				wfMessage( 'masseditregex-hint-headreplace' )->text(), // really needs width 12em
-				wfMessage( 'masseditregex-hint-headeffect' )->text()
+				$this->msg( 'masseditregex-hint-headmatch' )->text(), // really needs width 12em
+				$this->msg( 'masseditregex-hint-headreplace' )->text(), // really needs width 12em
+				$this->msg( 'masseditregex-hint-headeffect' )->text()
 			]
 
 		) ); // Xml::buildTable
 	}
 
-	public static function efSkinTemplateNavigationUniversal( &$sktemplate, &$links ) {
+	/**
+	 * @param SkinTemplate $sktemplate
+	 * @param array[][] &$links
+	 *
+	 * @return true
+	 */
+	public static function efSkinTemplateNavigationUniversal( $sktemplate, &$links ) {
 		$title = $sktemplate->getTitle();
 		$ns = $title->getNamespace();
 
@@ -476,7 +511,14 @@ class MassEditRegexSpecialPage extends SpecialPage {
 			( $ns == NS_SPECIAL )
 			&& ( $title->isSpecial( 'Whatlinkshere' ) )
 		) {
-			$titleParts = SpecialPageFactory::resolveAlias( $title->getText() );
+			if ( class_exists( 'MediaWiki\Special\SpecialPageFactory' ) ) {
+				// MW 1.32+
+				$titleParts = MediaWikiServices::getInstance()
+					->getSpecialPageFactory()
+					->resolveAlias( $title->getText() );
+			} else {
+				$titleParts = SpecialPageFactory::resolveAlias( $title->getText() );
+			}
 
 			$url = SpecialPage::getTitleFor( 'MassEditRegex' )->getLocalURL(
 				[
@@ -498,7 +540,13 @@ class MassEditRegexSpecialPage extends SpecialPage {
 		return true;
 	}
 
-	public static function efBaseTemplateToolbox( &$tpl, &$toolbox ) {
+	/**
+	 * @param BaseTemplate $tpl
+	 * @param array &$toolbox
+	 *
+	 * @return true
+	 */
+	public static function efBaseTemplateToolbox( $tpl, &$toolbox ) {
 		global $wgTitle;
 		if ( !$wgTitle->isSpecial( 'MassEditRegex' ) ) {
 			return true;
@@ -537,6 +585,9 @@ class MassEditRegexSpecialPage extends SpecialPage {
 		}
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	protected function getGroupName() {
 		return 'pagetools';
 	}

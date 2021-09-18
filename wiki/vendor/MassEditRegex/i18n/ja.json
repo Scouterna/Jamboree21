@@ -2,18 +2,19 @@
 	"@metadata": {
 		"authors": [
 			"Fryed-peach",
-			"Shirayuki",
-			"Whym",
-			"青子守歌",
 			"Los688",
+			"Shirayuki",
 			"Sujiniku",
-			"Suyama"
+			"Suyama",
+			"Tmv",
+			"Whym",
+			"青子守歌"
 		]
 	},
 	"action-masseditregex": "一括編集の実行",
 	"masseditregex": "正規表現を使用した大量編集",
 	"masseditregex-desc": "正規表現を使用して[[Special:MassEditRegex|大量のページを一度の操作で編集する]]することを許可",
-	"masseditregextext": "一致用に1つ以上の正規表現 (1行に1つ) と、置換用に1つ以上の正規表現を入力してください。\n1番目の一致用正規表現に一致すると、1番目の置換用正規表現で置換されます。2番目以降も同様です。\n詳細は [http://php.net/manual/ja/function.preg-replace.php PHP 関数 preg_replace()] を参照してください。",
+	"masseditregextext": "1つ以上の一致用正規表現 (1行に1つ) と、1つ以上の置換用正規表現を入力してください。\n最初の一致用正規表現は、もし一致すれば、最初の置換用正規表現で置換されます。2番目以降も同様です。\n詳細は [http://php.net/manual/ja/function.preg-replace.php PHP 関数 preg_replace()] を参照してください。",
 	"masseditregex-pagelisttxt": "編集するページ:",
 	"masseditregex-matchtxt": "一致用:",
 	"masseditregex-replacetxt": "置換用:",
