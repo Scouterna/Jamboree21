@@ -11,14 +11,15 @@ spec:
   {{ range .Values.domains }}
   - host: {{ . }}
     http:
-    - backend:
-        serviceName: parsoid
-        servicePort: 8142
-      path: /parsoid
-    - backend:
-        serviceName: mediawiki
-        servicePort: 80
-      path: /
+      paths:
+      - path: /parsoid
+        backend:
+          serviceName: parsoid
+          servicePort: 8142
+      - path: /
+        backend:
+          serviceName: mediawiki
+          servicePort: 80
   {{- end }}
   tls:
   - hosts:
