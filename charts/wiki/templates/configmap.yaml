@@ -1,8 +1,8 @@
 ---
 apiVersion: v1
 data:
-  MEDIAWIKI_BASE_URL: {{ printf "https://%s" (first .Values.domains) }}
-  MEDIAWIKI_EMAIL: {{ printf "apache@%s" (first .Values.domains) }}
+  MEDIAWIKI_BASE_URL: {{ printf "https://%s" (first .Values.domains ) }}
+  MEDIAWIKI_EMAIL: {{ printf "apache@%s" (first .Values.domains ) }}
   MEDIAWIKI_ADMIN_PASS: {{ .Values.adminpass | default "admin" }}
   MEDIAWIKI_ADMIN_USER: {{ .Values.adminuser | default "admin" }}
   MEDIAWIKI_DB_HOST: wikidb
@@ -10,7 +10,7 @@ data:
   MEDIAWIKI_DB_TYPE: mysql
   MEDIAWIKI_SITE_LANG: sv
   MEDIAWIKI_SITE_NAME: Jamboree21 wiki
-  MEDIAWIKI_SITE_SERVER: {{ .Values.domain }}
+  MEDIAWIKI_SITE_SERVER: {{ first .Values.domains }}
   MEDIAWIKI_UPDATE: "false"
 kind: ConfigMap
 metadata:
