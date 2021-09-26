@@ -10,7 +10,7 @@ data:
   MEDIAWIKI_DB_TYPE: mysql
   MEDIAWIKI_SITE_LANG: sv
   MEDIAWIKI_SITE_NAME: Jamboree21 wiki
-  MEDIAWIKI_SITE_SERVER: {{ .Values.domain }}
+  MEDIAWIKI_SITE_SERVER: {{ (first .Values.domains }}
   MEDIAWIKI_UPDATE: "false"
 kind: ConfigMap
 metadata:
