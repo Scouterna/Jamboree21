@@ -1,0 +1,9 @@
+---
+image: scouterna.azurecr.io/wiki
+domains:
+  - wiki.wsj23.webservices.scouterna.net
+storage:
+  data:
+    capacity: 16Gi
+  images:
+    capacity: 32Gi
