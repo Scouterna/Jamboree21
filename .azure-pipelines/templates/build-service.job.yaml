@@ -7,7 +7,7 @@ parameters:
     default: ''
   - name: stepsTemplate
     type: string
-    default: .azure-pipelines/templates/build.yaml
+    default: .azure-pipelines/templates/defaultbuild.yaml
 
 jobs:
   - job: ${{ format('build_{0}', parameters.serviceName) }}
