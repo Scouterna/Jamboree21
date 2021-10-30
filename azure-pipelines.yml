@@ -35,3 +35,7 @@ jobs:
    parameters:
     serviceName: template
     subPath: template
+ - template: .azure-pipelines/templates/build-service.job.yaml
+   parameters:
+    serviceName: wsj2023-access
+    subPath: wsj2023-access
