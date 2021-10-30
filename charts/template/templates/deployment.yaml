@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: template
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: template
+  template:
+    metadata:
+      labels:
+        app: template
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: mediawiki-env
+          image: {{ .Values.image | default "scouterna.azurecr.io/template" }}:{{ .Chart.AppVersion }}
+          imagePullPolicy: Always
+          name: app
