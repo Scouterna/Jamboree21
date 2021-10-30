@@ -1,15 +1,26 @@
 # Service directory template
 
-When creating a new service, you can use this directory as a template. Either
-look in `.azure-pipelines` and `.k8s` and write your own specs with those in
-there as inspiration, or make a copy of this directory and make (at least) the
-following updates:
+When creating a new service, you can use this directory as a template. For a
+basic Golang service, three steps are required:
 
-* Change `<service name>` in `.k8s/build.yaml` to the name of
-	your service (preferably the exact name of the directory the service is in).
-	This is a very bare service spec - you'll probably need some more info in your
-	service. If you need help or pointers to get this right, contact
-	e-tjänstgruppen who can help.
+1. Copy this directory. You can put the new directory anywhere in this repo
+2. Copy the `charts/template` directory. The new chart should be `charts/[name
+	 of your new service]`
+3. Add your new service to `.azure-pipelines.yaml` - use the entry for the
+	 `template` service as guidance.
+	 
+If you're using another programming language, or you need a more complex build:
+Update or replace the `Dockerfile` to suit your needs. The only requirement is
+that the app should listen to ports `8080` for http or `8443` for https - if
+you need another setup, you need to make the corresponding changes to your chart
+in `charts`.
 
-* If you need to receive traffic from the Internet, make a pull request to the
-	`Scouterna/deploy` repo on Github with an Ingress for your service.
+## Supporting infrastructure 
+
+If you need persistent storage, databases, or anything else, add relevant
+services to your chart. Reach out in #etjanster on Scouterna Slack for support.
+
+## Environment variables
+
+If you want to control your app through environment variables, this is
+controlled through the chart.
