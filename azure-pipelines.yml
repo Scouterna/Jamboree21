@@ -13,9 +13,9 @@ jobs:
     stepsTemplate: wiki/.azure-pipelines/build.yaml
  - template: .azure-pipelines/templates/build-service.job.yaml
    parameters:
-   serviceName: parsoid
-   subPath: parsoid
-   stepsTemplate: parsoid/.azure-pipelines/build.yaml
+    serviceName: parsoid
+    subPath: parsoid
+    stepsTemplate: parsoid/.azure-pipelines/build.yaml
  - template: .azure-pipelines/templates/build-service.job.yaml
    parameters:
     serviceName: facelist
