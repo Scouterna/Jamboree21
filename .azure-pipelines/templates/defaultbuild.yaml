@@ -1,0 +1,41 @@
+---
+parameters:
+  serviceName: ''
+  subPath: ''
+steps:
+  - bash: |
+      ${{ format('docker build . -t scouterna.azurecr.io/{0}:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
+    displayName: Build docker image
+    condition: and(succeeded(), eq(variables.updated, 'true'))
+    workingDirectory: ${{ parameters.subPath }}
+  - task: Docker@2
+    inputs:
+      containerRegistry: 'acr'
+      repository: ${{ parameters.serviceName }}
+      command: 'push'
+      tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
+    displayName: Push docker image
+    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
+  - task: HelmInstaller@1
+    displayName: Install Helm
+    inputs:
+      helmVersionToInstall: latest
+  - task: HelmDeploy@0
+    displayName: Helm package
+    inputs:
+      command: package
+      chartPath: ${{ format('charts/{0}', parameters.serviceName) }}
+      destination: $(Build.ArtifactStagingDirectory)
+      arguments: '--app-version $(Build.SourceBranchName)-$(Build.SourceVersion)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: $(Build.ArtifactStagingDirectory)
+      ArtifactName: ${{ format('{0}-chart', parameters.serviceName) }}
+      publishLocation: 'Container'
+    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: ${{ format('charts/{0}/values/', parameters.serviceName) }}
+      ArtifactName: ${{ format('{0}-chartvalues', parameters.serviceName) }}
+      publishLocation: 'Container'
+    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
