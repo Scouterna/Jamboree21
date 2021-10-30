@@ -10,7 +10,7 @@ parameters:
     default: .azure-pipelines/templates/defaultbuild.yaml
 
 jobs:
-  - job: ${{ format('build_{0}', parameters.serviceName) }}
+  - job: ${{ format('build_{0}', replace(parameters.serviceName, '-', '_')) }}
     displayName: ${{ format('Build {0}', parameters.serviceName) }}
     pool:
       vmImage: ubuntu-18.04
@@ -30,4 +30,3 @@ jobs:
         parameters:
           serviceName: ${{ parameters.serviceName }}
           subPath: ${{ parameters.subPath }}
-
