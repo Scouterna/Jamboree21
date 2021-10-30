@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wsj2023-access
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wsj2023-access
+  template:
+    metadata:
+      labels:
+        app: wsj2023-access
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: mediawiki-env
+          image: {{ .Values.image | default "scouterna.azurecr.io/wsj2023-access" }}:{{ .Chart.AppVersion }}
+          imagePullPolicy: Always
+          name: app
