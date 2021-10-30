@@ -16,7 +16,7 @@ spec:
       containers:
         - envFrom:
             - configMapRef:
-                name: mediawiki-env
+                name: environment
           image: {{ .Values.image | default "scouterna.azurecr.io/wsj2023-access" }}:{{ .Chart.AppVersion }}
           imagePullPolicy: Always
           name: app
