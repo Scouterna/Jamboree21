@@ -16,11 +16,9 @@
 }
 
 .ns-special {
-	#content {
-		#section_0 {
-			font-size: 1.5em;
-			font-weight: bold;
-		}
+	.mw-body #section_0 { // stylelint-disable-line selector-max-id
+		font-size: 1.5em;
+		font-weight: bold;
 	}
 
 	.heading-holder {
@@ -33,7 +31,7 @@
 	h1,
 	h2 {
 		// Important given we have no idea which rules special pages are enforcing
-		font-family: @fontFamilyBase !important;
+		font-family: @font-family-base !important;
 	}
 
 	.content-header {
@@ -41,12 +39,16 @@
 		h2 {
 			text-align: center;
 		}
+
+		.mw-mf-user:before {
+			opacity: @opacity-icon-subtle;
+		}
 	}
 }
 
 // Used by MobileSpecialPageFeed.php in MobileFrontend
 .truncated-text {
-	.truncated-text();
+	.text-overflow( @visible: false );
 
 	// FIXME: this works only in WebKit
 	&.multi-line {

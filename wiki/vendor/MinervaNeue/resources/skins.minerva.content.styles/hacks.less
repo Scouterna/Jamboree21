@@ -24,6 +24,7 @@ FIXME: Review all of these hacks to see if they still apply.
 		display: none;
 	}
 
+	// stylelint-disable selector-max-id
 	/* Hide cleanup templates by default to non-javascript users as these stop them from reading the article itself
 	 * Edit page notices */
 	.action-edit .fmbox,
@@ -35,58 +36,63 @@ FIXME: Review all of these hacks to see if they still apply.
 		// It's important as some of these are tables which become display: table on larger screens
 		display: none !important;
 	}
+	// stylelint-enable selector-max-id
 
-	table {
+	table,
+	.infobox {
+		// Unfloat tables and infoboxes:;
 		// A lot of templates introduce floating and horizontal margins inline styles
 		float: none !important;
 		margin-left: 0 !important;
 		margin-right: 0 !important;
+	}
 
-		&.infobox {
-			font-size: 90%;
-			position: relative;
-			border: 1px solid @colorGray14;
-			margin-bottom: 2em;
-			background-color: @colorGray15;
-			display: flex;
-			flex: 1 1 100%;
-			flex-flow: column nowrap;
+	.infobox {
+		font-size: 90%;
+		position: relative;
+		border: 1px solid @colorGray14;
+		margin-bottom: 2em;
+		background-color: @colorGray15;
+		display: flex;
+		flex: 1 1 100%;
+		flex-flow: column nowrap;
+		width: 100% !important;
+		max-width: 100% !important;
 
-			caption {
-				padding: 10px 10px 0;
-				text-align: center;
-			}
-
-			th, td {
-				vertical-align: top;
-				border: 0;
-				border-bottom: 1px solid @colorGray14;
-				padding: 7px 10px;
-			}
-
-			tbody > tr > td,
-			tbody > tr > th {
-				flex: 1 0;
-			}
-
-			td:only-child,
-			th:only-child {
-				width: 100%;
-			}
-
-			tr:last-child th,
-			tr:last-child td {
-				border: 0;
-			}
+		caption {
+			padding: 10px 10px 0;
+			text-align: center;
 		}
 
-		&.infobox > tbody,
-		&.infobox > caption {
+		th, td {
+			vertical-align: top;
+			border: 0;
+			border-bottom: 1px solid @colorGray14;
+			padding: 7px 10px;
+		}
+
+		tbody > tr > td,
+		tbody > tr > th {
+			flex: 1 0;
+		}
+
+		td:only-child,
+		th:only-child {
+			width: 100%;
+		}
+
+		tr:last-child th,
+		tr:last-child td {
+			border: 0;
+		}
+
+		& > tbody,
+		& > caption {
 			display: flex;
 			flex-flow: column nowrap;
 		}
 
-		&.infobox > tbody > tr {
+		& > tbody > tr {
 			min-width: 100%;
 			display: flex;
 			flex-flow: row nowrap;
@@ -94,20 +100,20 @@ FIXME: Review all of these hacks to see if they still apply.
 	}
 
 	// Hack to assign info boxes properly when using RTL languages on LTR wiki
-	.mw-content-ltr table.infobox {
+	.mw-content-ltr .infobox {
 		/* @noflip */
 		text-align: left;
 	}
 
 	// Hack to assign info boxes properly when using LTR languages on RTL wiki
-	.mw-content-rtl table.infobox {
+	.mw-content-rtl .infobox {
 		/* @noflip */
 		text-align: right;
 	}
 }
 
 // FIXME: Remove when filetoc is stripped from file pages a la table of contents (toc)
-#filetoc {
+#filetoc { // stylelint-disable-line selector-max-id
 	display: none;
 }
 
@@ -124,7 +130,7 @@ FIXME: Review all of these hacks to see if they still apply.
 
 // When JavaScript is disabled clarify to the user which reference they clicked on
 .references li:target {
-	background-color: #def;
+	background-color: @background-color-primary;
 }
 
 .hatnote,
@@ -132,7 +138,7 @@ FIXME: Review all of these hacks to see if they still apply.
 .rellink {
 	padding: 5px 7px;
 	color: @colorGray5;
-	font-size: 0.8em;
+	font-size: @font-size-minerva-smallest;
 	background-color: @colorGray15;
 	margin-bottom: 1px;
 	overflow: hidden;

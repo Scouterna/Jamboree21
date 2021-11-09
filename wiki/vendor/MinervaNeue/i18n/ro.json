@@ -1,14 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
-			"Minisarm",
-			"Strainu",
 			"Adrianbblk",
 			"Andrei Stroe",
-			"GabiBil"
+			"Fitoschido",
+			"GabiBil",
+			"Minisarm",
+			"NGC 54",
+			"Strainu"
 		]
 	},
 	"minerva-last-modified-date": "Ultima modificare pe $1, la $2",
+	"minerva-watchlist-cta": "Urmăriți această pagină și toate schimbările asupra sa.",
 	"minerva-talk-add-topic": "Adăugare discuție",
 	"mobile-frontend-cookies-required": "Sunt necesare module cookie pentru a comuta între modurile de vizualizare. Activați-le și încercați din nou.",
 	"mobile-frontend-editor-edit": "Modificare",
@@ -17,7 +20,7 @@
 	"mobile-frontend-editor-redlink-leave": "Nu, mulțumesc.",
 	"mobile-frontend-history": "Vezi istoricul modificărilor aceastei pagini.",
 	"mobile-frontend-home-button": "Acasă",
-	"mobile-frontend-language-article-heading": "Lecturare în altă limbă",
+	"mobile-frontend-language-article-heading": "Limbă",
 	"mobile-frontend-languages-not-available": "Această pagină nu este disponibilă în alte limbi.",
 	"mobile-frontend-logged-in-homepage-notification": "{{GENDER:$1|Bun venit}}, $1!",
 	"mobile-frontend-main-menu-button-tooltip": "Deschide meniul principal",
@@ -44,8 +47,9 @@
 	"mobile-frontend-user-button-tooltip": "Arată-mi notificările",
 	"mobile-frontend-user-newmessages": "Aveți mesaje noi pe pagina dumneavoastră de discuție",
 	"mobile-frontend-user-page-contributions": "Contribuții",
-	"mobile-frontend-user-page-member-since": "{{GENDER:$2|S-a înscris}} în $1",
+	"mobile-frontend-user-page-member-since": "{{GENDER:$2|Alăturat|Alăturată|Alăturat}} în $1",
 	"mobile-frontend-user-page-talk": "Discuție",
-	"mobile-frontend-user-page-uploads": "Încărcări",
+	"minerva-page-actions-overflow": "Mai mult",
+	"minerva-page-actions-info": "Informații despre pagină",
 	"minerva-page-actions-user-groups": "Grupuri de utilizatori"
 }

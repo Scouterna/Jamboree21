@@ -1,12 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Fitoschido",
 			"GrigorGB",
 			"Kareyac",
 			"Pandukht",
 			"Xelgen",
-			"Սահակ",
-			"Fitoschido"
+			"Սահակ"
 		]
 	},
 	"mobile-frontend-cookies-required": "Դիտման ռեժիմը փոխելու համար անհրաժեշտ է ակտիվացնել թխուկները (քուքիները)։ Խնդրում ենք միացնել դրանք։",
@@ -18,6 +18,7 @@
 	"mobile-frontend-main-menu-button-tooltip": "Բացել գլխավոր ցանկը",
 	"mobile-frontend-main-menu-contributions": "Ներդրում",
 	"mobile-frontend-main-menu-login": "Մուտք գործել",
+	"mobile-frontend-main-menu-logout": "Դուրս գալ",
 	"mobile-frontend-main-menu-nearby": "Մոտակայքում",
 	"mobile-frontend-main-menu-settings": "Կարգավորումներ",
 	"mobile-frontend-main-menu-watchlist": "Հսկացանկ",
@@ -25,5 +26,8 @@
 	"mobile-frontend-placeholder": "Որոնել {{SITENAME}} կայքում",
 	"mobile-frontend-random-button": "Պատահական",
 	"mobile-frontend-redirected-from": "Վերահղված է «[[$1]]»-ից",
-	"mobile-frontend-user-page-contributions": "Ներդրում"
+	"mobile-frontend-user-page-contributions": "Ներդրում",
+	"minerva-page-actions-overflow": "Ավելին",
+	"minerva-page-actions-history": "Պատմություն",
+	"skin-minerva-mobile-option-MinervaShowCategoriesButton": "Կատեգորիաներ"
 }

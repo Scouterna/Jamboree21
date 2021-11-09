@@ -4,7 +4,9 @@
 @dividerHeight: 2px;
 @dividerSpacing: 28px;
 
-.hatnote {
+// stylelint-disable-next-line selector-max-id
+.hatnote,
+.pre-content #page-actions {
 	display: none;
 }
 
@@ -26,13 +28,10 @@
 	.tagline {
 		font-size: 36px;
 	}
-
-	#page-actions {
-		display: none;
-	}
 }
 
-#bodyContent {
+// Prefer class & direct child selector `.mw-body > .content` over `#bodyContent`.
+.mw-body > .content {
 	padding-top: 55px;
 	position: relative;
 
@@ -61,8 +60,9 @@
 	}
 }
 
+// Prefer class & direct child selector `.mw-body > .content` over `#bodyContent`.
 .thumb:after,
-#bodyContent:before {
+.mw-body > .content:before {
 	position: absolute;
 	left: 0;
 	content: '';
@@ -79,7 +79,9 @@
 	font-size: 28px;
 }
 
-#mw-content-text {
+// `#mw-content-text` doesn't feature universal class selector.
+// `class|='mw-content'` catches `.mw-content`, but also `.mw-content-rtl`.
+[ class|='mw-content' ] {
 	font-size: 36px;
 
 	a {
@@ -117,7 +119,7 @@
 		font-size: 16px;
 	}
 
-	table.infobox {
+	.infobox {
 		font-size: 30px;
 	}
 }

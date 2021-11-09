@@ -1,10 +1,12 @@
+'use strict';
+
 const { defineSupportCode } = require( 'cucumber' ),
 	{ iClickOnTheCategoryButton,
 		iShouldSeeTheCategoriesOverlay, iShouldSeeAListOfCategories
 	} = require( './category_steps' ),
 	{ iAmInAWikiThatHasCategories,
 		iAmOnAPageThatHasTheFollowingEdits,
-		iAmOnAPageWithNoTalkTopics,
+		iAmOnATalkPageWithNoTalkTopics,
 		iAmViewingAWatchedPage, iAmViewingAnUnwatchedPage,
 		iGoToAPageThatHasLanguages } = require( './create_page_api_steps' ),
 	{
@@ -28,8 +30,8 @@ const { defineSupportCode } = require( 'cucumber' ),
 	{
 		theWatchstarShouldNotBeSelected, theWatchstarShouldBeSelected,
 		iClickTheWatchstar, iClickTheUnwatchStar } = require( './watch_steps' ),
-	{ iVisitMyUserPage, iShouldBeOnMyUserPage, thereShouldBeALinkToMyUploads,
-		thereShouldBeALinkToMyContributions, thereShouldBeALinkToMyTalkPage
+	{ iVisitMyUserPage, iShouldBeOnMyUserPage, thereShouldBeALinkToMyContributions,
+		thereShouldBeALinkToMyTalkPage
 	} = require( './user_page_steps' ),
 	{
 		iClickTheSearchIcon,
@@ -38,12 +40,13 @@ const { defineSupportCode } = require( 'cucumber' ),
 		iSeeTheSearchOverlay
 	} = require( './search_steps' ),
 	{
-		iClickTheTalkButton,
+		iClickTheAddTalkButton,
 		iAddATopic,
 		iSeeTheTalkOverlay,
 		thereShouldBeASaveDiscussionButton,
 		noTopicIsPresent,
 		thereShouldBeAnAddDiscussionButton,
+		thereShouldBeATalkButton,
 		thereShouldBeNoTalkButton,
 		iShouldSeeTheTopicInTheListOfTopics
 	} = require( './talk_steps' ),
@@ -89,7 +92,7 @@ defineSupportCode( function ( { Then, When, Given } ) {
 	When( /I click the browser back button/, iClickTheBrowserBackButton );
 
 	// Page steps
-	Given( /^I am on a page with no talk topics$/, iAmOnAPageWithNoTalkTopics );
+	Given( /^I am on a talk page with no talk topics$/, iAmOnATalkPageWithNoTalkTopics );
 	Given( /^I am in a wiki that has categories$/, () => {
 		iAmInAWikiThatHasCategories( 'Selenium categories test page' );
 	} );
@@ -117,20 +120,20 @@ defineSupportCode( function ( { Then, When, Given } ) {
 	Then( /I should see the notifications overlay/, iShouldSeeTheNotificationsOverlay );
 
 	// talk
-	When( /^I click the talk button$/, iClickTheTalkButton );
+	When( /^I click the add talk button$/, iClickTheAddTalkButton );
 	When( /^I add a topic called "(.+)"$/, iAddATopic );
 	Then( /^I see the talk overlay$/, iSeeTheTalkOverlay );
 	Then( /^I should see the talk overlay$/, iSeeTheTalkOverlay );
 	Then( /^there should be a save discussion button$/, thereShouldBeASaveDiscussionButton );
 	Then( /^no topic is present$/, noTopicIsPresent );
 	Then( /^there should be an add discussion button$/, thereShouldBeAnAddDiscussionButton );
+	Then( /^there should be a talk button/, thereShouldBeATalkButton );
 	Then( /^there should be no talk button$/, thereShouldBeNoTalkButton );
 	Then( /^I should see the topic called "(.+)" in the list of topics$/, iShouldSeeTheTopicInTheListOfTopics );
 
 	// user page
 	Given( /^I visit my user page$/, iVisitMyUserPage );
 	When( /^I should be on my user page$/, iShouldBeOnMyUserPage );
-	Then( /^there should be a link to my uploads$/, thereShouldBeALinkToMyUploads );
 	Then( /^there should be a link to my contributions$/, thereShouldBeALinkToMyContributions );
 	Then( /^there should be a link to my talk page$/, thereShouldBeALinkToMyTalkPage );
 

@@ -38,8 +38,8 @@ class MobileContextShouldDisplayMobileViewIntegrationTest extends MediaWikiTestC
 	}
 
 	/**
-	 * @dataProvider shouldDisplayMobileViewProvider
 	 * @covers MobileContext::shouldDisplayMobileView
+	 * @dataProvider shouldDisplayMobileViewProvider
 	 */
 	public function testShouldDisplayMobileView(
 		$expected,
@@ -82,9 +82,8 @@ class MobileContextShouldDisplayMobileViewIntegrationTest extends MediaWikiTestC
 				'User-Agent',
 
 				// An iPhone running iOS 8.0.
-				// @codingStandardsIgnoreStart
+				// phpcs:ignore Generic.Files.LineLength
 				'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25'
-				// @codingStandardsIgnoreEnd
 			);
 		}
 

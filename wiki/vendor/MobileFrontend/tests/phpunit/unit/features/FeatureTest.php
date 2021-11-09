@@ -8,6 +8,7 @@ use MobileFrontend\Features\Feature;
  * @covers ::__construct()
  */
 class FeatureTest extends \MediaWikiUnitTestCase {
+	/** @var array */
 	private $madeUpConfigVariable;
 
 	protected function setUp() : void {
@@ -65,7 +66,7 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 		);
 		$actual = $feature->getId();
 
-		$this->assertSame( $actual, 'TestName' );
+		$this->assertSame( 'TestName', $actual );
 	}
 
 	/**
@@ -77,7 +78,7 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 		);
 		$actual = $feature->__toString();
 
-		$this->assertSame( $actual, 'TestName' );
+		$this->assertSame( 'TestName', $actual );
 	}
 
 	/**
@@ -89,7 +90,7 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 		);
 		$actual = $feature->getGroup();
 
-		$this->assertSame( $actual, 'test-group' );
+		$this->assertSame( 'test-group', $actual );
 	}
 
 	/**
@@ -102,7 +103,7 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 		$actual = $feature->getNameKey();
 		$expected = 'test-group-mobile-option-TestName';
 
-		$this->assertSame( $actual, $expected );
+		$this->assertSame( $expected, $actual );
 	}
 
 	/**
@@ -115,7 +116,7 @@ class FeatureTest extends \MediaWikiUnitTestCase {
 		$actual = $feature->getDescriptionKey();
 		$expected = 'test-group-mobile-option-TestName-description';
 
-		$this->assertSame( $actual, $expected );
+		$this->assertSame( $expected, $actual );
 	}
 
 	protected function tearDown() : void {

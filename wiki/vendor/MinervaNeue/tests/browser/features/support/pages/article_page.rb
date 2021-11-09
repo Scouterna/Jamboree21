@@ -4,7 +4,7 @@ class ArticlePage # rubocop:disable Metrics/ClassLength
   page_url '<%=params[:article_name]%><%=params[:hash]%>'
 
   # UI elements
-  a(:mainmenu_button, id: 'mw-mf-main-menu-button')
+  label(:mainmenu_button, id: 'mw-mf-main-menu-button')
   body(:is_authenticated, css: '.is-authenticated')
 
   # pre-content
@@ -15,7 +15,7 @@ class ArticlePage # rubocop:disable Metrics/ClassLength
   a(:beta_mode_indicator, css: '.branding-box sup')
 
   # left nav
-  nav(:navigation, css: '#mw-mf-page-left')
+  div(:navigation, css: '#mw-mf-page-left')
   a(:about_link) { |page| page.navigation_element.link_element(text: /^About/) }
   a(:disclaimer_link) { |page| page.navigation_element.link_element(text: 'Disclaimers') }
 
@@ -79,7 +79,7 @@ class ArticlePage # rubocop:disable Metrics/ClassLength
     page.search_overlay_page_list_element.element.h3
   end
 
-  a(:notifications_button, css: '.user-button')
+  div(:notifications_button, css: '#pt-notifications-alert')
   div(:notifications_overlay, class: 'notifications-overlay')
   button(:notifications_overlay_close_button) do |page|
     page.notifications_overlay_element.button_element(class: 'cancel')
@@ -148,7 +148,7 @@ class ArticlePage # rubocop:disable Metrics/ClassLength
   # loader
   element(:content_wrapper, 'main')
   div(:content, id: 'bodyContent')
-  div(:transparent_shield, css: '.transparent-shield')
+  a(:transparent_shield, css: '.mw-mf-page-center__mask')
   # secondary menu
   ## languages
   a(:switch_language_page_action, css: '#page-actions .language-selector')
@@ -162,7 +162,7 @@ class ArticlePage # rubocop:disable Metrics/ClassLength
   a(:desktop_link, text: 'Desktop')
   a(:terms_link, css: '#footer-places-terms-use')
   a(:license_link, css: 'footer .license a')
-  a(:privacy_link, text: 'Privacy')
+  a(:privacy_link, text: 'Privacy policy')
 
   # pagelist
   ul(:page_list, css: '.page-list')
@@ -174,14 +174,11 @@ class ArticlePage # rubocop:disable Metrics/ClassLength
 
   # sections
   h2(:first_section, css: '.section-heading', index: 0)
-  div(:first_section_content, id: 'content-collapsible-block-0')
+  section(:first_section_content, id: 'content-collapsible-block-0')
   h2(:third_section, css: '.collapsible-block', index: 2)
 
   # issues
-  # We use 2 selectors here - the first relates to the old treatment (A) and
-  # the 2nd relates to the new treatment (.issues-group-B .ambox)
-  # see https://phabricator.wikimedia.org/T206647
-  a(:issues_stamp, css: '.mw-mf-cleanup, .issues-group-B .ambox')
+  span(:issues_stamp, css: '.ambox-learn-more')
 
   # page info (action=info)
   td(:edit_count, css: '#mw-pageinfo-edits td', index: 1)

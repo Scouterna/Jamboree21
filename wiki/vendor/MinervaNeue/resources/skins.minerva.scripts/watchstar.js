@@ -1,33 +1,47 @@
-/**
- * @param {Object} mobile mobileFrontend component library
- */
-module.exports = function ( mobile ) {
+( function () {
 
-	var
-		currentPage = mobile.currentPage(),
-		Watchstar = mobile.Watchstar,
-		user = mw.user;
+	var WATCHED_CLASS = [ 'watched', 'mw-ui-icon-wikimedia-unStar-progressive' ],
+		TEMP_WATCHED_CLASS = [ 'temp-watched', 'mw-ui-icon-wikimedia-halfStar-progressive' ],
+		UNWATCHED_CLASS = 'mw-ui-icon-wikimedia-star-base20';
 
 	/**
-	 * Toggle the watch status of a known page
-	 * @method
-	 * @param {Page} page
-	 * @ignore
+	 * Tweaks the global watchstar handler in core to use the correct classes for Minerva.
+	 *
+	 * @param {jQuery.Object} $icon
 	 */
-	function init( page ) {
-		// eslint-disable-next-line no-jquery/no-global-selector
-		var $container = $( '#ca-watch' );
-		if ( !page.inNamespace( 'special' ) ) {
-			// eslint-disable-next-line no-new
-			new Watchstar( {
-				api: new mw.Api(),
-				el: $container,
-				isWatched: page.isWatched(),
-				page: page,
-				funnel: 'page',
-				isAnon: user.isAnon()
-			} );
-		}
+	function init( $icon ) {
+		$icon.on( 'watchpage.mw', function ( _ev, action, expiry ) {
+			toggleClasses( $( this ).find( 'a' ), action, expiry );
+		} );
 	}
-	init( currentPage );
-};
+
+	/**
+	 *
+	 * @param {jQuery.Object} $elem
+	 * @param {string} action
+	 * @param {string} expiry
+	 */
+	function toggleClasses( $elem, action, expiry ) {
+		$elem.removeClass(
+			[].concat( WATCHED_CLASS, TEMP_WATCHED_CLASS, UNWATCHED_CLASS )
+		).addClass( function () {
+			var classes = UNWATCHED_CLASS;
+			if ( action === 'watch' ) {
+				if ( expiry !== null && expiry !== undefined ) {
+					classes = TEMP_WATCHED_CLASS;
+				} else {
+					classes = WATCHED_CLASS;
+				}
+			}
+			return classes;
+		} );
+	}
+
+	module.exports = {
+		init: init,
+		test: {
+			toggleClasses: toggleClasses
+		}
+	};
+
+}() );

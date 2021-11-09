@@ -36,22 +36,6 @@ for the page.
 Controls whether site notices should be shown.
 See <https://www.mediawiki.org/wiki/Manual:$wgSiteNotice>.
 
-#### $wgMinervaCountErrors
-* Type: `Boolean`
-* Default: `false`
-
-Whether to count client side errors in statsv.
-
-#### $wgMinervaErrorLogSamplingRate
-* Type: `Integer`
-* Default: `0`
-
-Whether to log client side errors to EventLogging. If 0, error logging is disabled.
-If 0.5, 50% of all client side errors will be logged to the EventLogging client.
-If 1, all errors will be logged to the EventLogging client, thus when enabling this
-care should be taken that your setup is bug free in order to not overwhelm the EventLogging
-server.
-
 #### $wgMinervaShowCategoriesButton
 
 * Type: `Array`
@@ -70,6 +54,18 @@ Controls whether the category button should be displayed.
 * Default: `false`
 
 When enabled and hacks.less exists, hacks.less workarounds are included in stylesheet. These should only be needed for Wikimedia based wikis or wikis using common templates such as Template:Infobox on those wikis.
+
+#### $wgMinervaDonateLink
+
+* Type: `Array`
+* Default:
+```php
+  [
+    'base' => true,
+  ]
+```
+
+When enabled a donate link will be added to the main menu. The donate link uses the `sitesupport` and `sitesupport-url` mediawiki messages.
 
 #### $wgMinervaPageActions
 
@@ -157,71 +153,9 @@ Controls whether a personal menu appears in the header chrome. This menu contain
 ```
 Controls whether the overflow link appears in the page actions menu.
 
-#### $wgMinervaShowShareButton
-
-* Type: `Array`
-* Default:
-```php
-  [
-    'beta' => false,
-    'base' => false,
-  ]
 ```
 Controls whether the share feature should be added to the page actions menu.
 
-#### $wgMinervaEnableBackToTop
-
-* Type: `Array`
-* Default:
-```php
-  [
-    'base' => false,
-    'beta' => true,
-  ]
-```
-Controls whether the a back to top button should appear in the bottom right of the screen when scrolling.
-
-#### $wgMinervaCustomLogos
-
-* Type: `Array`
-* Default: `[]`
-
-Make the logos configurable.
-
-Currently, `copyright`, `copyright-fallback`, `copyright-width`, and `copyright-height` elements are
-supported.
-
-* `copyright` is the URL of the logo displayed in the header and footer
-* `copyright-fallback` is the URL of the fallback logo displayed on
-  non-supported browsers like IE8 or Opera Mini
-* `copyright-width` (optional) is the width in pixels of the copyright image
-  you want to display
-* `copyright-height` (optional) is the height in pixels of the copyright image
-  you want to display
-* If the actual `copyright` dimensions are 200x30, then you may want to set the
-  width and height to 100 and 15 respectively (in order to support retina
-  screens).
-* Note that if -width and -height are not used sysadmin should ensure the image
-used is appropriately sized (suggested dimensions < 120px width and 18px height).
-
-Example:
-```php
-[
-  'copyright' => '/images/mysite_copyright_logo.png',
-  'copyright-width' => 100,
-  'copyright-height' => 15,
-]
-```
-
-Example with fallback URL:
-```php
-[
-  'copyright' => '/images/mysite_copyright_logo.svg',
-  'copyright-fallback' => '/images/mysite_copyright_logo.svg.png',
-  'copyright-width' => 100,
-  'copyright-height' => 15,
-]
-```
 
 #### $wgMinervaAlwaysShowLanguageButton
 
@@ -282,8 +216,7 @@ components/ToggleList.mustache, are designed to be rendered as root templates no
 // 🆗
 
 $templatesDir = __DIR__ . '/../../components';
-$invalidateTemplateCache = false;
-$templateParser = new TemplateParser( $templatesDir, $invalidateTemplateCache );
+$templateParser = new TemplateParser( $templatesDir );
 
 // Render components/ToggleList.mustache not components/ToggleList/ToggleList.mustache.
 $html = $templateParser->processTemplate( 'ToggleList',  $data );
@@ -296,8 +229,7 @@ assumptions:
 // 🚫
 
 $templatesDir = __DIR__ . '/../../components/ToggleList';
-$invalidateTemplateCache = false;
-$templateParser = new TemplateParser( $templatesDir, $invalidateTemplateCache );
+$templateParser = new TemplateParser( $templatesDir );
 
 // Error: components/ToggleList/ToggleList.mustache references
 // components/ToggleList/ToggleList/ToggleListItem.mustache which does not exist.

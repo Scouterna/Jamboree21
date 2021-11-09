@@ -20,6 +20,7 @@
 
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Minerva\SkinOptions;
+use MediaWiki\Minerva\Skins\SkinUserPageHelper;
 
 /**
  * Hook handlers for Minerva skin.
@@ -28,7 +29,34 @@ use MediaWiki\Minerva\SkinOptions;
  *	on<HookName>()
  */
 class MinervaHooks {
-	const FEATURE_OVERFLOW_PAGE_ACTIONS = 'MinervaOverflowInPageActions';
+	private const FEATURE_OVERFLOW_PAGE_ACTIONS = 'MinervaOverflowInPageActions';
+
+	/**
+	 * ResourceLoaderRegisterModules hook handler.
+	 *
+	 * Registers:
+	 *
+	 * * EventLogging schema modules, if the EventLogging extension is loaded;
+	 * * Modules for the Visual Editor overlay, if the VisualEditor extension is loaded; and
+	 * * Modules for the notifications overlay, if the Echo extension is loaded.
+	 *
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ResourceLoaderRegisterModules
+	 *
+	 * @param ResourceLoader &$resourceLoader
+	 */
+	public static function onResourceLoaderRegisterModules( ResourceLoader &$resourceLoader ) {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'MobileFrontend' ) ) {
+			$resourceLoader->register( [
+				'mobile.startup' => [
+					'dependencies' => [ 'mediawiki.searchSuggest' ],
+					'localBasePath' => dirname( __DIR__ ),
+					'remoteExtPath' => 'Minerva',
+					'scripts' => 'resources/mobile.startup.stub.js',
+					'targets' => [ 'desktop', 'mobile' ],
+				]
+			] );
+		}
+	}
 
 	/**
 	 * Disable recent changes enhanced mode (table mode)
@@ -70,20 +98,6 @@ class MinervaHooks {
 			);
 			$featureManager->registerFeature(
 				new MobileFrontend\Features\Feature(
-					'MinervaEnableBackToTop',
-					'skin-minerva',
-					$config->get( 'MinervaEnableBackToTop' )
-				)
-			);
-			$featureManager->registerFeature(
-				new MobileFrontend\Features\Feature(
-					'MinervaShareButton',
-					'skin-minerva',
-					$config->get( 'MinervaShowShareButton' )
-				)
-			);
-			$featureManager->registerFeature(
-				new MobileFrontend\Features\Feature(
 					'MinervaPageIssuesNewTreatment',
 					'skin-minerva',
 					$config->get( 'MinervaPageIssuesNewTreatment' )
@@ -94,6 +108,13 @@ class MinervaHooks {
 					'MinervaTalkAtTop',
 					'skin-minerva',
 					$config->get( 'MinervaTalkAtTop' )
+				)
+			);
+			$featureManager->registerFeature(
+				new MobileFrontend\Features\Feature(
+					'MinervaDonateLink',
+					'skin-minerva',
+					$config->get( 'MinervaDonateLink' )
 				)
 			);
 			$featureManager->registerFeature(
@@ -150,18 +171,12 @@ class MinervaHooks {
 
 		if ( $skin instanceof SkinMinerva ) {
 			switch ( $name ) {
-				case 'MobileMenu':
-					$out->addModuleStyles( [
-						'skins.minerva.mainMenu.icons',
-						'skins.minerva.mainMenu.styles',
-					] );
-					break;
 				case 'Recentchanges':
-					$isEnhancedDefaultForUser = $special->getUser()->getOption( 'usenewrc' );
+					$isEnhancedDefaultForUser = $special->getUser()->getBoolOption( 'usenewrc' );
 					$enhanced = $request->getBool( 'enhanced', $isEnhancedDefaultForUser );
 					if ( $enhanced ) {
 						$out->addHTML( Html::warningBox(
-							$special->msg( 'skin-minerva-recentchanges-warning-enhanced-not-supported' )
+							$special->msg( 'skin-minerva-recentchanges-warning-enhanced-not-supported' )->parse()
 						) );
 					}
 					break;
@@ -171,7 +186,7 @@ class MinervaHooks {
 					// if no warning message set.
 					if (
 						!$request->getVal( 'warning' ) &&
-						!$special->getUser()->isLoggedIn() &&
+						!$special->getUser()->isRegistered() &&
 						!$request->wasPosted()
 					) {
 						$request->setVal( 'warning', 'mobile-frontend-generic-login-new' );
@@ -191,27 +206,46 @@ class MinervaHooks {
 		MobileContext $mobileContext, Skin $skin
 	) {
 		// setSkinOptions is not available
-		if ( $skin instanceof SkinMinerva ) {
+		if ( $skin instanceof SkinMinerva
+		) {
 			$services = MediaWikiServices::getInstance();
 			$featureManager = $services
 				->getService( 'MobileFrontend.FeaturesManager' );
 			$skinOptions = $services->getService( 'Minerva.SkinOptions' );
+			$title = $skin->getTitle();
+
+			// T245162 - this should only apply if the context relates to a page view.
+			// Examples:
+			// - parsing wikitext during an REST response
+			// - a ResourceLoader response
+			if ( $title !== null ) {
+				// T232653: TALK_AT_TOP, HISTORY_IN_PAGE_ACTIONS, TOOLBAR_SUBMENU should
+				// be true on user pages and user talk pages for all users
+				//
+				// For some reason using $services->getService( 'SkinUserPageHelper' )
+				// here results in a circular dependency error which is why
+				// SkinUserPageHelper is being instantiated instead.
+				$relevantUserPageHelper = new SkinUserPageHelper(
+					$services->getUserNameUtils(),
+					$title->inNamespace( NS_USER_TALK ) ? $title->getSubjectPage() : $title
+				);
+				$isUserPageOrUserTalkPage = $relevantUserPageHelper->isUserPage();
+			} else {
+				// If no title this must be false
+				$isUserPageOrUserTalkPage = false;
+			}
 
 			$isBeta = $mobileContext->isBetaGroupMember();
 			$skinOptions->setMultiple( [
-				SkinOptions::TALK_AT_TOP => $featureManager->isFeatureAvailableForCurrentUser(
-					'MinervaTalkAtTop'
-				),
+				SkinOptions::SHOW_DONATE => $featureManager->isFeatureAvailableForCurrentUser( 'MinervaDonateLink' ),
+				SkinOptions::TALK_AT_TOP => $isUserPageOrUserTalkPage ?
+					true : $featureManager->isFeatureAvailableForCurrentUser( 'MinervaTalkAtTop' ),
 				SkinOptions::BETA_MODE
 					=> $isBeta,
 				SkinOptions::CATEGORIES
 					=> $featureManager->isFeatureAvailableForCurrentUser( 'MinervaShowCategoriesButton' ),
-				SkinOptions::BACK_TO_TOP
-					=> $featureManager->isFeatureAvailableForCurrentUser( 'MinervaEnableBackToTop' ),
 				SkinOptions::PAGE_ISSUES
 					=> $featureManager->isFeatureAvailableForCurrentUser( 'MinervaPageIssuesNewTreatment' ),
-				SkinOptions::SHARE_BUTTON
-					=> $featureManager->isFeatureAvailableForCurrentUser( 'MinervaShareButton' ),
 				SkinOptions::MOBILE_OPTIONS => true,
 				SkinOptions::PERSONAL_MENU => $featureManager->isFeatureAvailableForCurrentUser(
 					'MinervaPersonalMenu'
@@ -219,16 +253,36 @@ class MinervaHooks {
 				SkinOptions::MAIN_MENU_EXPANDED => $featureManager->isFeatureAvailableForCurrentUser(
 					'MinervaAdvancedMainMenu'
 				),
-				SkinOptions::HISTORY_IN_PAGE_ACTIONS => $featureManager->isFeatureAvailableForCurrentUser(
-					'MinervaHistoryInPageActions'
-				),
-				SkinOptions::TOOLBAR_SUBMENU => $featureManager->isFeatureAvailableForCurrentUser(
-					self::FEATURE_OVERFLOW_PAGE_ACTIONS
-				),
+				SkinOptions::HISTORY_IN_PAGE_ACTIONS => $isUserPageOrUserTalkPage ?
+					true : $featureManager->isFeatureAvailableForCurrentUser( 'MinervaHistoryInPageActions' ),
+				SkinOptions::TOOLBAR_SUBMENU => $isUserPageOrUserTalkPage ?
+					true : $featureManager->isFeatureAvailableForCurrentUser(
+						self::FEATURE_OVERFLOW_PAGE_ACTIONS
+					),
 				SkinOptions::TABS_ON_SPECIALS => false,
 			] );
 			Hooks::run( 'SkinMinervaOptionsInit', [ $skin, $skinOptions ] );
 		}
+	}
+
+	/**
+	 * MobileFrontendBeforeDOM hook handler that runs before the MobileFormatter
+	 * executes. We use it to determine whether or not the talk page is eligible
+	 * to be simplified (we want it only to be simplified when the MobileFormatter
+	 * makes expandable sections).
+	 *
+	 * @param MobileContext $mobileContext
+	 * @param MobileFormatter $formatter
+	 */
+	public static function onMobileFrontendBeforeDOM(
+		MobileContext $mobileContext,
+		MobileFormatter $formatter
+	) {
+		$services = MediaWikiServices::getInstance();
+		$skinOptions = $services->getService( 'Minerva.SkinOptions' );
+		$skinOptions->setMultiple( [
+			SkinOptions::SIMPLIFIED_TALK => true
+		] );
 	}
 
 	/**
@@ -263,7 +317,7 @@ class MinervaHooks {
 	 * ResourceLoaderGetConfigVars hook handler.
 	 * Used for setting JS variables which are pulled in dynamically with RL
 	 * instead of embedded directly on the page with a script tag.
-	 * These vars have a shorter cache-life than those in `getSkinConfigVariables`.
+	 * These vars have a shorter cache-life than those in `getJsConfigVars`.
 	 *
 	 * @param array &$vars Array of variables to be added into the output of the RL startup module.
 	 * @param string $skin
@@ -277,10 +331,60 @@ class MinervaHooks {
 			$roConf = MediaWikiServices::getInstance()->getConfiguredReadOnlyMode();
 			$vars += [
 				'wgMinervaABSamplingRate' => $config->get( 'MinervaABSamplingRate' ),
-				'wgMinervaCountErrors' => $config->get( 'MinervaCountErrors' ),
-				'wgMinervaErrorLogSamplingRate' => $config->get( 'MinervaErrorLogSamplingRate' ),
 				'wgMinervaReadOnly' => $roConf->isReadOnly(),
 			];
+		}
+	}
+
+	/**
+	 * Modifies the `<body>` element's attributes.
+	 *
+	 * By default, the `class` attribute is set to the output's "bodyClassName"
+	 * property.
+	 *
+	 * @param OutputPage $out
+	 * @param Skin $skin
+	 * @param string[] &$bodyAttrs
+	 */
+	public static function onOutputPageBodyAttributes( OutputPage $out, Skin $skin, &$bodyAttrs ) {
+		$classes = $out->getProperty( 'bodyClassName' );
+		$skinOptions = MediaWikiServices::getInstance()->getService( 'Minerva.SkinOptions' );
+		$isMinerva = $skin instanceof SkinMinerva;
+
+		if ( $isMinerva && $skinOptions->get( SkinOptions::HISTORY_IN_PAGE_ACTIONS ) ) {
+			// Class is used when page actions is modified to contain more elements
+			$classes .= ' minerva--history-page-action-enabled';
+		}
+
+		if ( $isMinerva ) {
+			// phan doesn't realize that $skin can only be an instance of SkinMinerva without this:
+			'@phan-var SkinMinerva $skin';
+			if ( $skin->isSimplifiedTalkPageEnabled() ) {
+				$classes .= ' skin-minerva--talk-simplified';
+			}
+
+			$bodyAttrs['class'] .= ' ' . $classes;
+		}
+	}
+
+	/**
+	 * SkinPageReadyConfig hook handler
+	 *
+	 * Disable collapsible and sortable on page load
+	 *
+	 * @param ResourceLoaderContext $context
+	 * @param mixed[] &$config Associative array of configurable options
+	 * @return void This hook must not abort, it must return no value
+	 */
+	public static function onSkinPageReadyConfig(
+		ResourceLoaderContext $context,
+		array &$config
+	) {
+		if ( $context->getSkin() === 'minerva' ) {
+			$config['search'] = false;
+			$config['collapsible'] = false;
+			$config['sortable'] = false;
+			$config['selectorLogoutLink'] = 'a.menu__item--logout[data-mw="interface"]';
 		}
 	}
 }

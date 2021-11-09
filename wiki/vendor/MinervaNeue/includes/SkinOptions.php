@@ -24,24 +24,27 @@ namespace MediaWiki\Minerva;
  */
 final class SkinOptions {
 
-	const MOBILE_OPTIONS = 'mobileOptionsLink';
-	const CATEGORIES = 'categories';
-	const BACK_TO_TOP = 'backToTop';
-	const PAGE_ISSUES = 'pageIssues';
-	const SHARE_BUTTON = 'shareButton';
-	const BETA_MODE = 'beta';
-	const TALK_AT_TOP = 'talkAtTop';
-	const HISTORY_IN_PAGE_ACTIONS = 'historyInPageActions';
-	const TOOLBAR_SUBMENU = 'overflowSubmenu';
-	const TABS_ON_SPECIALS = 'tabsOnSpecials';
-	const MAIN_MENU_EXPANDED = 'mainMenuExpanded';
-	const PERSONAL_MENU = 'personalMenu';
+	public const MOBILE_OPTIONS = 'mobileOptionsLink';
+	public const CATEGORIES = 'categories';
+	public const PAGE_ISSUES = 'pageIssues';
+	public const BETA_MODE = 'beta';
+	public const TALK_AT_TOP = 'talkAtTop';
+	public const SHOW_DONATE = 'donate';
+	public const HISTORY_IN_PAGE_ACTIONS = 'historyInPageActions';
+	public const TOOLBAR_SUBMENU = 'overflowSubmenu';
+	public const TABS_ON_SPECIALS = 'tabsOnSpecials';
+	public const MAIN_MENU_EXPANDED = 'mainMenuExpanded';
+	public const PERSONAL_MENU = 'personalMenu';
+	public const SIMPLIFIED_TALK = 'simplifiedTalk';
 
-	/** @var array skin specific options, initialized with default values */
-	// Note stable skin options default to true for desktop-Minerva and are expected to be
-	// overridden on mobile.
+	/**
+	 * Note stable skin options default to true for desktop-Minerva and are expected to be
+	 * overridden on mobile.
+	 * @var array skin specific options, initialized with default values
+	 */
 	private $skinOptions = [
 		self::BETA_MODE => false,
+		self::SHOW_DONATE => true,
 		/**
 		 * Whether the main menu should include a link to
 		 * Special:Preferences of Special:MobileOptions
@@ -49,10 +52,6 @@ final class SkinOptions {
 		self::MOBILE_OPTIONS => false,
 		/** Whether a categories button should appear at the bottom of the skin. */
 		self::CATEGORIES => false,
-		/** Whether a back to top button appears at the bottom of the view page */
-		self::BACK_TO_TOP => false,
-		/** Whether a share button should appear in icons section */
-		self::SHARE_BUTTON => false,
 		/** requires a wiki using Template:Ambox */
 		self::PAGE_ISSUES => false,
 		/** no extension requirements */
@@ -67,6 +66,8 @@ final class SkinOptions {
 		self::PERSONAL_MENU => true,
 		/** whether to show a main menu with additional items */
 		self::MAIN_MENU_EXPANDED => true,
+		/** whether the simplified talk page is eligible to be shown */
+		self::SIMPLIFIED_TALK => false,
 	];
 
 	/**

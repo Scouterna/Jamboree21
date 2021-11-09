@@ -1,7 +1,9 @@
+/* stylelint-disable selector-max-id */
+
 @import '../minerva.less/minerva.mixins.less';
 @import '../minerva.less/minerva.variables.less';
-@import 'mediawiki.ui/variables';
-@import 'mediawiki.ui/mixins.buttons';
+@import 'mediawiki.ui/variables.less';
+@import 'mediawiki.ui/mixins.buttons.less';
 
 .action-history {
 	#mw-content-text > form {
@@ -21,10 +23,10 @@
 
 	// The large "Compare selected revisions" button container
 	.mw-history-compareselectedversions {
+		background: @background-color-base;
 		position: sticky;
 		position: -webkit-sticky;
 		top: 0;
-		background: @skinContentBgColor;
 		z-index: @z-indexAboveContent;
 
 		// "Compare selected revisions" button
@@ -35,7 +37,7 @@
 			max-width: 100%;
 			-webkit-appearance: unset;
 			font-weight: bold;
-			border-radius: 2px;
+			border-radius: @border-radius-base;
 			margin: 10px 0;
 		}
 
@@ -74,136 +76,94 @@
 
 		li {
 			.changeslist-row();
+			.box-sizing( border-box );
+			position: relative;
 			min-height: inherit;
-			padding: 12px 0;
+			padding: 12px 0 10px 60px;
 		}
 
 		li:after {
 			.clearfix();
 		}
 
-		// diff radio buttons, admin revision-delete checkbox
-		input[ type='radio' ],
-		input[ type='checkbox' ] {
-			float: left;
-			position: relative;
-			display: inline-block;
-			vertical-align: baseline;
-			// aligning checkboxes with text
-			top: 5px;
-			margin-right: 10px;
-			// FIXME: Overrides the border: 0 in reset.less
-			// When that reset rule doesn't exist, neither should this.
-			border: 1px solid @grayLight;
+		.mw-history-histlinks {
+			float: right;
 		}
 
-		// FIXME: Override the background: none; in reset.less.
-		// When that reset rule doesn't exist, neither should this.
+		// Diff radio buttons, admin revision-delete checkbox.
+		input[ type='radio' ],
+		input[ type='checkbox' ] {
+			// Align checkboxes with text.
+			top: 5px;
+		}
+
 		input[ type='radio' ] {
-			background: @grayMediumDark;
+			position: absolute;
+			top: 16px;
+		}
+
+		input[ name='oldid' ] {
+			left: 8px;
+		}
+
+		input[ name='diff' ] {
+			left: 32px;
 		}
 
 		// checkbox appears slightly smaller than radio buttons,
 		// moving down 6px to vertically center.
 		input[ type='checkbox' ] {
-			top: 6px;
-		}
-
-		// (cur|prev) links
-		.mw-history-histlinks {
-			float: right;
-		}
-
-		// date
-		.mw-changeslist-date {
-			float: left;
-			font-weight: bold;
-			clear: none;
-		}
-
-		// user name
-		.history-user {
-			float: left;
-			// margin separates the entire username (talk | contrib) block
-			// from the (cur|prev) links on the right. Approximates a &nbsp;
-			margin-right: 0.5em;
-
-			.mw-userlink {
-				// margin separates the username
-				// from the (talk | contrib) links. Approximates a &nbsp;
-				margin-right: 0.5em;
-			}
-		}
-
-		// container for rollback, undo buttons
-		.mw-changeslist-links:not( .mw-usertoollinks ):not( .mw-history-histlinks ) {
-			float: right;
-			font-size: 0.85em;
-
-			&:after {
-				.clearfix();
-			}
-
-			// removing parentheses around undo button
-			& > span:before {
-				content: '';
-			}
-
-			& > span:after {
-				content: '';
-			}
-
-			// rollback edit link
-			.mw-rollback-link a {
-				// separating rollback link from undo link.
-				margin-left: 1em;
-			}
-
-			// undo link, styled as button
-			.mw-history-undo a, .mw-rollback-link a {
-				float: right;
-				background-color: @colorGray15;
-				color: @colorText;
-				text-decoration: none;
-				.mw-ui-button();
-				.mw-ui-button-states();
-			}
-		}
-
-		// edit summary
-		.comment {
-			// meant to give space for the undo button to the right of
-			// the revision description.
-			width: 65%;
-		}
-
-		// edit summary, +/- bytes changed, tags
-		.comment,
-		.mw-diff-bytes,
-		.mw-tag-markers {
-			float: left;
-			clear: left;
-		}
-
-		// add left margin to create a faux column after the radio buttons
-		.history-user,
-		.comment,
-		.mw-diff-bytes,
-		.mw-history-tools,
-		.mw-tag-markers {
-			margin-left: @revision-selectors-width;
+			position: absolute;
+			top: 46px;
+			left: 32px;
 		}
 	}
 
-	// hide page instructions
+	.mw-diff-bytes,
+	.mw-changeslist-date {
+		display: block;
+	}
+
+	// removes space between the .mw-diff-bytes and comments.
+	.comment {
+		float: left;
+		width: 100%;
+		margin-bottom: 6px;
+	}
+
+	// hide page instructions, article size, double dot separator, thank link
 	.mw-history-legend,
-	// article size
-	.history-size,
-	// double dot separator
+	.history-size.mw-diff-bytes,
 	.mw-changeslist-separator,
-	// thank link
 	.mw-thanks-thank-link,
 	abbr {
 		display: none;
+	}
+
+	// Disable the parentheseses around the undo and rollback link.
+	.mw-changeslist-links:not( .mw-usertoollinks ):not( .mw-history-histlinks ) {
+		& > span:after,
+		& > span:before {
+			content: '';
+		}
+	}
+
+	.mw-tag-markers {
+		// Disable the core margins of tags.
+		margin: 0;
+		// places the tags on the same line as the float-right undo button.
+		display: inline;
+	}
+
+	.history-user {
+		// (hack) - the history page injects unstyleable whitespace. to keep user aligned with other elements
+		// it most be moved to the left.
+		margin-left: -5px;
+	}
+
+	.mw-history-undo {
+		float: right;
+		// Push the tags down to bottom so undo and tags do not overlay.
+		padding-bottom: 10px;
 	}
 }

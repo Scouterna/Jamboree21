@@ -6,6 +6,7 @@
 
 	/**
 	 * IssueNotice
+	 *
 	 * @class IssueNotice
 	 * @extends View
 	 *
@@ -23,4 +24,6 @@
 		}
 	} );
 	module.exports = IssueNotice;
+
+// eslint-disable-next-line no-restricted-properties
 }( mw.mobileFrontend ) );

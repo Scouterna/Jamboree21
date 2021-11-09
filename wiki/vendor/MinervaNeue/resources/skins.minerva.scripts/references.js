@@ -1,4 +1,7 @@
+var drawers = require( './drawers.js' );
+
 module.exports = function () {
+	// eslint-disable-next-line no-restricted-properties
 	var M = mw.mobileFrontend,
 		mobile = M.require( 'mobile.startup' ),
 		references = mobile.references,
@@ -9,8 +12,9 @@ module.exports = function () {
 
 	/**
 	 * Event handler to show reference when a reference link is clicked
+	 *
 	 * @ignore
-	 * @param {JQuery.Event} ev Click event of the reference element
+	 * @param {jQuery.Event} ev Click event of the reference element
 	 */
 	function showReference( ev ) {
 		var urlComponents,
@@ -25,8 +29,22 @@ module.exports = function () {
 		if ( urlComponents.length > 1 ) {
 			href = '#' + urlComponents[ 1 ];
 		}
+
 		references.showReference( href, currentPage, $dest.text(),
-			currentPageHTMLParser, gateway );
+			currentPageHTMLParser, gateway, {
+				onShow: function () {
+					drawers.lockScroll();
+				},
+				onShowNestedReference: true,
+				onBeforeHide: drawers.discardDrawer
+			},
+			function ( oldDrawer, newDrawer ) {
+				oldDrawer.hide();
+				drawers.displayDrawer( newDrawer, {} );
+			}
+		).then( function ( drawer ) {
+			drawers.displayDrawer( drawer, {} );
+		} );
 	}
 
 	/**
@@ -34,7 +52,7 @@ module.exports = function () {
 	 * Delegates to `showReference` once the references drawer is ready.
 	 *
 	 * @ignore
-	 * @param {JQuery.Event} ev Click event of the reference element
+	 * @param {jQuery.Event} ev Click event of the reference element
 	 */
 	function onClickReference( ev ) {
 		showReference( ev );

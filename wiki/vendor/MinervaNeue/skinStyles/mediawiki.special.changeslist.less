@@ -5,8 +5,8 @@
 
 @import '../minerva.less/minerva.mixins.less';
 @import '../minerva.less/minerva.variables.less';
-@import 'mediawiki.ui/mixins.buttons';
-@import 'mediawiki.ui/variables';
+@import 'mediawiki.ui/mixins.buttons.less';
+@import 'mediawiki.ui/variables.less';
 
 // Decrease the font-size of the advanced filters module (see T229360).
 .mw-rcfilters-container,
@@ -32,8 +32,11 @@ ul.special {
 
 	// the following selector are nested due to their
 	// generic names.
+	.mw-contributions-title,
 	.mw-title {
 		font-weight: bold;
+		// Word-break overlong user names, see T237230.
+		.hyphens( auto );
 	}
 
 	.comment {
@@ -43,6 +46,11 @@ ul.special {
 		line-height: 1.4em;
 		padding: 0.5em 0;
 	}
+}
+
+a.mw-contributions-title,
+.mw-title a {
+	word-break: break-word;
 }
 
 // T232955: Properly align deletion comments
@@ -126,17 +134,55 @@ ul.mw-contributions-list li > * {
 	white-space: nowrap;
 }
 
+// undo link, styled as button
+.mw-history-undo, .mw-rollback-link {
+	font-size: initial;
+
+	a {
+		float: right;
+		background-color: @colorGray15;
+		color: @colorText;
+		text-decoration: none;
+		.mw-ui-button();
+		.mw-ui-button-states();
+		font-size: @font-size-minerva-smallest;
+
+		&:after {
+			.clearfix();
+		}
+	}
+}
+
+ul.mw-contributions-list li .mw-rollback-link {
+	float: right;
+	font-size: initial;
+}
+
+// rollback edit link
+.mw-rollback-link a {
+	// separating rollback link from undo link.
+	margin-left: 1em;
+}
+
 .mw-revdelundel-link,
 .mw-tag-markers {
 	display: block;
 }
 
-/**
- * Button style rollback link, visible to admins.
- */
-a.mw-rollback-link {
-	.mw-ui-button();
-	font-size: @taglineFontSize;
-	float: left;
-	clear: both;
+// On Watchlist and RecentChanges the user is on a separate line per T236328.
+// This does not apply to the history page.
+// It is unnecessary on Special:Contributions since all contributions are by the same user.
+.mw-special-Watchlist,
+.mw-special-Recentchanges {
+	.mw-userlink,
+	.mw-usertoollinks {
+		float: none;
+	}
+
+	.mw-userlink:before,
+	.mw-usertoollinks:after {
+		content: '';
+		display: table;
+		width: 100%;
+	}
 }

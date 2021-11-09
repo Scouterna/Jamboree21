@@ -8,6 +8,8 @@
  * https://en.m.wikipedia.org/wiki/Barack_Obama
  */
 
+'use strict';
+
 const { Page } = require( './mw_core_pages' );
 
 class MinervaPage extends Page {
@@ -16,6 +18,7 @@ class MinervaPage extends Page {
 
 	/**
 	 * Opens a page if it isn't already open.
+	 *
 	 * @param {string} path
 	 */
 	open( path = 'Main_Page' ) {
@@ -29,6 +32,7 @@ class MinervaPage extends Page {
 	/**
 	 * Ensure browser is opened on a MediaWiki page, and set a specified
 	 * cookie for that domain.
+	 *
 	 * @param {string} name - name of the cookie
 	 * @param {string} value - value of the cookie
 	 */
@@ -38,10 +42,10 @@ class MinervaPage extends Page {
 			this.open();
 		}
 
-		const cookie = browser.getCookie( name );
+		const cookie = browser.getCookies( [ name ] );
 
 		if ( !cookie || cookie.value !== value ) {
-			browser.setCookie( {
+			browser.setCookies( {
 				name: name,
 				value: value } );
 		}
@@ -66,7 +70,7 @@ class MinervaPage extends Page {
 			const state = browser.execute( ( m ) => {
 				return mw.loader.getState( m );
 			}, moduleName );
-			return state.value === 'ready';
+			return state === 'ready';
 		} );
 	}
 }

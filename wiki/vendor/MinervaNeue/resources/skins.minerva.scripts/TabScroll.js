@@ -13,7 +13,7 @@ function testScrollLeftStyle() {
 		dir: 'rtl',
 		style: 'font-size: 14px; width: 4px; height: 1px; position: absolute; top: -1000px; overflow: scroll;'
 	} ).text( 'ABCD' );
-	$definer.appendTo( 'body' );
+	$definer.appendTo( document.body );
 	definer = $definer[ 0 ];
 	if ( definer.scrollLeft > 0 ) {
 		// Safari, Chrome
@@ -34,6 +34,7 @@ function testScrollLeftStyle() {
 
 /**
  * When tabs are present and one is selected, scroll the selected tab into view.
+ *
  * @return {void}
  */
 function initTabsScrollPosition() {
@@ -44,6 +45,7 @@ function initTabsScrollPosition() {
 
 	/**
 	 * Set tabContainer.scrollLeft, with adjustments for browser inconsistencies in RTL
+	 *
 	 * @param {number} sl New .scrollLeft value, in 'default' (WebKit) style
 	 */
 	function setScrollLeft( sl ) {

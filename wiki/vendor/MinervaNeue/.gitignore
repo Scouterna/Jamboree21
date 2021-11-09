@@ -1,5 +1,4 @@
-/docs/js/
-/docs/php/
+/docs/
 /node_modules/
 /vendor
 /composer.lock
@@ -7,3 +6,5 @@
 .DS_Store
 /.eslintcache
 /tests/selenium/log
+/tmp
+/.resolve-less-imports

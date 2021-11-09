@@ -19,21 +19,21 @@
  * @file
  */
 
+use MediaWiki\Config\ServiceOptions;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Minerva\LanguagesHelper;
 use MediaWiki\Minerva\Menu\Definitions;
-use MediaWiki\Minerva\Menu\Main\MainMenuDirector;
-use MediaWiki\Minerva\Menu\Main\DefaultMainMenuBuilder;
 use MediaWiki\Minerva\Menu\Main\AdvancedMainMenuBuilder;
+use MediaWiki\Minerva\Menu\Main\DefaultMainMenuBuilder;
+use MediaWiki\Minerva\Menu\Main\MainMenuDirector;
 use MediaWiki\Minerva\Menu\PageActions as PageActionsMenu;
 use MediaWiki\Minerva\Menu\User\AdvancedUserMenuBuilder;
 use MediaWiki\Minerva\Menu\User\DefaultUserMenuBuilder;
 use MediaWiki\Minerva\Menu\User\UserMenuDirector;
 use MediaWiki\Minerva\Permissions\IMinervaPagePermissions;
 use MediaWiki\Minerva\Permissions\MinervaPagePermissions;
-use MediaWiki\Minerva\Permissions\MinervaNoPagePermissions;
 use MediaWiki\Minerva\SkinOptions;
-use MediaWiki\Minerva\SkinUserPageHelper;
+use MediaWiki\Minerva\Skins\SkinUserPageHelper;
 
 return [
 	'Minerva.Menu.Definitions' => function ( MediaWikiServices $services ): Definitions {
@@ -64,58 +64,70 @@ return [
 		$definitions = $services->getService( 'Minerva.Menu.Definitions' );
 		$showMobileOptions = $options->get( SkinOptions::MOBILE_OPTIONS );
 		$user = $context->getUser();
+		// Add a donate link (see https://phabricator.wikimedia.org/T219793)
+		$showDonateLink = $options->get( SkinOptions::SHOW_DONATE );
 		$builder = $options->get( SkinOptions::MAIN_MENU_EXPANDED ) ?
-			new AdvancedMainMenuBuilder( $showMobileOptions, $user, $definitions ) :
-			new DefaultMainMenuBuilder( $showMobileOptions, $user, $definitions );
+			new AdvancedMainMenuBuilder( $showMobileOptions, $showDonateLink, $user, $definitions ) :
+			new DefaultMainMenuBuilder( $showMobileOptions, $showDonateLink, $user, $definitions );
 
 		return new MainMenuDirector( $builder, $context, $services->getSpecialPageFactory() );
 	},
 	'Minerva.Menu.PageActionsDirector' =>
 		function ( MediaWikiServices $services ): PageActionsMenu\PageActionsDirector {
-		/**
-		 * @var SkinOptions $skinOptions
-		 * @var SkinMinerva $skin
-		 * @var SkinUserPageHelper $userPageHelper
-		 */
-		$skinOptions = $services->getService( 'Minerva.SkinOptions' );
-		$context = RequestContext::getMain();
-		$title = $context->getTitle();
-		$user = $context->getUser();
-		$userPageHelper = $services->getService( 'Minerva.SkinUserPageHelper' );
-		$languagesHelper = $services->getService( 'Minerva.LanguagesHelper' );
-		$toolbarBuilder = new PageActionsMenu\ToolbarBuilder(
-			$title,
-			$user,
-			$context,
-			$services->getService( 'Minerva.Permissions' ),
-			$skinOptions,
-			$userPageHelper,
-			$languagesHelper
-		);
-		if ( $skinOptions->get( SkinOptions::TOOLBAR_SUBMENU ) ) {
-			 $overflowBuilder = $userPageHelper->isUserPage() ?
-				 new PageActionsMenu\UserNamespaceOverflowBuilder(
-					 $title,
-					 $context,
-					 $userPageHelper,
-					 $services->getService( 'Minerva.Permissions' ),
-					 $languagesHelper
-				 ) :
-				 new PageActionsMenu\DefaultOverflowBuilder(
-					 $context
-				 );
-		} else {
-			$overflowBuilder = new PageActionsMenu\EmptyOverflowBuilder();
-		}
+			/**
+			 * @var SkinOptions $skinOptions
+			 * @var SkinMinerva $skin
+			 * @var SkinUserPageHelper $userPageHelper
+			 */
+			$skinOptions = $services->getService( 'Minerva.SkinOptions' );
+			$context = RequestContext::getMain();
+			$title = $context->getTitle();
+			$user = $context->getUser();
+			$userPageHelper = $services->getService( 'Minerva.SkinUserPageHelper' );
+			$languagesHelper = $services->getService( 'Minerva.LanguagesHelper' );
 
-		return new PageActionsMenu\PageActionsDirector(
-			$toolbarBuilder,
-			$overflowBuilder,
-			$context
-		);
-	 },
-	'Minerva.SkinUserPageHelper' => function (): SkinUserPageHelper {
+			$relevantUserPageHelper = $title->inNamespace( NS_USER_TALK ) ?
+				new SkinUserPageHelper(
+					$services->getUserNameUtils(),
+					$context->getSkin()->getRelevantTitle()->getSubjectPage()
+				) :
+				$userPageHelper;
+
+			$toolbarBuilder = new PageActionsMenu\ToolbarBuilder(
+				$title,
+				$user,
+				$context,
+				$services->getService( 'Minerva.Permissions' ),
+				$skinOptions,
+				$relevantUserPageHelper,
+				$languagesHelper,
+				new ServiceOptions( PageActionsMenu\ToolbarBuilder::CONSTRUCTOR_OPTIONS,
+					$services->getMainConfig() )
+			);
+			if ( $skinOptions->get( SkinOptions::TOOLBAR_SUBMENU ) ) {
+				 $overflowBuilder = $relevantUserPageHelper->isUserPage() ?
+					 new PageActionsMenu\UserNamespaceOverflowBuilder(
+						 $title,
+						 $context,
+						 $services->getService( 'Minerva.Permissions' ),
+						 $languagesHelper
+					 ) :
+					 new PageActionsMenu\DefaultOverflowBuilder(
+						 $context
+					 );
+			} else {
+				$overflowBuilder = new PageActionsMenu\EmptyOverflowBuilder();
+			}
+
+			return new PageActionsMenu\PageActionsDirector(
+				$toolbarBuilder,
+				$overflowBuilder,
+				$context
+			);
+		},
+	'Minerva.SkinUserPageHelper' => function ( MediaWikiServices $services ): SkinUserPageHelper {
 		return new SkinUserPageHelper(
+			$services->getUserNameUtils(),
 			RequestContext::getMain()->getSkin()->getRelevantTitle()
 		);
 	},
@@ -126,24 +138,13 @@ return [
 		return new SkinOptions();
 	},
 	'Minerva.Permissions' => function ( MediaWikiServices $services ): IMinervaPagePermissions {
-		$context = RequestContext::getMain();
-		$title = $context->getTitle();
-
-		// Title may be undefined in certain contexts (T179833)
-		if ( $title ) {
-			$contentHandler = ContentHandler::getForTitle( $title );
-
-			return new MinervaPagePermissions(
-				$context->getTitle(),
-				$context->getConfig(),
-				$context->getUser(),
-				$services->getService( 'Minerva.SkinOptions' ),
-				$contentHandler,
-				$services->getService( 'Minerva.LanguagesHelper' ),
-				$services->getPermissionManager()
-			);
-		} else {
-			return new MinervaNoPagePermissions();
-		}
+		$permissions = new MinervaPagePermissions(
+			$services->getService( 'Minerva.SkinOptions' ),
+			$services->getService( 'Minerva.LanguagesHelper' ),
+			$services->getPermissionManager()
+		);
+		// TODO: This should not be allowed, this is basically global $wgTitle and $wgUser.
+		$permissions->setContext( RequestContext::getMain() );
+		return $permissions;
 	}
 ];

@@ -8,7 +8,6 @@
  * links can be differentiated from other links. Thus we only apply the linkColor to links with href
  * attributes.
 */
-/* stylelint-disable no-descending-specificity */
 a:not( [ href ] ) {
 	color: @colorGray2;
 
@@ -16,10 +15,10 @@ a:not( [ href ] ) {
 	cursor: pointer;
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
 a {
+	color: @color-link;
 	text-decoration: none;
-	color: @linkColor;
-	hyphens: none;
 
 	&:visited {
 		color: #6b4ba1;
@@ -36,10 +35,10 @@ a {
 	&.new,
 	&.new:visited,
 	&.new:hover {
-		color: @redLinkColor;
+		color: @color-link--new;
 		// Take care of headings in page lists.
 		> * {
-			color: @redLinkColor;
+			color: @color-link--new;
 		}
 	}
 
