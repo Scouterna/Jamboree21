@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>J22 Infotavla</title>
+
+		<link rel="stylesheet" href="static/dist/reset.css">
+		<link rel="stylesheet" href="static/dist/reveal.css">
+		<link rel="stylesheet" href="static/dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="static/plugin/highlight/monokai.css">
+
+		<meta http-equiv="Refresh" content="300" />
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section><h1>God {{ tod_string }}!</h1>
+					{{ today }}
+				</section>
+				<section>
+					<h1>Vad händer idag?</h1>
+					<ul>
+						<li>Tvättstugan är öppen 8-17</li>
+						<li>Mat hälsar att middagen är sen 20 min</li>
+						<li>OBS: Imorgon är onsdagen</li>
+					</ul>
+				</section>
+				<section>
+					<h1>Vädret idag</h1>
+					<table style="font-size: small; padding: 0;">
+						<thead>
+							<th>Klockan</th>
+							<th></th>
+							<th></th>
+							<th>Temperatur</th>
+							<th>Vind</th>
+						</thead>
+						<tbody>
+						{% for w in weather %}
+						
+						<tr>
+							<td>{{ w['time'] }}</td>
+							<td><img src="static/img/wsymb2/wsymb2_{{ w['Wsymb2'] }}.png" alt="" style="height: 30px; width: 30px; padding: 0;"></td>
+							<td>{{ weather_symb[w['Wsymb2']] }}</td>
+							<td>{{ w['T'] }} &deg;C</td>
+							<td>{{ w['ws']}} m/s {{ w['wd']}}</td>
+							
+						</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					<p style="font-size: x-small;">Data från <a href="https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/14.141990/lat/55.991130/data.json">SMHI</a></p>
+				</section>
+				<section>
+					<img src="static/img/logo.png" alt="">
+				</section>
+			</div>
+		</div>
+
+		<script src="static/dist/reveal.js"></script>
+		<script src="static/plugin/notes/notes.js"></script>
+		<script src="static/plugin/markdown/markdown.js"></script>
+		<script src="static/plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				autoSlide: 5000,
+				loop: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
