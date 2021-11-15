@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 token = ""
 tok_file = "tok"
-wu_url = "http://wikiupdates"
+wu_url = "http://wikiupdate.jamboree21.cluster.local"
 
 class MLStripper(HTMLParser):
     def __init__(self):
