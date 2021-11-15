@@ -2,21 +2,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: template
+  name: planera
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: template
+      app: planera
   template:
     metadata:
       labels:
-        app: template
+        app: planera
     spec:
       containers:
         - envFrom:
             - configMapRef:
                 name: environment
-          image: {{ .Values.image | default "scouterna.azurecr.io/template" }}:{{ .Chart.AppVersion }}
+        - env:
+            - name: MICROSOFT_GRAPH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: microsoft-password
+                  name: planera-credentials
+            - name: WU_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: wikiupdate-secret
+                  name: planera-credentials
+          image: {{ .Values.image | default "scouterna.azurecr.io/planera" }}:{{ .Chart.AppVersion }}
           imagePullPolicy: Always
           name: app
+

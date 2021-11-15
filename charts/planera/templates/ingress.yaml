@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/tls-acme: "true"
     plugins.konghq.com: office-oauth
     kubernetes.io/ingress.class: "kong"
-  name: mediawiki
+  name: planera
 spec:
   rules:
   {{ range .Values.domains }}
@@ -15,7 +15,7 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: template
+          serviceName: planera
           servicePort: 8080
   {{- end }}
   tls:
@@ -23,4 +23,4 @@ spec:
     {{ range .Values.domains }}
     - {{ . }}
     {{- end }}
-    secretName: template-tls
+    secretName: planera-tls

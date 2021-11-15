@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: template
+  name: planera
 spec:
   ports:
   - port: 80
     protocol: TCP
     targetPort: 8080
   selector:
-    app: template
+    app: planera
   type: ClusterIP

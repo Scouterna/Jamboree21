@@ -1,4 +1,4 @@
 ---
-image: template
+image: planera
 domains:
-  - template.localhost
+  - planera.localhost
