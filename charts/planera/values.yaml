@@ -1,0 +1,4 @@
+---
+image: scouterna.azurecr.io/planera
+domains:
+  - localhost
