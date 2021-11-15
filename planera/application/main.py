@@ -29,7 +29,7 @@ def strip_tags(html):
     return s.get_data()
 
 def get_wikiupdate():
-    return json.loads(requests.get(wu_url + "?d=1&l=20", headers={'secret': 'superdupersecret??'}))
+    return json.loads(requests.get(wu_url + "?d=1&l=20", headers={'secret': os.environ['WU_SECRET']}))
 
 @app.route('/', methods=['GET'])
 def index():
@@ -38,8 +38,8 @@ def index():
     j = json.loads(open("data.json", 'r').read())
     s = jsontohtml(j)
     now = datetime.strftime(datetime.now(), "%Y-%m-%d, %H:%M")
-    with open(tok_file, 'w') as token_file:
-        token_file.write(token)
+    # with open(tok_file, 'w') as token_file:
+    #     token_file.write(token)
     
     events = cal.get_cal(tok_file)
 
@@ -62,7 +62,7 @@ def daysleft(d2):
     return d2 - td
 
 def main():
-    app.run()
+    app.run(port=8080)
 
 if __name__ == "__main__":
     main()

@@ -1,10 +1,11 @@
 from O365 import Account, FileSystemTokenBackend
 import datetime as dt
 from dateutil.relativedelta import relativedelta
+import os
 
-credentials = ('b791f64f-5373-4418-be01-2c41bd06fb08','')
+credentials = (os.environ['MICROSOFT_GRAPH_UNAME'], os.environ['MICROSOFT_GRAPH_PASSWORD'])
 acc = Account(credentials)
-redirect_uri = "http://localhost:5000"
+redirect_uri = 'https://' + os.environ['HOSTNAME']
 scope = ["basic", "User.Read", "Calendars.Read"]
 
 
