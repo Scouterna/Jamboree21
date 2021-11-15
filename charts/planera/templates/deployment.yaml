@@ -17,7 +17,7 @@ spec:
         - envFrom:
             - configMapRef:
                 name: environment
-        - env:
+          env:
             - name: MICROSOFT_GRAPH_PASSWORD
               valueFrom:
                 secretKeyRef:
