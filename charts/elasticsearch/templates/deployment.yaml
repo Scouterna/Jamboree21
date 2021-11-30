@@ -17,6 +17,6 @@ spec:
         - envFrom:
             - configMapRef:
                 name: environment
-          image: {{ .Values.image | default "scouterna.azurecr.io/template" }}:{{ .Chart.AppVersion }}
+          image: {{ .Values.image | default "scouterna.azurecr.io/elasticsearch" }}:{{ .Chart.AppVersion }}
           imagePullPolicy: Always
           name: app
