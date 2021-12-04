@@ -189,6 +189,13 @@ wfLoadExtension( 'MassEditRegex' );
 $wgGroupPermissions['masseditregexeditor']['masseditregex'] = true;
 $wgGroupPermissions['sysop']['masseditregex'] = true;
 
+# Install CirrusSearch, Elastica and configure them
+wfLoadExtension( 'Elastica' );
+wfLoadExtension( 'CirrusSearch' );
+$wgCirrusSearchClusters = [ # what is the correct url to the cluster?
+	'dc-elastic' => [ 'elasticsearch' ], # _only placeholder_
+];
+
 wfLoadSkin( 'MinervaNeue' );
 $wgMFDefaultSkinClass = 'SkinMinerva';
 

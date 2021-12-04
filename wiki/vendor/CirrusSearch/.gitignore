@@ -1,0 +1,12 @@
+.svn
+*~
+*.kate-swp
+.*.swp
+.indexed
+node_modules/
+vendor/
+composer.lock
+.eslintcache
+/tests/selenium/log
+log
+.idea
