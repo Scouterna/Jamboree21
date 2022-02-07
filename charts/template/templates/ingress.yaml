@@ -2,9 +2,9 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: "true"
-    plugins.konghq.com: office-oauth
+    konghq.com/plugins: office-oauth
     kubernetes.io/ingress.class: "kong"
   name: mediawiki
 spec:
