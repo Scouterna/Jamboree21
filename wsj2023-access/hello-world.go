@@ -16,6 +16,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		target = "World"
 	}
 	fmt.Fprintf(w, "Hello %s!\n", target)
+
+	// Loop over header names
+	for name, values := range r.Header {
+		// Loop over all values for the name.
+		for _, value := range values {
+			fmt.Println(w, name, value)
+		}
+	}
 }
 
 func main() {
