@@ -15,7 +15,6 @@ steps:
       command: 'push'
       tags: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
     displayName: Push docker image
-    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
   - task: HelmInstaller@1
     displayName: Install Helm
     inputs:
@@ -32,10 +31,8 @@ steps:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
       ArtifactName: ${{ format('{0}-chart', parameters.serviceName) }}
       publishLocation: 'Container'
-    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: ${{ format('charts/{0}/values/', parameters.serviceName) }}
       ArtifactName: ${{ format('{0}-chartvalues', parameters.serviceName) }}
       publishLocation: 'Container'
-    condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
