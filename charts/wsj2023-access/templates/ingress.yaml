@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/tls-acme: "true"
     plugins.konghq.com: office-oauth
     kubernetes.io/ingress.class: "kong"
-  name: mediawiki
+  name: wsj2023-access
 spec:
   rules:
   {{ range .Values.domains }}
@@ -16,7 +16,7 @@ spec:
       - path: /
         backend:
           serviceName: wsj2023-access
-          servicePort: 8080
+          servicePort: 80
   {{- end }}
   tls:
   - hosts:
