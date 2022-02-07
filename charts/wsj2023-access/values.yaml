@@ -1,5 +1,5 @@
 ---
-image: scouterna.azurecr.io/wiki
+image: scouterna.azurecr.io/wsj2023-access
 domains:
   - localhost
 storage:
