@@ -4,7 +4,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: "true"
-    plugins.konghq.com: office-oauth
+    konghq.com/plugins: office-oauth
     konghq.com/protocols: "https"
     konghq.com/https-redirect-status-code: "301"
   name: mediawiki
