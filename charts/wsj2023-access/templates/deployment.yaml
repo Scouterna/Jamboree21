@@ -14,9 +14,25 @@ spec:
         app: wsj2023-access
     spec:
       containers:
-        - envFrom:
-            - configMapRef:
-                name: environment
+        - name: app
           image: {{ .Values.image | default "scouterna.azurecr.io/wsj2023-access" }}:{{ .Chart.AppVersion }}
           imagePullPolicy: Always
-          name: app
+          env:
+            - name: SCOUTNET_ACTIVITY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: scoutnet_credentials
+                  key: activity_id
+            - name: SCOUTNET_PARTICIPANTS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: scoutnet_credentials
+                  key: participants_key
+            - name: SCOUTNET_QUESTIONS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: scoutnet_credentials
+                  key: questions_key
+          envFrom:
+            - configMapRef:
+                name: environment
