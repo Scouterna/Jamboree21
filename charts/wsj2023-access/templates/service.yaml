@@ -7,7 +7,7 @@ spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: 8080
+    targetPort: 80
   selector:
     app: wsj2023-access
   type: ClusterIP

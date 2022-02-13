@@ -1,0 +1,5 @@
+fastapi==0.70.1
+uvicorn==0.16.0
+pydantic[email]
+pydantic[dotenv]
+requests_cache
