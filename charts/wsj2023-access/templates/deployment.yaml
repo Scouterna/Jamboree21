@@ -21,18 +21,18 @@ spec:
             - name: SCOUTNET_ACTIVITY_ID
               valueFrom:
                 secretKeyRef:
-                  name: scoutnet_credentials
-                  key: activity_id
+                  name: scoutnet-credentials
+                  key: activity-id
             - name: SCOUTNET_PARTICIPANTS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: scoutnet_credentials
-                  key: participants_key
+                  name: scoutnet-credentials
+                  key: participants-key
             - name: SCOUTNET_QUESTIONS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: scoutnet_credentials
-                  key: questions_key
+                  name: scoutnet-credentials
+                  key: questions-key
           envFrom:
             - configMapRef:
                 name: environment
