@@ -1,3 +1,4 @@
 ---
 domains:
   - wsj2023-access.staging.webservices.scouterna.net
+oauth-plugin: office-oauth-wsj2023-access-staging
