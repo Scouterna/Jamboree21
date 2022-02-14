@@ -1,4 +1,4 @@
 ---
 domains:
   - wsj2023-access.production.webservices.scouterna.net
-oauth-plugin: office-oauth-wsj2023-access-staging
+oauthPlugin: office-oauth-wsj2023-access-staging

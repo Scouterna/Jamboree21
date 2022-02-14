@@ -4,7 +4,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: "true"
-    konghq.com/plugins:  {{ .Values.oauth-plugin | default "office-oauth" }}
+    konghq.com/plugins:  {{ .Values.oauthPlugin | default "office-oauth" }}
     kubernetes.io/ingress.class: "kong"
   name: wsj2023-access
 spec:
