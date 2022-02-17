@@ -1,11 +1,14 @@
-from fastapi import FastAPI
+from xmlrpc.client import Boolean
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware  # NEW
 from pydantic import BaseSettings, BaseModel, EmailStr
 from typing import Optional, List, Tuple, Dict, Any, Union
 from fastapi.staticfiles import StaticFiles
 from enum import Enum
 from datetime import timedelta
+import pydantic
 from requests_cache import CachedSession
+from fastapi_pagination import Page, add_pagination, paginate
 
 import datetime
 import json
@@ -45,7 +48,8 @@ class ApplicationType(str, Enum):
             ApplicationType.ist: "6537",
         }[self.value]
 
-
+class View(str, Enum):
+    pass
 
 class Participant(BaseModel):
     member_no: int
@@ -60,6 +64,7 @@ class Participant(BaseModel):
 
 
 class Question(BaseModel):
+    status: Optional[Boolean]
     question: str
     description: str
     type: str
@@ -80,14 +85,27 @@ def get_participants():
     return list(data['participants'].values())
 
 
-def get_questions(type: ApplicationType):
-    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={type.form_id()}'
+def get_questions(form_id: int) -> Dict[int, Question]:
+    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
     print(f'Fetching: {url}')
     r = session.get(url)
     data = json.loads(r.text)['questions']
+    status_tabs = [v['id'] for (k,v) in data['tabs'].items() if v['title'] == 'Status']
     del data['tabs']
     del data['sections']
-    return data
+    for _, v in data.items():
+        v['status'] = True if (v['tab_id'] in status_tabs) else False
+    questions = pydantic.parse_obj_as(Dict[int, Question], data)
+    return questions
+
+def get_forms() -> Dict[int, str]:
+    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}'
+    print(f'Fetching: {url}')
+    r = session.get(url)
+    data = json.loads(r.text)['forms']
+    print(data)
+    res = {key: value['title'] for (key, value) in data.items()}
+    return res
 
 def filter_form(participants: List[Participant], type: ApplicationType):
     # print(f'filter_form: {type} ({type.classifier()})')
@@ -107,35 +125,42 @@ app.add_middleware(
 )
 
 @app.get("/info")
-async def info():
+async def info(request: Request):
+    headers = request.headers
     return {
         "app_name": settings.app_name,
-        "activity": settings.scoutnet_activity,
+        "activity": settings.scoutnet_activity_id,
+        "headers": headers,
     }
 
-@app.get("/participants", response_model=ParticipantsOut)
-def participants(type: Optional[ApplicationType] = None):
+@app.get("/participants", response_model=Page[Participant])
+def participants(form: Optional[int] = None):
     p = get_participants()
-    # print(f'type {type}')
-    if (type != None):
-        p = filter_form(p, type)
-    res = ParticipantsOut(participants = p, length = len(p))
-    return res
+
+    p = sorted(p, key=lambda x : f"{x['registration_date']} {x['member_no']}")
+
+    qualifier = None
+    if form == 5085: # deltagare
+        qualifier = "24549"
+    elif form == 5734: # ist
+        qualifier = "25654"
+
+    if not qualifier is None:
+        p = list(filter(lambda x: qualifier in x['questions'], p))
+    return paginate(p)
 
 @app.get("/questions", response_model=Dict[int, Question])
-def questions(type: Optional[ApplicationType] = ApplicationType.deltagare):
-    r = get_questions(type)
+def questions(form: int) -> Dict[int, Question]:
+    r = get_questions(form)
+    return r
+
+@app.get("/forms", response_model=Dict[int, str])
+def forms() -> Dict[int, str]:
+    r = get_forms()
     # print(r)
     return r
 
-@app.get("/internal_statuses", response_model=Dict[int, Question])
-def internal(type: Optional[ApplicationType] = ApplicationType.deltagare):
-    q = get_questions(type)
-    # print(q)
-    status_questions = {key: value for (key, value) in q.items() if value['tab_id'] == int(type.status_tab())}
-    # print(status_questions)
-    return status_questions
 
-
+add_pagination(app)
 # Place After All Other Routes
 app.mount('', StaticFiles(directory="../client/public/", html=True), name="static")

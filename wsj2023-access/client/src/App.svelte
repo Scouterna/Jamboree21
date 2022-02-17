@@ -1,24 +1,15 @@
 <script>
   import SvelteTable from "svelte-table";
-  import { onMount } from 'svelte';
-  export let type;
-  export let rows = [];
-  export let questions = {};
-  export let status_columns = [];
+  import StatusSelector from "./StatusSelector.svelte";
+  import StatusNumber from "./StatusNumber.svelte";
 
-  onMount(async () => {
-    const responseQ = await fetch('/questions?type='+type);
-    const jsonQ = await responseQ.json();
-    questions = jsonQ;
+  let participants = Promise.resolve({items:[]});
+  $: questions = Promise.resolve([]);
+  let status_columns = [];
+  let page = 1;
+  let selected_form;
 
-    const responseS = await fetch('/internal_statuses?type='+type);
-    const jsonS = await responseS.json();
-    status_columns = set_status_columns(jsonS);
-
-    const response = await fetch("/participants?type="+type);
-    const json = await response.json();
-    rows = json.participants;
-  })
+  let forms_promise = fetch_forms();
 
   const columns = [
     {
@@ -40,41 +31,105 @@
       value: v => v.last_name
     },
     {
+      key: "date_of_birth",
+      title: "Födelsedatum",
+      sortable: true,
+      value: v => v.date_of_birth
+    },
+    {
       key: "registration_date",
       title: "Anmäld",
       sortable: true,
       value: v => v.registration_date + (v.cancelled_date == null ? '' : ' (Avanmäld)')
     },
-    {
-      key: "date_of_birth",
-      title: "Födelsedatum",
-      sortable: true,
-      value: v => v.date_of_birth
-    }
   ];
 
-  function getChoiceValue(question, choice) {
-    if (questions) return questions[question]['choices'][choice]['option']
-    return ''
+  function getChoiceValues(question, choices) {
+    let res = '';
+    if (choices == null)
+      if (question['default_value'] in question['choices'])
+        return question['choices'][question['default_value']]['option'];
+      else
+        return '';
+    if (Array.isArray(choices)) {
+      choices.forEach(choice => { res += question['choices'][choice]['option'] });
+    } else {
+      res = question['choices'][choices]['option'];
+    }
+    return res;
   }
 
   function getDefaultValue(question) {
-    if (questions) return questions[question]['default_value']
+    if (questions) return question['default_value']
     return ''
   }
 
-  function set_status_columns(json) {
+  function get_status_columns(questions) {
     let columns = [];
-    for (const [q, value] of Object.entries(json)) {
-      columns.push({
-        key: q,
-        title: value.question,
-        sortable: true,
-        value: v => getChoiceValue(q, v.questions[q] == null ? getDefaultValue(q) : v.questions[q])
-      })
+    for (const [q, value] of Object.entries(questions)) {
+      if (value.status) {
+        let component = value.type == 'choice' ? StatusSelector : StatusNumber
+        columns.push({
+          key: q,
+          title: value.question,
+          sortable: true,
+          renderComponent: {
+            component: component,
+            props: {
+              choices: questions[q]['choices'],
+              default_value: questions[q]['default_value']
+            },
+          },
+          //  v.questions[q] // getChoiceValue(q, v.questions[q] == null ? getDefaultValue(q) : v.questions[q])
+        })
+      }
     }
     return columns;
   }
+
+  async function fetch_forms() {
+    const res = await fetch('/forms');
+
+    if (res.ok) {
+      return res.json()
+    } else {
+      throw new Error(res.text())
+    }
+  }
+
+  async function fetch_questions() {
+    const res = await fetch('/questions?form='+selected_form);
+
+    if (res.ok) {
+      return res.json()
+    } else {
+      throw new Error(res.text())
+    }
+  }
+
+  async function fetch_participants() {
+    const res = await fetch("/participants?form="+selected_form+"&page="+page);
+
+    if (res.ok) {
+      return res.json();
+    } else {
+      throw new Error(res.text());
+    }
+  }
+
+  async function select_form(form_id) {
+    page = 1;
+    selected_form = form_id;
+    questions = await fetch_questions(form_id);
+    status_columns = get_status_columns(questions);
+    participants = fetch_participants(form_id);
+  }
+
+  async function selectPage(p) {
+    page = p;
+    participants = fetch_participants();
+  }
+
 </script>
 
 <svelte:head>
@@ -82,22 +137,72 @@
 </svelte:head>
 
 <main>
-	<h1>WSJ2023 Deltagarvyer</h1>
-	<p>Besök <a href="https://scoutnet.se/activities/view/1758">arrangemanget</a> för mer information</p>
+	<h1>Scoutnet aktivitetsvyer</h1>
+  {#await forms_promise then forms}
+    {#each Object.entries(forms) as [id, name]}
+      <button on:click={() => select_form(id)} class="{(selected_form == id) ? 'btn-primary' : ''}">{name}</button>
+    {/each}
+  {/await}
 </main>
 
-<SvelteTable
+
+{#await participants}
+	<p>...Hämtar data...</p>
+{:then rows}
+  <div class='text-center'>
+  {#if rows.page > 1}
+    <button on:click={() => selectPage(page-1)}>&lt; prev</button>
+  {/if}
+  {#if (rows.items && rows.size < rows.total) }
+    {#each [...Array(Math.floor(rows.total / rows.size) + 1).keys()] as p}
+      <button on:click={() => selectPage(p+1)} class="{(rows.page == p+1) ? 'btn-primary' : ''}">
+        {p + 1}
+      </button>
+    {/each}
+  {/if}
+  {#if rows.total > (rows.page * rows.size)}
+    <button on:click={() => selectPage(page+1)}>Next page &gt;</button>
+  {/if}
+  </div>
+  {#if rows.items.length > 0}
+  <SvelteTable
   columns={[...columns, ...status_columns]}
-  rows={rows}
+  rows={rows.items}
   showExpandIcon={true}
-  classNameTable="table table-striped table-hover"
+  classNameTable="table table-striped"
   classNameThead="table-primary"
   expandRowKey="member_no">
-    <div slot="expanded" let:row class="text-center">
+    <div slot="expanded" let:row>
+      <table class="table table-bordered">
+        {#each Object.entries(row.questions) as [q_id, value]}
+        <!-- remove status -->
+        <tr>
+          <td q='{q_id}' q_t='{questions[q_id]['type']}'>{questions[q_id] == null ? 'Okänd fråga '+q_id : questions[q_id]['question']}</td>
+          <td>
+            {#if questions[q_id] == null }
+              {value}
+            {:else if questions[q_id]['type'] == 'choice' }
+              {getChoiceValues(questions[q_id], value)}
+            {:else if questions[q_id]['type'] == 'text'}
+              {value}
+            {:else if questions[q_id]['type'] == 'boolean'}
+              {value == 0 ? 'Nej' : 'Ja'}
+            {:else if questions[q_id]['type'] == 'other_unsupported_by_api' && value.includes('linked_id')}
+              {JSON.parse(value)['value']}
+            {:else}
+              {value} (type: {questions[q_id]['type']}}
+            {/if}
+          </td>
+        </tr>
+        {/each}
+      </table>
       {row.cancelled_date == null ? '' : ("Avanmäld: " + row.cancelled_date)}
-      Mejl: {row.primary_email}
     </div>
-</SvelteTable>
+  </SvelteTable>
+  {/if}
+{:catch error}
+	<p style="color: red">{error.message}</p>
+{/await}
 
 <style>
 	main {
