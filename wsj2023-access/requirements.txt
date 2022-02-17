@@ -3,3 +3,4 @@ uvicorn==0.16.0
 pydantic[email]
 pydantic[dotenv]
 requests_cache
+fastapi-pagination
