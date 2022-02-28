@@ -33,6 +33,11 @@ spec:
                 secretKeyRef:
                   name: scoutnet-credentials
                   key: questions-key
+            - name: SCOUTNET_CHECKIN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: scoutnet-credentials
+                  key: checkin-key
           envFrom:
             - configMapRef:
                 name: environment

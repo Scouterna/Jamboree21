@@ -2,14 +2,14 @@
   import SvelteTable from "svelte-table";
   import StatusSelector from "./StatusSelector.svelte";
   import StatusNumber from "./StatusNumber.svelte";
+  import SaveButtonComponent from "./SaveButtonComponent.svelte";
 
   let participants = Promise.resolve({items:[]});
-  $: questions = Promise.resolve([]);
   let status_columns = [];
-  let page = 1;
+  let query_page = 1;
   let selected_form;
-
-  let forms_promise = fetch_forms();
+  $: questions = Promise.resolve([]);
+  let forms_promise = Promise.resolve([]);
 
   const columns = [
     {
@@ -44,6 +44,39 @@
     },
   ];
 
+  const save_button = [
+    {
+      key: "save",
+      title: "",
+      sortable: false,
+      renderComponent: {
+        component: SaveButtonComponent,
+        props: { onSaveButtonClick },
+      },
+    },
+  ];
+
+  function get_status_columns(questions) {
+    let columns = [];
+    for (const [q, value] of Object.entries(questions)) {
+      if (value.status) {
+        columns.push({
+          key: q,
+          title: value.question,
+          sortable: true,
+          renderComponent: {
+            component: value.type == 'choice' ? StatusSelector : StatusNumber,
+            props: {
+              choices: questions[q]['choices'],
+              default_value: questions[q]['default_value']
+            },
+          },
+        })
+      }
+    }
+    return columns;
+  }
+
   function getChoiceValues(question, choices) {
     let res = '';
     if (choices == null)
@@ -54,41 +87,20 @@
     if (Array.isArray(choices)) {
       choices.forEach(choice => { res += question['choices'][choice]['option'] });
     } else {
-      res = question['choices'][choices]['option'];
+      if (choices in question['choices'])
+        res = question['choices'][choices]['option'];
+      else
+        res = ''
     }
     return res;
   }
 
-  function getDefaultValue(question) {
-    if (questions) return question['default_value']
-    return ''
-  }
-
-  function get_status_columns(questions) {
-    let columns = [];
-    for (const [q, value] of Object.entries(questions)) {
-      if (value.status) {
-        let component = value.type == 'choice' ? StatusSelector : StatusNumber
-        columns.push({
-          key: q,
-          title: value.question,
-          sortable: true,
-          renderComponent: {
-            component: component,
-            props: {
-              choices: questions[q]['choices'],
-              default_value: questions[q]['default_value']
-            },
-          },
-          //  v.questions[q] // getChoiceValue(q, v.questions[q] == null ? getDefaultValue(q) : v.questions[q])
-        })
-      }
-    }
-    return columns;
-  }
-
-  async function fetch_forms() {
-    const res = await fetch('/forms');
+  async function post_answers(member_no, answers) {
+    const res = await fetch('/update_status?member_no='+member_no, {
+      method: 'POST',
+      body: JSON.stringify(answers),
+      headers: {"content-type": "application/json"},
+    });
 
     if (res.ok) {
       return res.json()
@@ -97,39 +109,40 @@
     }
   }
 
-  async function fetch_questions() {
-    const res = await fetch('/questions?form='+selected_form);
+  async function onSaveButtonClick(row) {
+    console.log(row);
+    let status_answers = {};
+    Object.keys(status_columns).forEach(key => {
+      status_answers[status_columns[key].key] = row.questions[status_columns[key].key];
+      // console.log(`${ status_columns[key].title } (${status_columns[key].key}) = ${row.questions[status_columns[key].key]}`);
+    });
+    post_answers(row.member_no, status_answers);
+  }
+
+  async function fetch_async(path) {
+    const res = await fetch(path);
 
     if (res.ok) {
       return res.json()
     } else {
       throw new Error(res.text())
-    }
-  }
-
-  async function fetch_participants() {
-    const res = await fetch("/participants?form="+selected_form+"&page="+page);
-
-    if (res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.text());
     }
   }
 
   async function select_form(form_id) {
-    page = 1;
+    query_page = 1;
     selected_form = form_id;
-    questions = await fetch_questions(form_id);
+    questions = await fetch_async('/questions?form='+selected_form);
     status_columns = get_status_columns(questions);
-    participants = fetch_participants(form_id);
+    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page);
   }
 
   async function selectPage(p) {
-    page = p;
-    participants = fetch_participants();
+    query_page = p;
+    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page);
   }
 
+  forms_promise = fetch_async("/forms");
 </script>
 
 <svelte:head>
@@ -151,7 +164,7 @@
 {:then rows}
   <div class='text-center'>
   {#if rows.page > 1}
-    <button on:click={() => selectPage(page-1)}>&lt; prev</button>
+    <button on:click={() => selectPage(query_page-1)}>&lt; prev</button>
   {/if}
   {#if (rows.items && rows.size < rows.total) }
     {#each [...Array(Math.floor(rows.total / rows.size) + 1).keys()] as p}
@@ -161,12 +174,12 @@
     {/each}
   {/if}
   {#if rows.total > (rows.page * rows.size)}
-    <button on:click={() => selectPage(page+1)}>Next page &gt;</button>
+    <button on:click={() => selectPage(query_page+1)}>Next page &gt;</button>
   {/if}
   </div>
   {#if rows.items.length > 0}
   <SvelteTable
-  columns={[...columns, ...status_columns]}
+  columns={[...columns, ...status_columns, ...save_button]}
   rows={rows.items}
   showExpandIcon={true}
   classNameTable="table table-striped"
@@ -177,7 +190,7 @@
         {#each Object.entries(row.questions) as [q_id, value]}
         <!-- remove status -->
         <tr>
-          <td q='{q_id}' q_t='{questions[q_id]['type']}'>{questions[q_id] == null ? 'Okänd fråga '+q_id : questions[q_id]['question']}</td>
+          <td q='{q_id}'>{questions[q_id] == null ? 'Okänd fråga '+q_id : questions[q_id]['question']}</td>
           <td>
             {#if questions[q_id] == null }
               {value}

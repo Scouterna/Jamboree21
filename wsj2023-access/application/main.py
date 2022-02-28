@@ -1,7 +1,7 @@
 from xmlrpc.client import Boolean
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware  # NEW
-from pydantic import BaseSettings, BaseModel, EmailStr
+from pydantic import BaseSettings, BaseModel, EmailStr, constr
 from typing import Optional, List, Tuple, Dict, Any, Union
 from fastapi.staticfiles import StaticFiles
 from enum import Enum
@@ -21,32 +21,10 @@ class Settings(BaseSettings):
     scoutnet_activity_id: int = 0
     scoutnet_participants_key: str = ''
     scoutnet_questions_key: str = ''
+    scoutnet_checkin_key: str = ''
 
     class Config:
         env_file = ".env"
-
-
-class ApplicationType(str, Enum):
-    deltagare = 'Deltagare'
-    ist = 'IST'
-
-    def form_id(self):
-        return {
-            ApplicationType.deltagare: "5085",
-            ApplicationType.ist: "5734",
-        }[self.value]
-
-    def classifier(self):
-        return {
-            ApplicationType.deltagare: "24549",
-            ApplicationType.ist: "25654",
-        }[self.value]
-
-    def status_tab(self):
-        return {
-            ApplicationType.deltagare: "0000",
-            ApplicationType.ist: "6537",
-        }[self.value]
 
 class View(str, Enum):
     pass
@@ -59,7 +37,7 @@ class Participant(BaseModel):
     cancelled_date: Optional[datetime.datetime]
     sex: int
     date_of_birth: datetime.date
-    primary_email: EmailStr
+    primary_email: Union[EmailStr, constr(max_length=0)]
     questions: Any
 
 
@@ -84,6 +62,8 @@ def get_participants():
     data = json.loads(r.text)
     return list(data['participants'].values())
 
+def clean_participants_cache():
+    session.remove_expired_responses(expire_after=0)
 
 def get_questions(form_id: int) -> Dict[int, Question]:
     url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
@@ -98,20 +78,6 @@ def get_questions(form_id: int) -> Dict[int, Question]:
     questions = pydantic.parse_obj_as(Dict[int, Question], data)
     return questions
 
-def get_forms() -> Dict[int, str]:
-    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}'
-    print(f'Fetching: {url}')
-    r = session.get(url)
-    data = json.loads(r.text)['forms']
-    print(data)
-    res = {key: value['title'] for (key, value) in data.items()}
-    return res
-
-def filter_form(participants: List[Participant], type: ApplicationType):
-    # print(f'filter_form: {type} ({type.classifier()})')
-    a = list(filter(lambda x: type.classifier() in x['questions'], participants))
-    # print(f'filter_form: {len(a)}/{len(participants)}')
-    return a
 
 settings = Settings()
 app = FastAPI(reload=True)
@@ -135,18 +101,17 @@ async def info(request: Request):
 
 @app.get("/participants", response_model=Page[Participant])
 def participants(form: Optional[int] = None):
-    p = get_participants()
-
-    p = sorted(p, key=lambda x : f"{x['registration_date']} {x['member_no']}")
-
     qualifier = None
     if form == 5085: # deltagare
         qualifier = "24549"
     elif form == 5734: # ist
         qualifier = "25654"
+    else: # unknown form (yet)
+        return paginate([])
 
-    if not qualifier is None:
-        p = list(filter(lambda x: qualifier in x['questions'], p))
+    p = get_participants()
+    p = list(filter(lambda x: qualifier in x['questions'], p))
+    p = sorted(p, key=lambda x : f"{x['registration_date']} {x['member_no']}")
     return paginate(p)
 
 @app.get("/questions", response_model=Dict[int, Question])
@@ -156,9 +121,26 @@ def questions(form: int) -> Dict[int, Question]:
 
 @app.get("/forms", response_model=Dict[int, str])
 def forms() -> Dict[int, str]:
-    r = get_forms()
-    # print(r)
-    return r
+    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}'
+    print(f'Fetching: {url}')
+    r = session.get(url)
+    data = json.loads(r.text)['forms']
+    print(data)
+    res = {key: value['title'] for (key, value) in data.items()}
+    # print(res)
+    return res
+
+@app.post("/update_status", response_model=Boolean)
+def update_status(member_no: int, answers: Dict[int, str]) -> Boolean:
+    url = f'{settings.scoutnet_base}/project/checkin?id={settings.scoutnet_activity_id}&key={settings.scoutnet_checkin_key}'
+    ans = {k:{'value': v} for (k,v) in answers.items()}
+    body = {str(member_no): {'questions': ans}}
+    print(f'Posting {body} to {url}')
+    r = session.post(url, json.dumps(body), headers={'Content-Type': 'application/json'})
+    data = json.loads(r.text)
+    clean_participants_cache()
+    print(data)
+    return r.ok
 
 
 add_pagination(app)
