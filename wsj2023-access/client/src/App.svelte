@@ -10,6 +10,8 @@
   let selected_form;
   $: questions = Promise.resolve([]);
   let forms_promise = Promise.resolve([]);
+  let filter;
+  let filter_value = 0;
 
   const columns = [
     {
@@ -51,21 +53,21 @@
       sortable: false,
       renderComponent: {
         component: SaveButtonComponent,
-        props: { onSaveButtonClick },
+        props: { key:'Spara', onSaveButtonClick },
       },
     },
   ];
 
   function get_status_columns(questions) {
     let columns = [];
-    for (const [q, value] of Object.entries(questions)) {
-      if (value.status) {
+    for (let q in questions) {
+      if (questions[q].status) {
         columns.push({
-          key: q,
-          title: value.question,
+          key: questions[q].id,
+          title: questions[q].question,
           sortable: true,
           renderComponent: {
-            component: value.type == 'choice' ? StatusSelector : StatusNumber,
+            component: questions[q].type == 'choice' ? StatusSelector : StatusNumber,
             props: {
               choices: questions[q]['choices'],
               default_value: questions[q]['default_value']
@@ -132,17 +134,38 @@
   async function select_form(form_id) {
     query_page = 1;
     selected_form = form_id;
-    questions = await fetch_async('/questions?form='+selected_form);
+    filter = 0;
+    filter_value = 0;
+    questions = await fetch_async('/questions?form_id='+selected_form);
     status_columns = get_status_columns(questions);
-    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page);
+    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page+"&q="+(filter ? filter.id : '0')+"&q_val="+filter_value);
   }
 
   async function selectPage(p) {
     query_page = p;
-    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page);
+    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page+"&q="+(filter ? filter.id : '0')+"&q_val="+filter_value);
+  }
+
+  async function select_filter() {
+    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page+"&q="+(filter ? filter.id : '0')+"&q_val="+filter_value);
+  }
+
+  let _tab_id = -1
+  function show_tab(tab_id) {
+    if (tab_id == _tab_id) return false;
+    _tab_id = tab_id;
+    return true;
+  }
+
+  let _section_id = -1
+  function show_section(section_id) {
+    if (section_id == _section_id) return false;
+    _section_id = section_id;
+    return true;
   }
 
   forms_promise = fetch_async("/forms");
+
 </script>
 
 <svelte:head>
@@ -163,21 +186,45 @@
 	<p>...Hämtar data...</p>
 {:then rows}
   <div class='text-center'>
-  {#if rows.page > 1}
-    <button on:click={() => selectPage(query_page-1)}>&lt; prev</button>
+    {#if rows.page > 1}
+      <button on:click={() => selectPage(query_page-1)}>&lt; Föregående</button>
+    {/if}
+    {#if (rows.items && rows.size < rows.total) }
+      {#each [...Array(Math.floor(rows.total / rows.size) + 1).keys()] as p}
+        <button on:click={() => selectPage(p+1)} class="{(rows.page == p+1) ? 'btn-primary' : ''}">
+          {p + 1}
+        </button>
+      {/each}
+    {/if}
+    {#if rows.total > (rows.page * rows.size)}
+      <button on:click={() => selectPage(query_page+1)}>Nästa &gt;</button>
+    {/if}
+  </div>
+
+  {#if rows.items.length > 0}
+
+  <div> Filter:
+  <select bind:value={filter} on:change="{() => filter_value = 0}">
+    <option value='0'></option>
+    {#each questions as q}{#if q.filterable}
+      <option value={q}>{q.question}</option>
+    {/if}{/each}
+  </select>
+
+  {#if filter != 0}
+    <select bind:value={filter_value}>
+      <option value='0'></option>
+      {#each Object.entries(filter.choices) as [id, fv]}
+        <option value={id}>{fv.option}</option>
+      {/each}
+    </select>
   {/if}
-  {#if (rows.items && rows.size < rows.total) }
-    {#each [...Array(Math.floor(rows.total / rows.size) + 1).keys()] as p}
-      <button on:click={() => selectPage(p+1)} class="{(rows.page == p+1) ? 'btn-primary' : ''}">
-        {p + 1}
-      </button>
-    {/each}
-  {/if}
-  {#if rows.total > (rows.page * rows.size)}
-    <button on:click={() => selectPage(query_page+1)}>Next page &gt;</button>
+  {#if filter_value}
+    <button on:click={() => select_filter()}>Filtrera &gt;</button>
   {/if}
   </div>
-  {#if rows.items.length > 0}
+
+  <div>
   <SvelteTable
   columns={[...columns, ...status_columns, ...save_button]}
   rows={rows.items}
@@ -187,32 +234,48 @@
   expandRowKey="member_no">
     <div slot="expanded" let:row>
       <table class="table table-bordered">
-        {#each Object.entries(row.questions) as [q_id, value]}
-        <!-- remove status -->
-        <tr>
-          <td q='{q_id}'>{questions[q_id] == null ? 'Okänd fråga '+q_id : questions[q_id]['question']}</td>
-          <td>
-            {#if questions[q_id] == null }
-              {value}
-            {:else if questions[q_id]['type'] == 'choice' }
-              {getChoiceValues(questions[q_id], value)}
-            {:else if questions[q_id]['type'] == 'text'}
-              {value}
-            {:else if questions[q_id]['type'] == 'boolean'}
-              {value == 0 ? 'Nej' : 'Ja'}
-            {:else if questions[q_id]['type'] == 'other_unsupported_by_api' && value.includes('linked_id')}
-              {JSON.parse(value)['value']}
-            {:else}
-              {value} (type: {questions[q_id]['type']}}
-            {/if}
-          </td>
-        </tr>
-        {/each}
+        {#if row.cancelled_date != null}
+          <tr>
+            <th>Avanmäld</th>
+            <td>{row.cancelled_date}</td>
+          </tr>
+        {/if}
+        {#each questions as q, i}{#if q.id in row.questions}
+          {#if show_tab(q.tab_id) && q.tab_title != null && q.tab_title != ''}
+            <tr>
+              <th colspan="2">
+                <h2>{q.tab_title}</h2>
+              </th>
+            </tr>
+          {/if}
+          {#if show_section(q.section_id) && q.section_title != null && q.section_title != ''}
+            <tr>
+              <th colspan="2">
+                <h4>{q.section_title}</h4>
+              </th>
+            </tr>
+          {/if}
+          <tr>
+            <th>{q.question}</th>
+            <td>
+              {#if q.type == 'choice' }
+                {getChoiceValues(q, row.questions[q.id])}
+              {:else if q.type == 'boolean'}
+                {row.questions[q.id] == 0 ? 'Nej' : 'Ja'}
+              {:else if q.type == 'other_unsupported_by_api' && row.questions[q.id].includes('linked_id')}
+                {JSON.parse(row.questions[q.id])['value']}
+
+              {:else}
+                {row.questions[q.id]}
+              {/if}
+            </td>
+          </tr>
+        {/if}{/each}
       </table>
-      {row.cancelled_date == null ? '' : ("Avanmäld: " + row.cancelled_date)}
     </div>
   </SvelteTable>
-  {/if}
+</div>
+{/if}
 {:catch error}
 	<p style="color: red">{error.message}</p>
 {/await}

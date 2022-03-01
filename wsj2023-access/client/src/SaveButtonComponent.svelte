@@ -1,9 +1,10 @@
 <script>
+    export let key;
     export let row;
-    export let onSaveButtonClick;
     export let col;
+    export let onSaveButtonClick;
   </script>
 
   <button on:click={() => onSaveButtonClick(row)}
-    >Spara
+    >{key}
   </button>

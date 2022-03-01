@@ -42,6 +42,13 @@ class Participant(BaseModel):
 
 
 class Question(BaseModel):
+    id: int
+    tab_id: int
+    tab_title: Optional[str]
+    tab_description: Optional[str]
+    section_id: int
+    section_title: Optional[str]
+    filterable: Boolean
     status: Optional[Boolean]
     question: str
     description: str
@@ -65,19 +72,6 @@ def get_participants():
 def clean_participants_cache():
     session.remove_expired_responses(expire_after=0)
 
-def get_questions(form_id: int) -> Dict[int, Question]:
-    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
-    print(f'Fetching: {url}')
-    r = session.get(url)
-    data = json.loads(r.text)['questions']
-    status_tabs = [v['id'] for (k,v) in data['tabs'].items() if v['title'] == 'Status']
-    del data['tabs']
-    del data['sections']
-    for _, v in data.items():
-        v['status'] = True if (v['tab_id'] in status_tabs) else False
-    questions = pydantic.parse_obj_as(Dict[int, Question], data)
-    return questions
-
 
 settings = Settings()
 app = FastAPI(reload=True)
@@ -100,7 +94,7 @@ async def info(request: Request):
     }
 
 @app.get("/participants", response_model=Page[Participant])
-def participants(form: Optional[int] = None):
+def participants(form: Optional[int] = None, q: Optional[int] = None, q_val: Optional[int] = None):
     qualifier = None
     if form == 5085: # deltagare
         qualifier = "24549"
@@ -111,13 +105,34 @@ def participants(form: Optional[int] = None):
 
     p = get_participants()
     p = list(filter(lambda x: qualifier in x['questions'], p))
+    if (q != 0):
+        p = list(filter(lambda x: str(q) in x['questions'] and x['questions'][str(q)] == str(q_val), p))
     p = sorted(p, key=lambda x : f"{x['registration_date']} {x['member_no']}")
     return paginate(p)
 
-@app.get("/questions", response_model=Dict[int, Question])
-def questions(form: int) -> Dict[int, Question]:
-    r = get_questions(form)
-    return r
+@app.get("/questions", response_model=List[Question])
+def questions(form_id: int) -> Dict[int, Question]:
+    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
+    print(f'Fetching: {url}')
+    r = session.get(url)
+    data = json.loads(r.text)['questions']
+    tabs = data['tabs']
+    sections = data['sections']
+    status_tabs = [v['id'] for (_,v) in data['tabs'].items() if v['title'] == 'Status']
+    del data['tabs']
+    del data['sections']
+    questions = []
+    for id, v in data.items():
+        questions.append(dict({
+            'id': id,
+            'status': True if (v['tab_id'] in status_tabs) else False,
+            'filterable': v['type'] == 'choice',
+            'tab_title': tabs[str(v['tab_id'])]['title'] if str(v['tab_id']) in tabs else '',
+            'tab_description': tabs[str(v['tab_id'])]['description'] if str(v['tab_id']) in tabs else '',
+            'section_title': sections[str(v['section_id'])]['title'] if str(v['section_id']) in sections else '',
+            }, **v))
+    questions = sorted(questions, key=lambda x : f"{x['tab_id']} {x['section_id']}")
+    return questions
 
 @app.get("/forms", response_model=Dict[int, str])
 def forms() -> Dict[int, str]:
