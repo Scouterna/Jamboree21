@@ -38,6 +38,11 @@ spec:
                 secretKeyRef:
                   name: scoutnet-credentials
                   key: checkin-key
+            - name: SCOUTVIEW_ROLES
+              valueFrom:
+                secretKeyRef:
+                  name: scoutnet-credentials
+                  key: roles
           envFrom:
             - configMapRef:
                 name: environment
