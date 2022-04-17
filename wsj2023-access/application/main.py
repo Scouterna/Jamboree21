@@ -1,17 +1,17 @@
 from xmlrpc.client import Boolean
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware  # NEW
 from pydantic import BaseSettings, BaseModel, EmailStr, constr
-from typing import Optional, List, Tuple, Dict, Any, Union
+from typing import Optional, List, Dict, Any, Union, Set
 from fastapi.staticfiles import StaticFiles
 from enum import Enum
 from datetime import timedelta
-import pydantic
 from requests_cache import CachedSession
 from fastapi_pagination import Page, add_pagination, paginate
 
 import datetime
 import json
+import os
 
 session = CachedSession('access_cache', expire_after=timedelta(minutes=5), backend='memory')
 
@@ -22,12 +22,23 @@ class Settings(BaseSettings):
     scoutnet_participants_key: str = ''
     scoutnet_questions_key: str = ''
     scoutnet_checkin_key: str = ''
+    scoutview_debug_email: Optional[str] = None
+    scoutview_roles: Optional[Dict[str, Set[str]]] = {}
 
     class Config:
         env_file = ".env"
 
 class View(str, Enum):
     pass
+
+class User(BaseModel):
+    email: str
+    roles: Optional[List[str]] = []
+
+    def has_role(self, role):
+        res = (role in self.roles) or ('admin' in self.roles)
+        print(f'{self.email} in roles {self.roles}, request {role}: {res}')
+        return res
 
 class Participant(BaseModel):
     member_no: int
@@ -72,8 +83,28 @@ def get_participants():
 def clean_participants_cache():
     session.remove_expired_responses(expire_after=0)
 
+def matchingKeys(dictionary, searchString):
+    return [key for key,val in dictionary.items() if any(searchString in s for s in val)]
+
+def get_active_user(request: Request) -> User:
+    if "x-oauth-email" not in request.headers:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+        )
+
+    email = request.headers["x-oauth-email"]
+    roles = matchingKeys(settings.scoutview_roles, request.headers["x-oauth-email"])
+    print(email, roles)
+    user = User(
+        email=email,
+        roles = roles
+    )
+    return user
 
 settings = Settings()
+print(settings.scoutview_roles)
+
 app = FastAPI(reload=True)
 
 app.add_middleware(
@@ -85,12 +116,13 @@ app.add_middleware(
 )
 
 @app.get("/info")
-async def info(request: Request):
+async def info(request: Request, user: User = Depends(get_active_user)):
     headers = request.headers
     return {
         "app_name": settings.app_name,
         "activity": settings.scoutnet_activity_id,
         "headers": headers,
+        "user": user
     }
 
 @app.get("/participants", response_model=Page[Participant])
@@ -105,13 +137,13 @@ def participants(form: Optional[int] = None, q: Optional[int] = None, q_val: Opt
 
     p = get_participants()
     p = list(filter(lambda x: qualifier in x['questions'], p))
-    if (q != 0):
+    if (q and q != 0):
         p = list(filter(lambda x: str(q) in x['questions'] and x['questions'][str(q)] == str(q_val), p))
     p = sorted(p, key=lambda x : f"{x['registration_date']} {x['member_no']}")
     return paginate(p)
 
 @app.get("/questions", response_model=List[Question])
-def questions(form_id: int) -> Dict[int, Question]:
+def questions(form_id: int, user: User = Depends(get_active_user)) -> Dict[int, Question]:
     url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
     print(f'Fetching: {url}')
     r = session.get(url)
@@ -119,10 +151,13 @@ def questions(form_id: int) -> Dict[int, Question]:
     tabs = data['tabs']
     sections = data['sections']
     status_tabs = [v['id'] for (_,v) in data['tabs'].items() if v['title'] == 'Status']
+    health_tabs = [v['id'] for (_,v) in data['tabs'].items() if v['title'] == 'Medicinsk information']
     del data['tabs']
     del data['sections']
     questions = []
+    health_access = user.has_role('health')
     for id, v in data.items():
+        if (v['tab_id'] in health_tabs) and not health_access: continue
         questions.append(dict({
             'id': id,
             'status': True if (v['tab_id'] in status_tabs) else False,
@@ -140,7 +175,7 @@ def forms() -> Dict[int, str]:
     print(f'Fetching: {url}')
     r = session.get(url)
     data = json.loads(r.text)['forms']
-    print(data)
+    # print(data)
     res = {key: value['title'] for (key, value) in data.items()}
     # print(res)
     return res
@@ -157,7 +192,18 @@ def update_status(member_no: int, answers: Dict[int, str]) -> Boolean:
     print(data)
     return r.ok
 
-
 add_pagination(app)
 # Place After All Other Routes
-app.mount('', StaticFiles(directory="../client/public/", html=True), name="static")
+client_app = os.path.abspath((os.path.join(os.path.dirname(__file__), '../client/public/')))
+app.mount('', StaticFiles(directory=client_app, html=True), name="static")
+
+@app.middleware("http")
+async def debug_user(request: Request, call_next):
+    if settings.scoutview_debug_email:
+        request.headers.__dict__["_list"].append(
+            (
+                'x-oauth-email'.encode(), settings.scoutview_debug_email.encode()
+            )
+        )
+    response = await call_next(request)
+    return response
