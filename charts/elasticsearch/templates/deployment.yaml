@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: environment
+          image: {{ .Values.image | default "scouterna.azurecr.io/elasticsearch" }}:{{ .Chart.AppVersion }}
+          imagePullPolicy: Always
+          name: app

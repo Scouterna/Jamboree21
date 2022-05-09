@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    plugins.konghq.com: office-oauth
+    kubernetes.io/ingress.class: "kong"
+  name: elasticsearch
+spec:
+  rules:
+  {{ range .Values.domains }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: elasticsearch
+          servicePort: 9200
+  {{- end }}
+  tls:
+  - hosts:
+    {{ range .Values.domains }}
+    - {{ . }}
+    {{- end }}
+    secretName: elasticsearch-tls

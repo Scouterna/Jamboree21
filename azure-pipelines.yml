@@ -33,3 +33,7 @@ jobs:
    parameters:
     serviceName: planera
     subPath: planera
+ - template: .azure-pipelines/templates/build-service.job.yaml
+   parameters:
+    serviceName: elasticsearch
+    subPath: elasticsearch

@@ -1,0 +1,111 @@
+{
+    "analyzer": {
+        "el_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "lowercase",
+                "icu_normalizer",
+                "preserve_original_recorder",
+                "icu_folding",
+                "preserve_original",
+                "remove_empty"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "el_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "lowercase",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ga_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "ga_lowercase",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "ga_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "ga_lowercase",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "tr_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "tr_lowercase",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "tr_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "tr_lowercase",
+                "icu_normalizer"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        }
+    },
+    "char_filter": {
+        "word_break_helper": {
+            "mappings": [
+                "_=>\\u0020",
+                ".=>\\u0020",
+                "(=>\\u0020",
+                ")=>\\u0020"
+            ],
+            "type": "mapping"
+        }
+    },
+    "filter": {
+        "ga_lowercase": {
+            "language": "irish",
+            "type": "lowercase"
+        },
+        "icu_folding": {
+            "type": "icu_folding"
+        },
+        "icu_normalizer": {
+            "name": "nfkc_cf",
+            "type": "icu_normalizer"
+        },
+        "lowercase": {
+            "language": "greek",
+            "type": "lowercase"
+        },
+        "remove_empty": {
+            "min": 1,
+            "type": "length"
+        },
+        "tr_lowercase": {
+            "language": "turkish",
+            "type": "lowercase"
+        }
+    },
+    "tokenizer": []
+}

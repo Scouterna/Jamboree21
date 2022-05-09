@@ -1,0 +1,89 @@
+{
+    "analyzer": {
+        "he_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "he_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "he_text": {
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "he_text_search": {
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "uk_plain": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "uk_plain_search": {
+            "char_filter": [
+                "word_break_helper"
+            ],
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "uk_text": {
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        },
+        "uk_text_search": {
+            "filter": [
+                "lowercase"
+            ],
+            "tokenizer": "standard",
+            "type": "custom"
+        }
+    },
+    "char_filter": {
+        "word_break_helper": {
+            "mappings": [
+                "_=>\\u0020",
+                ".=>\\u0020",
+                "(=>\\u0020",
+                ")=>\\u0020"
+            ],
+            "type": "mapping"
+        }
+    },
+    "filter": {
+        "lowercase": {
+            "type": "lowercase"
+        }
+    },
+    "tokenizer": []
+}
