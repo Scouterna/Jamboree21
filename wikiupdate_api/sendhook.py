@@ -42,9 +42,7 @@ def sendhook():
 
 def main():
     print("Hello from thread!")
-    schedule.every().day.at("10:15").do(sendhook)  #Time in UTC
-    schedule.every().day.at("12:15").do(sendhook)  #Time in UTC
-    schedule.every().day.at("12:50").do(sendhook)  #Time in UTC
+    schedule.every().day.at("16:15").do(sendhook)  #Time in UTC
     while True:
         try:
             schedule.run_pending()
