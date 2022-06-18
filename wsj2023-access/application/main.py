@@ -132,6 +132,8 @@ def participants(form: Optional[int] = None, q: Optional[int] = None, q_val: Opt
         qualifier = "24549"
     elif form == 5734: # ist
         qualifier = "25654"
+    elif form == 6676: # ledare
+        qualifier = "31490"
     else: # unknown form (yet)
         return paginate([])
 
