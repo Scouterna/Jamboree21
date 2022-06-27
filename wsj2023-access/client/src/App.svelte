@@ -147,7 +147,7 @@
   }
 
   async function select_filter() {
-    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page+"&q="+(filter ? filter.id : '0')+"&q_val="+filter_value);
+    participants = fetch_async("/participants?form="+selected_form+"&page="+query_page+"&q="+(filter ? (typeof(filter) == 'string' ? filter : filter.id) : '0')+"&q_val="+filter_value);
   }
 
   let _tab_id = -1
@@ -206,12 +206,17 @@
   <div> Filter:
   <select bind:value={filter} on:change="{() => filter_value = 0}">
     <option value='0'></option>
+    <option value='member_no'>Medlemsnummer</option>
+    <option value='first_name'>Förnamn</option>
+    <option value='last_name'>Efternamn</option>
     {#each questions as q}{#if q.filterable}
       <option value={q}>{q.question}</option>
     {/if}{/each}
   </select>
 
-  {#if filter != 0}
+  {#if typeof(filter) == 'string'}
+    <input bind:value={filter_value} />
+  {:else if filter != 0}
     <select bind:value={filter_value}>
       <option value='0'></option>
       {#each Object.entries(filter.choices) as [id, fv]}
@@ -234,13 +239,26 @@
   expandRowKey="member_no">
     <div slot="expanded" let:row>
       <table class="table table-bordered">
+        <tr>
+          <th colspan="2">
+            <h4>Grundläggande info i scoutnet</h4>
+          </th>
+        </tr>
         {#if row.cancelled_date != null}
           <tr>
             <th>Avanmäld</th>
             <td>{row.cancelled_date}</td>
           </tr>
         {/if}
-        {#each questions as q, i}{#if q.id in row.questions}
+        <tr>
+          <th>Födelsedatum</th>
+          <td>{row.date_of_birth}</td>
+        </tr>
+        <tr>
+          <th>Epost i scoutnet</th>
+          <td>{row.primary_email}</td>
+        </tr>
+      {#each questions as q, i}{#if q.id in row.questions}
           {#if show_tab(q.tab_id) && q.tab_title != null && q.tab_title != ''}
             <tr>
               <th colspan="2">
