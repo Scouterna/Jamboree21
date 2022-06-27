@@ -126,7 +126,14 @@ async def info(request: Request, user: User = Depends(get_active_user)):
     }
 
 @app.get("/participants", response_model=Page[Participant])
-def participants(form: Optional[int] = None, q: Optional[int] = None, q_val: Optional[int] = None):
+def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None, q_val: Optional[Union[int, str]] = None):
+
+    def q_filter(q, q_val, x):
+        if isinstance(q, str) and x[q] == q_val:
+            return True
+        else:
+            return str(q) in x['questions'] and x['questions'][str(q)] == str(q_val)
+
     qualifier = None
     if form == 5085: # deltagare
         qualifier = "24549"
@@ -140,7 +147,7 @@ def participants(form: Optional[int] = None, q: Optional[int] = None, q_val: Opt
     p = get_participants()
     p = list(filter(lambda x: qualifier in x['questions'], p))
     if (q and q != 0):
-        p = list(filter(lambda x: str(q) in x['questions'] and x['questions'][str(q)] == str(q_val), p))
+        p = list(filter(lambda x: q_filter(q, q_val, x), p))
     p = sorted(p, key=lambda x : f"{x['registration_date']} {x['member_no']}")
     return paginate(p)
 
