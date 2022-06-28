@@ -15,7 +15,7 @@ def sendhook():
         "@type": "MessageCard",
         "@context": "https://schema.org/extensions",
         "summary": "Summary",
-        "title": "Ändringar på wikin senaste dygnet",
+        "title": "Senaste ändringar:",
         "sections": []
     }
 
