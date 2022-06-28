@@ -43,7 +43,7 @@ def sendhook():
 
 def main():
     print("Hello from thread!")
-    schedule.every(3).minutes.do(sendhook)
+    schedule.every(30).minutes.do(sendhook)
     while True:
         try:
             schedule.run_pending()
