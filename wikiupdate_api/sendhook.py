@@ -26,12 +26,13 @@ def sendhook():
         )
 
     for entry in j["entries"]:
-        t = datetime.strptime(entry["updated"], "%Y-%m-%dT%H:%M:%SZ")
-        out["sections"].append(
-            {
-                "text": ("<pre>" + entry["author"].ljust(25) + entry["title"].ljust(30) + "<a href=" + entry["link"]+ ">Se differens</a>".ljust(20) +  datetime.strftime(t, "%H:%M:%S, %d %b").rjust(20) + "</pre>")
-            }
-        )
+        if entry["updated"] > (datetime.now() - datetime.timedelta(minutes=30)):  # filter out everything that's older than 30 minutes, so we don't post it again
+            t = datetime.strptime(entry["updated"], "%Y-%m-%dT%H:%M:%SZ")
+            out["sections"].append(
+                {
+                    "text": ("<pre>" + entry["author"].ljust(25) + entry["title"].ljust(30) + "<a href=" + entry["link"]+ ">Se differens</a>".ljust(20) +  datetime.strftime(t, "%H:%M:%S, %d %b").rjust(20) + "</pre>")
+                }
+            )
 
     r  = requests.post(uri, data=json.dumps(out), headers=header)
 
