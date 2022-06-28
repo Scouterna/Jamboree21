@@ -8,6 +8,23 @@ pr:
 jobs:
  - template: .azure-pipelines/templates/build-service.job.yaml
    parameters:
+    serviceName: facelist
+    subPath: facelist
+    stepsTemplate: facelist/.azure-pipelines/build.yaml
+ - template: .azure-pipelines/templates/build-service.job.yaml
+   parameters:
     serviceName: wikiupdate_api
     subPath: wikiupdate_api
     stepsTemplate: wikiupdate_api/.azure-pipelines/build.yaml
+ - template: .azure-pipelines/templates/build-service.job.yaml
+   parameters:
+    serviceName: template
+    subPath: template
+ - template: .azure-pipelines/templates/build-service.job.yaml
+   parameters:
+    serviceName: wsj2023-access
+    subPath: wsj2023-access
+ - template: .azure-pipelines/templates/build-service.job.yaml
+   parameters:
+    serviceName: planera
+    subPath: planera
