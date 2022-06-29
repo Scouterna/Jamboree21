@@ -26,7 +26,7 @@ def sendhook():
         )
 
     for entry in j["entries"]:
-        if entry["updated"] > (datetime.now() - datetime.timedelta(minutes=30)):  # filter out everything that's older than 30 minutes, so we don't post it again
+        if entry["updated"] > (datetime.now() - timedelta(minutes=30)):  # filter out everything that's older than 30 minutes, so we don't post it again
             t = datetime.strptime(entry["updated"], "%Y-%m-%dT%H:%M:%SZ")
             out["sections"].append(
                 {
