@@ -9,13 +9,13 @@ uri = os.environ["webhook_url"]
 
 def sendhook():
     print("Welcome to sendhook")
-    j = json.loads(requests.get("http://localhost:5000/?d=1", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
+    j = json.loads(requests.get("http://localhost:5000/?d=0.020833", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
 
     out = {
         "@type": "MessageCard",
         "@context": "https://schema.org/extensions",
         "summary": "Summary",
-        "title": "Senaste ändringar:",
+        "title": "Ändringar på Wikin senaste 30 minuterna:",
         "sections": []
     }
 
@@ -26,13 +26,12 @@ def sendhook():
         )
 
     for entry in j["entries"]:
-        if entry["updated"] > (datetime.now() - timedelta(minutes=30)):  # filter out everything that's older than 30 minutes, so we don't post it again
-            t = datetime.strptime(entry["updated"], "%Y-%m-%dT%H:%M:%SZ")
-            out["sections"].append(
-                {
-                    "text": ("<pre>" + entry["author"].ljust(25) + entry["title"].ljust(30) + "<a href=" + entry["link"]+ ">Se differens</a>".ljust(20) +  datetime.strftime(t, "%H:%M:%S, %d %b").rjust(20) + "</pre>")
-                }
-            )
+        t = datetime.strptime(entry["updated"], "%Y-%m-%dT%H:%M:%SZ")
+        out["sections"].append(
+            {
+                "text": ("<pre>" + entry["author"].ljust(25) + entry["title"].ljust(30) + "<a href=" + entry["link"]+ ">Se differens</a>".ljust(20) +  datetime.strftime(t, "%H:%M:%S, %d %b").rjust(20) + "</pre>")
+            }
+        )
 
     if len(out["sections"]) > 0:
         r  = requests.post(uri, data=json.dumps(out), headers=header)
