@@ -33,7 +33,7 @@ def sendhook():
             }
         )
 
-    if len(out["sections"]) > 0:
+    if len(out["sections"]) > 1:
         r  = requests.post(uri, data=json.dumps(out), headers=header)
         print(r.status_code)
         print(r.text)
