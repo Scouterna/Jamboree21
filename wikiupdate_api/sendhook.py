@@ -8,7 +8,7 @@ header = {
 uri = os.environ["webhook_url"]
 
 def sendhook():
-    print("Welcome to sendhook")
+    print("Welcome to sendhook, making a request")
     j = json.loads(requests.get("http://localhost:5000/?d=0.020833", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
 
     out = {
@@ -33,7 +33,11 @@ def sendhook():
             }
         )
 
+    print(f'Length of sections is {len(out["sections"])}')
+    print(json.dumps(out))
+
     if len(out["sections"]) > 1:
+        print("Sending the webhook.")
         r  = requests.post(uri, data=json.dumps(out), headers=header)
         print(r.status_code)
         print(r.text)
