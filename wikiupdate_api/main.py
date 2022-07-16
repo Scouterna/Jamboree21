@@ -1,4 +1,4 @@
-import requests, feedparser, json, os
+import requests, feedparser, json, os, logging, sys
 from threading import Thread
 import sendhook
 from flask import Flask,request, abort
@@ -67,9 +67,10 @@ def index():
 
 
 if __name__ == '__main__':
-    print("Starting thread...")
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    logging.info("Starting thread...")
     thread = Thread(target = sendhook.main)
     thread.start()
-    print("Starting webserver!")
+    logging.info("Starting webserver!")
     app.run()
     
