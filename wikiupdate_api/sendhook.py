@@ -15,7 +15,7 @@ def sendhook():
     logging.info(f'Running sendhook, time is now {datetime.now().isoformat()}')
     logging.info("Getting updates from Mediawiki...")
 
-    response = requests.get("http://localhost:5000/?d=0.020833", headers={"secret": os.environ["wikiupdate_api_secret"]})
+    response = requests.get("http://localhost:5000/?d=1", headers={"secret": os.environ["wikiupdate_api_secret"]})
     if response.status_code != 200:
         logging.error(f'got http {response.status_code} error from Mediawiki: {response.text}')
         raise WikiConnectionError
