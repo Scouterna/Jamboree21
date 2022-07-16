@@ -8,8 +8,10 @@ header = {
 uri = os.environ["webhook_url"]
 
 def sendhook():
-    print("Welcome to sendhook, making a request")
+    logging.info(f'Running sendhook, time is now {datetime.now().isoformat()}')
+    logging.info("Getting updates from Mediawiki...")
     j = json.loads(requests.get("http://localhost:5000/?d=0.020833", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
+    logging.info(f'got {len(j["entries"])} updates from Mediawiki')
 
     out = {
         "@type": "MessageCard",
@@ -33,24 +35,23 @@ def sendhook():
             }
         )
 
-    print(f'Length of sections is {len(out["sections"])}')
-    print(json.dumps(out))
+    logging.info(f'Length of sections is {len(out["sections"])}')
+    logging.info(f'will send update: {json.dumps(out)}')
 
     if len(out["sections"]) > 1:
-        print("Sending the webhook.")
+        logging.info("Sending Teams webhook...")
         r  = requests.post(uri, data=json.dumps(out), headers=header)
-        print(r.status_code)
-        print(r.text)
+        logging.info("Teams webhook sent, status: ", r.status_code)
 
 
 def main():
-    print("Hello from thread!")
+    logging.debug("Hello from thread!")
+    logging.info("Scheduling Teams update to send every 30 minutes...")
     schedule.every(30).minutes.do(sendhook)
     while True:
         try:
             schedule.run_pending()
         except requests.exceptions.ConnectionError:
-            print("Conn refused, trying in 60s")
+            logging.error("Connection error when sending webhook, retrying in 60s")
             continue
-        
         time.sleep(1)
