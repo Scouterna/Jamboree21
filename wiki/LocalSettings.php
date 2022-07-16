@@ -243,3 +243,11 @@ $wgMaxUploadSize = 1024*1024*100;
 
 # Preload template for new pages
 $wgPreloaderSource[ NS_MAIN ] = "Template:Boilerplate";
+
+#Set Default Timezone
+$wgLocaltimezone = "Europe/Stockholm";
+date_default_timezone_set( $wgLocaltimezone );
+
+#Install GoogleTranslator
+$wgGoogleTranslatorOriginal  = 'sv';          
+$wgGoogleTranslatorLanguages  = 'en,fr,de';
