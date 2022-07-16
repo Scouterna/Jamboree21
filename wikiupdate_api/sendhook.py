@@ -10,7 +10,7 @@ uri = os.environ["webhook_url"]
 def sendhook():
     logging.info(f'Running sendhook, time is now {datetime.now().isoformat()}')
     logging.info("Getting updates from Mediawiki...")
-    j = json.loads(requests.get("http://localhost:5000/?d=0.020833", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
+    j = json.loads(requests.get("http://localhost:5000/?d=1", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
     logging.info(f'got {len(j["entries"])} updates from Mediawiki')
 
     out = {
@@ -27,13 +27,17 @@ def sendhook():
             }
         )
 
+    logging.info("Appending entries...")
     for entry in j["entries"]:
         t = datetime.strptime(entry["updated"], "%Y-%m-%dT%H:%M:%SZ")
-        out["sections"].append(
-            {
-                "text": ("<pre>" + entry["author"].ljust(25) + entry["title"].ljust(30) + "<a href=" + entry["link"]+ ">Se differens</a>".ljust(20) +  datetime.strftime(t, "%H:%M:%S, %d %b").rjust(20) + "</pre>")
-            }
-        )
+        
+        logging.info(f'This post is {datetime.now() - t} old.')
+        if (datetime.now() - t) <= timedelta(minutes=30):
+            out["sections"].append(
+                {
+                    "text": ("<pre>" + entry["author"].ljust(25) + entry["title"].ljust(30) + "<a href=" + entry["link"]+ ">Se differens</a>".ljust(20) +  datetime.strftime(t, "%H:%M:%S, %d %b").rjust(20) + "</pre>")
+                }
+            )
 
     logging.info(f'Length of sections is {len(out["sections"])}')
     logging.info(f'will send update: {json.dumps(out)}')
