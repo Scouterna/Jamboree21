@@ -21,6 +21,10 @@ def sendhook():
 
     j = json.loads(response.text)
     logging.info(f'got {len(j["entries"])} updates from Mediawiki')
+    if len(j["entries"]) == 0:
+           logging.info(f'got no entries from Mediawiki, returning')
+           logging.info(f'Mediawiki response was: {response.text}')
+           return
 
     out = {
         "@type": "MessageCard",
