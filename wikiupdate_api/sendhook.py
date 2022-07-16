@@ -7,10 +7,19 @@ header = {
 
 uri = os.environ["webhook_url"]
 
+class WikiConnectionError(Exception):
+    pass
+
+
 def sendhook():
     logging.info(f'Running sendhook, time is now {datetime.now().isoformat()}')
     logging.info("Getting updates from Mediawiki...")
-    j = json.loads(requests.get("http://localhost:5000/?d=0.020833", headers={"secret": os.environ["wikiupdate_api_secret"]}).text)
+    response = requests.get("http://localhost:5000/?d=0.020833", headers={"secret": os.environ["wikiupdate_api_secret"]})
+    if response.status_code != 200:
+        logging.error(f'got http {response.status_code} error from Mediawiki: {response.text}')
+        raise WikiConnectionError
+
+    j = json.loads(response.text)
     logging.info(f'got {len(j["entries"])} updates from Mediawiki')
 
     out = {
@@ -51,7 +60,7 @@ def main():
     while True:
         try:
             schedule.run_pending()
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError, WikiConnectionError:
             logging.error("Connection error when sending webhook, retrying in 60s")
             continue
         time.sleep(1)
