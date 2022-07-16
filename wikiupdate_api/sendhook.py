@@ -64,7 +64,7 @@ def main():
     while True:
         try:
             schedule.run_pending()
-        except requests.exceptions.ConnectionError, WikiConnectionError:
+        except (requests.exceptions.ConnectionError, WikiConnectionError):
             logging.error("Connection error when sending webhook, retrying in 60s")
             continue
         time.sleep(1)
