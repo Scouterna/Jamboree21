@@ -237,9 +237,9 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
 enableSemantics(getenv('MEDIAWIKI_BASE_URL'));
 
 # Increase max upload size
-ini_set('post_max_size', 2*1024*1024*100);
-ini_set('upload_max_filesize', 1024*1024*100);
-$wgMaxUploadSize = 1024*1024*100;
+ini_set('post_max_size', '25M');
+ini_set('upload_max_filesize', '25M');
+$wgMaxUploadSize = 1024*1024*25;
 
 # Preload template for new pages
 $wgPreloaderSource[ NS_MAIN ] = "Template:Boilerplate";
