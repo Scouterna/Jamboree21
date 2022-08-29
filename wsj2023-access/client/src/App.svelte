@@ -2,6 +2,7 @@
   import SvelteTable from "svelte-table";
   import StatusSelector from "./StatusSelector.svelte";
   import StatusNumber from "./StatusNumber.svelte";
+  import StatusBoolean from "./StatusBoolean.svelte";
   import SaveButtonComponent from "./SaveButtonComponent.svelte";
 
   let participants = Promise.resolve({items:[]});
@@ -67,7 +68,7 @@
           title: questions[q].question,
           sortable: true,
           renderComponent: {
-            component: questions[q].type == 'choice' ? StatusSelector : StatusNumber,
+            component: questions[q].type == 'choice' ? StatusSelector : questions[q].type == 'choice' ? StatusNumber : StatusBoolean,
             props: {
               choices: questions[q]['choices'],
               default_value: questions[q]['default_value']
@@ -294,6 +295,7 @@
     </div>
   </SvelteTable>
 </div>
+Total: {rows.total}
 {/if}
 {:catch error}
 	<p style="color: red">{error.message}</p>

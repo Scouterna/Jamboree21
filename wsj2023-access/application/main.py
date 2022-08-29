@@ -129,7 +129,7 @@ async def info(request: Request, user: User = Depends(get_active_user)):
 def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None, q_val: Optional[Union[int, str]] = None):
 
     def q_filter(q, q_val, x):
-        if isinstance(q, str) and x[q] == q_val:
+        if isinstance(q, str) and x[q].upper().startswith(q_val.upper()):
             return True
         else:
             return str(q) in x['questions'] and x['questions'][str(q)] == str(q_val)

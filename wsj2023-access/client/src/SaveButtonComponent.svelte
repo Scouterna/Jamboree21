@@ -1,7 +1,6 @@
 <script>
     export let key;
     export let row;
-    export let col;
     export let onSaveButtonClick;
   </script>
 
