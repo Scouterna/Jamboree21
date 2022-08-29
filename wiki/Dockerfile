@@ -32,7 +32,7 @@ COPY composer.local.json composer.local.json
 RUN COMPOSER=composer.local.json php composer.phar install
 
 # Run composer
-RUN php composer.phar update --no-dev
+RUN COMPOSER=composer.local.json php composer.phar update --no-dev
 
 COPY LocalSettings.php LocalSettings.php
 COPY smw.json /var/www/html/extensions/SemanticMediaWiki/.smw.json
