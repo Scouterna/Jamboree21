@@ -147,6 +147,7 @@
   }
 
   async function select_filter() {
+    query_page = 1;
     participants = fetch_async("/participants?form="+selected_form+"&page="+query_page+"&q="+(filter ? (typeof(filter) == 'string' ? filter : filter.id) : '0')+"&q_val="+filter_value);
   }
 

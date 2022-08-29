@@ -141,6 +141,8 @@ def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None
         qualifier = "25654"
     elif form == 6676: # ledare
         qualifier = "31490"
+    elif form == 7126: # ledare
+        qualifier = "34445"
     else: # unknown form (yet)
         return paginate([])
 
