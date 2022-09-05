@@ -192,7 +192,7 @@ def forms() -> Dict[int, str]:
     return res
 
 @app.post("/update_status", response_model=Boolean)
-def update_status(member_no: int, answers: Dict[int, str]) -> Boolean:
+def update_status(member_no: int, answers: Dict[int, Union[int, str]]) -> Boolean:
     url = f'{settings.scoutnet_base}/project/checkin?id={settings.scoutnet_activity_id}&key={settings.scoutnet_checkin_key}'
     ans = {k:{'value': v} for (k,v) in answers.items()}
     body = {str(member_no): {'questions': ans}}

@@ -68,7 +68,7 @@
           title: questions[q].question,
           sortable: true,
           renderComponent: {
-            component: questions[q].type == 'choice' ? StatusSelector : questions[q].type == 'choice' ? StatusNumber : StatusBoolean,
+            component: questions[q].type == 'choice' ? StatusSelector : (questions[q].type == 'boolean' ? StatusBoolean : StatusNumber),
             props: {
               choices: questions[q]['choices'],
               default_value: questions[q]['default_value']
@@ -113,7 +113,7 @@
   }
 
   async function onSaveButtonClick(row) {
-    console.log(row);
+    // console.log(row);
     let status_answers = {};
     Object.keys(status_columns).forEach(key => {
       status_answers[status_columns[key].key] = row.questions[status_columns[key].key];
@@ -217,6 +217,8 @@
   </select>
 
   {#if typeof(filter) == 'string'}
+    <input bind:value={filter_value} />
+  {:else if typeof(filter) == 'boolean'}
     <input bind:value={filter_value} />
   {:else if filter != 0}
     <select bind:value={filter_value}>
