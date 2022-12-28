@@ -11,7 +11,7 @@ function Forms() {
   const [forms, setForms]=useState([]);
 
   useEffect(()=>{
-		fetch("http://localhost:8000/forms")
+		fetch("/forms")
 			.then((response) => response.json())
 			.then((data) => setForms(data))
 	}, []);
