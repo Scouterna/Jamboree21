@@ -1,11 +1,13 @@
-FROM node:17 AS build
+FROM node:18 AS build
 
 WORKDIR /app
 
 COPY client/package.json ./
 COPY client/package-lock.json ./
+COPY client/patches ./patches
 RUN npm install
-COPY client ./
+COPY client/public ./public
+COPY client/src ./src
 RUN npm run build
 
 FROM python:3.9-buster
