@@ -21,7 +21,7 @@ function Forms() {
       {Object.entries(forms)
         .map( ([key, value]) =>
           <ListItem disablePadding key={key}>
-            <ListItemButton component='a' href={"/"+key} >
+            <ListItemButton component='a' href={"/client/"+key} >
               <ListItemText primary={value} />
             </ListItemButton>
           </ListItem>)}

@@ -7,7 +7,7 @@ function App() {
   return (
     <div className="App">
       <AppBar />
-      <BrowserRouter>
+      <BrowserRouter basename="/client">
         <Routes>
           <Route path="/" element={<div><p>Select Scoutnet form in right dropdown</p></div>} />
           <Route path="/:form_id" element={<Participants />} />
