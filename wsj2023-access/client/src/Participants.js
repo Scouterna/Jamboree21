@@ -29,7 +29,7 @@ const useFakeMutation = () => {
     (member_no, answers) =>
       new Promise((resolve, reject) => {
         console.log(member_no, answers);
-        fetch(`http://localhost:8000/update_status?member_no=${member_no}`, {
+        fetch(`/update_status?member_no=${member_no}`, {
           method: 'POST',
           body: JSON.stringify(answers),
           headers: {"content-type": "application/json"},
@@ -80,14 +80,14 @@ function Participants() {
   const params = useParams();
 
   useEffect(()=>{
-		fetch(`http://localhost:8000/questions?form_id=${params.form_id}`)
+		fetch(`/questions?form_id=${params.form_id}`)
       .then((response) => response.json())
         .then((data) => {
           setStatusColumns(get_status_columns(data));
           setDataColumns(get_data_columns(data));
         });
     setLoadingParticipants(true);
-    fetch(`http://localhost:8000/participants?form=${params.form_id}&size=10000`)
+    fetch(`/participants?form=${params.form_id}&size=10000`)
       .then((response) => response.json())
         .then((data) => {
           setTableData(data.items);

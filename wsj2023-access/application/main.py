@@ -1,21 +1,20 @@
-from xmlrpc.client import Boolean
-from fastapi import FastAPI, Request, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware  # NEW
-from pydantic import BaseSettings, BaseModel, EmailStr, constr
-from typing import Optional, List, Dict, Any, Union, Set
-from fastapi.staticfiles import StaticFiles
-from enum import Enum
-from datetime import timedelta
-from requests_cache import CachedSession
-from fastapi_pagination import add_pagination, paginate
-
-from typing import TypeVar, Generic
-from fastapi import Query
-from fastapi_pagination.default import Page as BasePage, Params as BaseParams
-
 import datetime
 import json
-import os
+from datetime import timedelta
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union
+
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi_pagination import add_pagination, paginate
+from fastapi_pagination.default import Page as BasePage
+from fastapi_pagination.default import Params as BaseParams
+from fastapi.responses import RedirectResponse
+from pydantic import BaseModel, BaseSettings, EmailStr, constr
+from requests_cache import CachedSession
 
 T = TypeVar("T")
 class Params(BaseParams):
@@ -70,8 +69,8 @@ class Question(BaseModel):
     tab_description: Optional[str]
     section_id: int
     section_title: Optional[str]
-    filterable: Boolean
-    status: Optional[Boolean]
+    filterable: bool
+    status: Optional[bool]
     question: str
     description: str
     type: str
@@ -202,8 +201,8 @@ def forms() -> Dict[int, str]:
     # print(res)
     return res
 
-@app.post("/update_status", response_model=Boolean)
-def update_status(member_no: int, answers: Dict[int, Union[int, str]]) -> Boolean:
+@app.post("/update_status", response_model=bool)
+def update_status(member_no: int, answers: Dict[int, Union[int, str]]) -> bool:
     url = f'{settings.scoutnet_base}/project/checkin?id={settings.scoutnet_activity_id}&key={settings.scoutnet_checkin_key}'
     ans = {k:{'value': v} for (k,v) in answers.items()}
     body = {str(member_no): {'questions': ans}}
@@ -215,9 +214,21 @@ def update_status(member_no: int, answers: Dict[int, Union[int, str]]) -> Boolea
     return r.ok
 
 add_pagination(app)
+
 # Place After All Other Routes
-client_app = os.path.abspath((os.path.join(os.path.dirname(__file__), '../client/public/')))
-app.mount('', StaticFiles(directory=client_app, html=True), name="static")
+@app.get("/")
+async def redirect():
+    return RedirectResponse(url=f"/client/", status_code=303)
+
+client_dir = Path(__file__).parent.resolve() / 'client'
+
+
+templates = Jinja2Templates(directory=client_dir.as_posix())
+@app.get("/client/{full_path:path}")
+async def catch_all(request: Request, full_path: str):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+app.mount('/', StaticFiles(directory=client_dir, html=True), name="static")
 
 @app.middleware("http")
 async def debug_user(request: Request, call_next):

@@ -23,6 +23,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 COPY ./application /app
-COPY --from=build /app/public /client/public
+COPY --from=build /application/client /app/client
 
+EXPOSE 80
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

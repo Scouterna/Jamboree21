@@ -3,3 +3,4 @@ uvicorn==0.16.0
 pydantic[email,dotenv]==1.10.2
 requests_cache==0.9.7
 fastapi-pagination==0.9.3
+jinja2==3.1.2
