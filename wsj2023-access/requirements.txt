@@ -1,6 +1,5 @@
 fastapi==0.70.1
 uvicorn==0.16.0
-pydantic[email]
-pydantic[dotenv]
-requests_cache
-fastapi-pagination
+pydantic[email,dotenv]==1.10.2
+requests_cache==0.9.7
+fastapi-pagination==0.9.3

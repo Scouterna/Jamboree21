@@ -7,11 +7,22 @@ from fastapi.staticfiles import StaticFiles
 from enum import Enum
 from datetime import timedelta
 from requests_cache import CachedSession
-from fastapi_pagination import Page, add_pagination, paginate
+from fastapi_pagination import add_pagination, paginate
+
+from typing import TypeVar, Generic
+from fastapi import Query
+from fastapi_pagination.default import Page as BasePage, Params as BaseParams
 
 import datetime
 import json
 import os
+
+T = TypeVar("T")
+class Params(BaseParams):
+    size: int = Query(50, ge=1, le=50_000, description="Page size")
+
+class Page(BasePage[T], Generic[T]):
+    __params_type__ = Params
 
 session = CachedSession('access_cache', expire_after=timedelta(minutes=5), backend='memory')
 
@@ -109,7 +120,7 @@ app = FastAPI(reload=True)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=["http://localhost:8080", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -141,7 +152,7 @@ def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None
         qualifier = "25654"
     elif form == 6676: # ledare
         qualifier = "31490"
-    elif form == 7126: # ledare
+    elif form == 7126: # cmt
         qualifier = "34445"
     else: # unknown form (yet)
         return paginate([])

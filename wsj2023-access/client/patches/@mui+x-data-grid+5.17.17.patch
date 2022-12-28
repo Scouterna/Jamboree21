@@ -1,0 +1,23 @@
+diff --git a/node_modules/@mui/x-data-grid/colDef/gridSingleSelectOperators.js b/node_modules/@mui/x-data-grid/colDef/gridSingleSelectOperators.js
+index 026e133..a2f61ee 100644
+--- a/node_modules/@mui/x-data-grid/colDef/gridSingleSelectOperators.js
++++ b/node_modules/@mui/x-data-grid/colDef/gridSingleSelectOperators.js
+@@ -32,8 +32,16 @@ export const getGridSingleSelectQuickFilterFn = (value, column, apiRef) => {
+ 
+       if (typeof option === 'object') {
+         optionValue = option.value;
+-        optionLabel = option.label;
+-      } else {
++        if (valueFormatter) {
++          optionLabel = valueFormatter({
++            value: option.value,
++            field,
++            api: apiRef.current
++          });
++          } else {
++            optionLabel = option.label;
++          }
++        } else {
+         optionValue = option;
+ 
+         if (valueFormatter) {
