@@ -136,7 +136,7 @@ async def info(request: Request, user: User = Depends(get_active_user)):
     }
 
 @app.get("/participants", response_model=Page[Participant])
-def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None, q_val: Optional[Union[int, str]] = None):
+def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None, q_val: Optional[Union[int, str]] = None, cached: bool = True):
 
     def q_filter(q, q_val, x):
         if isinstance(q, str) and x[q].upper().startswith(q_val.upper()):
@@ -156,7 +156,12 @@ def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None
     else: # unknown form (yet)
         return paginate([])
 
-    p = get_participants()
+    if (cached):
+        with session.cache_disabled():
+            p = get_participants()
+    else:
+        p = get_participants()
+
     p = list(filter(lambda x: qualifier in x['questions'], p))
     if (q and q != 0):
         p = list(filter(lambda x: q_filter(q, q_val, x), p))

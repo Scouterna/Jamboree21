@@ -2,7 +2,12 @@ import './App.css';
 import * as React from "react";
 import { useState,useEffect,useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { DataGridPremium, GridToolbar, svSE } from "@mui/x-data-grid-premium";
+import {
+  DataGridPremium,
+  GridActionsCellItem,
+  GridRowModes,
+  GridToolbar,
+  svSE } from "@mui/x-data-grid-premium";
 import moment from 'moment';
 import { styled } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
@@ -13,6 +18,10 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Close';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -28,7 +37,6 @@ const useFakeMutation = () => {
   return useCallback(
     (member_no, answers) =>
       new Promise((resolve, reject) => {
-        console.log(member_no, answers);
         fetch(`/update_status?member_no=${member_no}`, {
           method: 'POST',
           body: JSON.stringify(answers),
@@ -49,11 +57,35 @@ function Participants() {
   const [statusColumns,setStatusColumns]=useState([]);
   const [dataColumns,setDataColumns]=useState([]);
   const [snackbar, setSnackbar] = useState(null);
+  const [rowModesModel, setRowModesModel] = useState({});
 
   const mutateRow = useFakeMutation()
 
-
   const handleCloseSnackbar = () => setSnackbar(null);
+
+  const handleRowEditStart = (params, event) => {
+    event.defaultMuiPrevented = true;
+  };
+
+  const handleRowEditStop = (params, event) => {
+    event.defaultMuiPrevented = true;
+  };
+
+  const handleEditClick = (id) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+  };
+
+  const handleSaveClick = (id) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
+
+  const handleCancelClick = (id) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    });
+    setTableData(tableData);
+  };
 
   const processRowUpdate = useCallback(
     async (newRow, oldRow) => {
@@ -67,6 +99,13 @@ function Participants() {
       // Make the HTTP request to save in the backend
       await mutateRow(oldRow.member_no, statusAnswers);
       setSnackbar({ children: `Deltagare ${oldRow.member_no} uppdaterad`, severity: 'success' });
+      setLoadingParticipants(true);
+      fetch(`/participants?form=${params.form_id}&size=10000&cache=0`)
+        .then((response) => response.json())
+          .then((data) => {
+            setTableData(data.items);
+            setLoadingParticipants(false);
+          });
       return newRow;
     },
     [statusColumns, mutateRow],
@@ -157,6 +196,8 @@ function Participants() {
       if (!(questions[q].status)) {
         let column = {
           field: questions[q].id.toString(),
+          tab: questions[q].tab_title,
+          section: questions[q].section_title,
           headerName: questions[q].question,
           valueGetter: (params) => {
             let value = params?.row ? params.row.questions[questions[q].id] : params
@@ -202,6 +243,39 @@ function Participants() {
       valueFormatter: choiceFormater, hide: true},
   ];
 
+  const actions = [
+    { field: 'actions', type: 'actions', width: 100, cellClassName: 'actions',
+      getActions: ({ id }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              icon={<SaveIcon />}
+              label="Save"
+              onClick={handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              icon={<CancelIcon />}
+              label="Cancel"
+              className="textPrimary"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+              />,
+            ];
+          }
+
+          return [
+          <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Edit"
+          className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+            />,
+          ];
+      }}]
+
   return (
     <Box style={{
       display: 'flex',
@@ -217,7 +291,7 @@ function Participants() {
       }}}}>
       <DataGridPremium
         rows={tableData}
-        columns={[...columns, ...statusColumns, ...dataColumns]}
+        columns={[...columns, ...statusColumns, ...dataColumns, ...actions]}
         getRowId={(row) => row.member_no}
         localeText={svSE.components.MuiDataGrid.defaultProps.localeText}
         density="compact"
@@ -229,6 +303,10 @@ function Participants() {
         loading={loadingParticipants}
         experimentalFeatures={{ newEditingApi: true }}
         isCellEditable={(params) => params.row.cancelled_date == null}
+        onRowEditStart={handleRowEditStart}
+        onRowEditStop={handleRowEditStop}
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={(newModel) => setRowModesModel(newModel)}
         editMode='row'
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
@@ -243,20 +321,42 @@ function Participants() {
         getDetailPanelContent= {({ row }) => (
           <Table size='small' >
             <TableBody>
-            <TableRow>
+            <TableRow key='h'>
               <TableCell component="th" colSpan="2"><b>Grundläggande info i scoutnet</b></TableCell>
             </TableRow>
-            <StyledTableRow>
+            <StyledTableRow key='cancelled_date'>
               <TableCell component="th">Avanmäld</TableCell>
               <TableCell component="td">{row.cancelled_date}</TableCell>
             </StyledTableRow>
-            <StyledTableRow>
+            <StyledTableRow key='primary_email'>
               <TableCell component="th">Epost i scoutnet</TableCell>
               <TableCell component="td">{row.primary_email}</TableCell>
             </StyledTableRow>
+            <StyledTableRow key='sex'>
+              <TableCell component="th">Kön</TableCell>
+              <TableCell component="td">{columns.find(c => c.field === 'sex').valueOptions.find(o => o.value === row.sex).label}</TableCell>
+            </StyledTableRow>
             {(() => {
               let rows = []
+              let tab = ''
+              let section = ''
               for (let q in dataColumns) {
+                if (dataColumns[q].tab !== '' & dataColumns[q].tab !== null & tab !== dataColumns[q].tab){
+                  tab = dataColumns[q].tab;
+                  rows.push(
+                    <StyledTableRow key={tab}>
+                      <TableCell component="th" colSpan="2"><h3>{tab}</h3></TableCell>
+                    </StyledTableRow>
+                  )
+                }
+                if (dataColumns[q].section !== '' & dataColumns[q].section !== null & section !== dataColumns[q].section){
+                  section = dataColumns[q].section;
+                  rows.push(
+                    <StyledTableRow key={section}>
+                      <TableCell component="th" colSpan="2"><b>{section}</b></TableCell>
+                    </StyledTableRow>
+                  )
+                }
                 rows.push(
                   <StyledTableRow key={dataColumns[q].field}>
                     <TableCell component="th">{dataColumns[q].headerName}</TableCell>
