@@ -33,7 +33,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const useFakeMutation = () => {
+const useScoutViewMutation = () => {
   return useCallback(
     (member_no, answers) =>
       new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ function Participants() {
   const [snackbar, setSnackbar] = useState(null);
   const [rowModesModel, setRowModesModel] = useState({});
 
-  const mutateRow = useFakeMutation()
+  const mutateRow = useScoutViewMutation()
 
   const handleCloseSnackbar = () => setSnackbar(null);
 
@@ -86,6 +86,10 @@ function Participants() {
     });
     setTableData(tableData);
   };
+
+  const handleRowEditCommit = (params) => (p) => {
+    console.log(params, p)
+  }
 
   const processRowUpdate = useCallback(
     async (newRow, oldRow) => {
@@ -231,7 +235,9 @@ function Participants() {
     { field: 'member_no', headerName: 'Medlemsnummer', width: 150, type: 'string'},
     { field: 'first_name', headerName: 'Förnamn'},
     { field: 'last_name', headerName: 'Efternamn'},
-    { field: 'date_of_birth', headerName: 'Födelsedatum', width: 150, type: 'date'},
+    { field: 'date_of_birth', headerName: 'Födelsedatum', width: 150, type: 'date',
+      width: 180, valueGetter: ({ value }) => value && new Date(value),
+      valueFormatter: params => moment(params.value).format("YYYY-MM-DD")},
     { field: 'registration_date', headerName: 'Anmälningsdatum', type: 'dateTime',
       width: 180, valueGetter: ({ value }) => value && new Date(value),
       valueFormatter: params => moment(params.value).format("YYYY-MM-DD HH:mm")},
@@ -295,10 +301,10 @@ function Participants() {
         getRowId={(row) => row.member_no}
         localeText={svSE.components.MuiDataGrid.defaultProps.localeText}
         density="compact"
+        disableDensitySelector
         sx={{ fontSize: 16 }}
         getRowClassName={(params) => `cancelled--${params.row.cancelled_date != null}`}
         components={{ Toolbar: GridToolbar}}
-        disableDensitySelector
         pagination
         loading={loadingParticipants}
         experimentalFeatures={{ newEditingApi: true }}
@@ -310,6 +316,7 @@ function Participants() {
         editMode='row'
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
+        onRowEditCommit={handleRowEditCommit}
 
         componentsProps={{
           toolbar: {
