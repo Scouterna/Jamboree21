@@ -308,7 +308,6 @@ function Participants() {
         pagination
         loading={loadingParticipants}
         experimentalFeatures={{ newEditingApi: true }}
-        isCellEditable={(params) => params.row.cancelled_date == null}
         onRowEditStart={handleRowEditStart}
         onRowEditStop={handleRowEditStop}
         rowModesModel={rowModesModel}
