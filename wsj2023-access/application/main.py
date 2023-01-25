@@ -207,9 +207,9 @@ def forms() -> Dict[int, str]:
     return res
 
 @app.post("/update_status", response_model=bool)
-def update_status(member_no: int, answers: Dict[int, Union[int, str]]) -> bool:
+def update_status(member_no: int, answers: Dict[int, Union[int, str, None]]) -> bool:
     url = f'{settings.scoutnet_base}/project/checkin?id={settings.scoutnet_activity_id}&key={settings.scoutnet_checkin_key}'
-    ans = {k:{'value': v} for (k,v) in answers.items()}
+    ans = {k:{'value': '' if v is None else str(v)} for (k,v) in answers.items()}
     body = {str(member_no): {'questions': ans}}
     print(f'Posting {body} to {url}')
     r = session.post(url, json.dumps(body), headers={'Content-Type': 'application/json'})
