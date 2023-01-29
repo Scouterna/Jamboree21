@@ -1,0 +1,9 @@
+---
+image: scouterna.azurecr.io/scoutwise
+domains:
+  - localhost
+storage:
+  data:
+    capacity: 10Gi
+  images:
+    capacity: 1Gi
