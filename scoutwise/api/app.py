@@ -68,6 +68,25 @@ def updateRow():
 		con.execute(u)
 	return 1
 
+@app.route('/add', methods=['POST'])
+def addRow():
+	data = json.loads(request.data)
+	newRow = data['row']
+
+	if (data['table'] == "cardtransactions"):
+		tablename = cardtransactions;
+
+	if (data['table'] == "cardholders"):
+		tablename = cardholders;
+
+	if (data['table'] == "cardcategories"):
+		tablename = cardcategories;
+
+	with engine.connect() as con:
+		u = insert(tablename).values(newRow)
+		con.execute(u)
+	return 1
+
 @app.route('/transactions', methods=['GET','OPTIONS'])
 #@cross_origin(supports_credentials=True)
 @jwt_required()
