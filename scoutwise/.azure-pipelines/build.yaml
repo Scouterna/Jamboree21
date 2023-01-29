@@ -18,7 +18,7 @@ steps:
     condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
 
   - bash: |
-      ${{ format('docker build . -t scouterna.azurecr.io/{0}-db:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
+      ${{ format('docker build . -t scouterna.azurecr.io/{0}-web:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     displayName: Build web docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
     workingDirectory: scoutwise/web
