@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    konghq.com/plugins:  {{ .Values.oauthPlugin | default "office-oauth" }}
+    kubernetes.io/ingress.class: "kong"
+  name: scoutwise
+spec:
+  rules:
+  {{ range .Values.domains }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: web
+          servicePort: 80
+  {{- end }}
+  tls:
+  - hosts:
+    {{ range .Values.domains }}
+    - {{ . }}
+    {{- end }}
+    secretName: scoutwise-tls
