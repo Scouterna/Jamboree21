@@ -4,7 +4,7 @@ parameters:
   subPath: ''
 steps:
   - bash: |
-      ${{ format('docker build api -t scouterna.azurecr.io/{0}-api:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
+      ${{ format('docker build ./api -t scouterna.azurecr.io/{0}-api:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     displayName: Build docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
     workingDirectory: ${{ parameters.supPath }}
@@ -18,7 +18,7 @@ steps:
     condition: or(and(succeeded(), eq(variables.updated, 'true'), eq(variables['Build.SourceBranch'], 'refs/heads/master')), eq(variables.forcerebuild, 'true'))
 
   - bash: |
-      ${{ format('docker build web -t scouterna.azurecr.io/{0}-db:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
+      ${{ format('docker build ./web -t scouterna.azurecr.io/{0}-db:{1}-{2}', parameters.serviceName, '$BUILD_SOURCEBRANCHNAME', '$BUILD_SOURCEVERSION') }}
     displayName: Build docker image
     condition: and(succeeded(), eq(variables.updated, 'true'))
     workingDirectory: ${{ parameters.supPath }}

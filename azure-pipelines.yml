@@ -28,6 +28,7 @@ jobs:
    parameters:
     serviceName: scoutwise
     subPath: scoutwise
+    stepsTemplate: scoutwise/.azure-pipelines/build.yaml
  - template: .azure-pipelines/templates/build-service.job.yaml
    parameters:
     serviceName: planera
