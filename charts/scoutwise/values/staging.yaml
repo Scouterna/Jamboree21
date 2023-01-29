@@ -2,3 +2,6 @@
 domains:
   - scoutwise.staging.webservices.scouterna.net
 oauthPlugin: office-oauth-wsj2023-access-staging
+storage:
+  data:
+    capacity: 10Gi
