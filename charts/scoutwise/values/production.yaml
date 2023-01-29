@@ -1,0 +1,4 @@
+---
+domains:
+  - scoutwise.production.webservices.scouterna.net
+oauthPlugin: office-oauth-wsj2023-access-staging
