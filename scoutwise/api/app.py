@@ -33,7 +33,7 @@ CORS(app, support_credentials=True)
 api = Api(app)
 
 engine = create_engine(
-	f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@db:5432/scoutwise",
+	f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/scoutwise",
 	echo=True
 )
 
