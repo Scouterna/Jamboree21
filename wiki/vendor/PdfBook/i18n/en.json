@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aran Dunkley"
+		]
+	},
+	"pdfbook-action": "Print as PDF",
+	"pdfbook-log": "$1 exported as a PDF book",
+	"pdfbook-desc": "Composes a book from pages in a category and exports as a PDF book"
+}

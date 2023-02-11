@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Naudefj"
+		]
+	},
+	"pdfbook-action": "Druk as PDF",
+	"pdfbook-log": "$1 is as 'n PDF-boek geëksporteer",
+	"pdfbook-desc": "Maak 'n boek van bladsye in 'n kategorie en eksporteer as 'n PDF-boek"
+}

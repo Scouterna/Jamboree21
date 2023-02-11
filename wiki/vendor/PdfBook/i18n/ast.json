@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Xuacu"
+		]
+	},
+	"pdfbook-action": "Esportar a PDF...",
+	"pdfbook-log": "$1 esportáu como llibru en PDF",
+	"pdfbook-desc": "Compón un llibru a partir de páxines d'una categoría y lu esporta como llibru PDF"
+}

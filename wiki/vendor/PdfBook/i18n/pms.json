@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Borichèt",
+			"Dragonòt"
+		]
+	},
+	"pdfbook-action": "Stampa com PDF",
+	"pdfbook-log": "$1 esportà coma lìber PDF",
+	"pdfbook-desc": "A compon un lìber a parte da le pàgine an na categorìa e a lo espòrta com un lìber an PDF"
+}

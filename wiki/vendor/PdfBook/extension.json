@@ -1,0 +1,28 @@
+{
+	"name": "PdfBook",
+	"version": "2.0.5, 2021-07-19",
+	"author": [
+		"[http://www.organicdesign.co.nz/aran Aran Dunkley]",
+		"[http://absorto.dev Igor Absorto]"
+	],
+	"url": "http://www.mediawiki.org/wiki/Extension:PdfBook",
+	"descriptionmsg": "pdfbook-desc",
+	"license-name": "[https://www.gnu.org/licenses/gpl-2.0.html GNU General Public Licence 2.0] or later",
+	"type": "parserhook",
+	"callback": "PdfBookHooks::onRegistration",
+	"config": {
+		"wgPdfBookTab": false,           "@": "Whether or not an action tab is wanted for printing to PDF",
+		"wgPdfBookDownload": true,       "@": "Whether the files should be downloaded or view in-browser"
+	},
+	"Hooks": {
+		"SkinTemplateNavigation": ["PdfBookHooks::onSkinTemplateNavigation"]
+	},
+	"AutoloadClasses": {
+		"PdfBookHooks": "PdfBookHooks.php",
+		"PdfBookAction": "PdfBookAction.php"
+	},
+	"MessagesDirs": {
+		"PdfBook": ["i18n"]
+	},
+	"manifest_version": 1
+}

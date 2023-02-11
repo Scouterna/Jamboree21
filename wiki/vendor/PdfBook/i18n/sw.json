@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lloffiwr"
+		]
+	},
+	"pdfbook-action": "Chapa kwa mtindo wa PDF",
+	"pdfbook-log": "$1 amekipeleka kitabu nje kwa mtindo wa PDF",
+	"pdfbook-desc": "Inaunda kurasa za jamii fulani katika kitabu, na kukipeleka nje kwa mtindo wa PDF"
+}

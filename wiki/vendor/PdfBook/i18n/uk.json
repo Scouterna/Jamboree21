@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Andriykopanytsia"
+		]
+	},
+	"pdfbook-action": "Друк у PDF",
+	"pdfbook-log": "$1 експортовано як книгу PDF",
+	"pdfbook-desc": "Створює книгу зі сторінок у категорії і експортує як книгу PDF"
+}

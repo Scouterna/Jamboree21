@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hamilton Abreu"
+		]
+	},
+	"pdfbook-action": "Imprimir como PDF",
+	"pdfbook-log": "$1 exportado como um livro PDF",
+	"pdfbook-desc": "Compõe um livro com as páginas de uma categoria e exporta-o como um livro PDF"
+}

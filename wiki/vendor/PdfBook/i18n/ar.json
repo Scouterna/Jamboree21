@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"ديفيد"
+		]
+	},
+	"pdfbook-action": "طباعة كملف PDF",
+	"pdfbook-log": "تم تصدير $1 ككتاب PDF",
+	"pdfbook-desc": "يؤلف كتابا من صفحات في تصنيف ويصدر ككتاب PDF"
+}

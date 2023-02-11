@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Njardarlogar"
+		]
+	},
+	"pdfbook-action": "Skriv ut som PDF",
+	"pdfbook-log": "$1 eksporterte som ei PDF-bok",
+	"pdfbook-desc": "Set saman ei bok frå sider i ein kategori og eksporter som ei PDF-bok"
+}

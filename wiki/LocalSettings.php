@@ -184,6 +184,9 @@ $wgGroupPermissions['user']['writeapi'] = true;
 wfLoadExtension( 'MobileFrontend' );
 wfLoadExtension( 'Auth_remoteuser' );
 
+# install PdfBook
+wfLoadExtension( 'PdfBook' );
+
 # install masseditregex
 wfLoadExtension( 'MassEditRegex' );
 $wgGroupPermissions['masseditregexeditor']['masseditregex'] = true;

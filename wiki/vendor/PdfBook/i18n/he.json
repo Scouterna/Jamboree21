@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"pdfbook-action": "הדפסה כקובץ PDF",
+	"pdfbook-log": "$1 יוּצָא כספר PDF",
+	"pdfbook-desc": "לערוך ספר מדפים בקטגוריה וייצא אותו כ־PDF"
+}

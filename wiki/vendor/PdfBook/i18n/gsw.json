@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Als-Holder"
+		]
+	},
+	"pdfbook-action": "As PDF-Datei uusgee",
+	"pdfbook-log": "$1 exportiert as PDF-Buech",
+	"pdfbook-desc": "Stellt e Buech vu Syte us ere Kategori zämme un exportiert s as PDF-Buech"
+}

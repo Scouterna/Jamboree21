@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beluga",
+			"Pyscowicz"
+		]
+	},
+	"pdfbook-action": "Tulosta PDF-tiedostoksi",
+	"pdfbook-log": "$1 vietiin PDF-kirjaksi"
+}

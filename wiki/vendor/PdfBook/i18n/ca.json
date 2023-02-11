@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aleator"
+		]
+	},
+	"pdfbook-action": "Imprimeix com a PDF",
+	"pdfbook-log": "$1 exportat com a llibre PDF",
+	"pdfbook-desc": "Compon un llibre a partir de pàgines en una categoria i ho exporta com a llibre PDF"
+}
