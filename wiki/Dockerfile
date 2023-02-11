@@ -24,8 +24,8 @@ RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.pa
 
 RUN	chown -R www-data:www-data extensions skins cache images
 
-# Install composer
-RUN apt-get update && apt-get install -y unzip --no-install-recommends && rm -rf /var/lib/apt/lists/*
+# Install composer and htmldoc
+RUN apt-get update && apt-get install -y unzip htmldoc --no-install-recommends && rm -rf /var/lib/apt/lists/*
 RUN bash /tmp/download-composer.sh
 
 COPY composer.local.json composer.local.json
@@ -33,9 +33,6 @@ RUN COMPOSER=composer.local.json php composer.phar install
 
 # Run composer
 RUN COMPOSER=composer.local.json php composer.phar update --no-dev
-
-# Install HTMLDOC
-RUN apt-get install htmldoc
 
 # Copy conf
 COPY LocalSettings.php LocalSettings.php
