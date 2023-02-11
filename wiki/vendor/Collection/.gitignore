@@ -1,0 +1,8 @@
+.*.swp
+/.project
+/.idea
+/composer.lock
+/vendor
+/node_modules
+npm-debug.log
+/.eslintcache
