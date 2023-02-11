@@ -14,7 +14,7 @@ COPY vendor/PluggableAuth extensions/PluggableAuth
 COPY vendor/Preloader extensions/Preloader
 COPY vendor/Renameuser extensions/Renameuser
 COPY vendor/SimpleSAMLphp extensions/SimpleSAMLphp
-COPY vendor/PdfBook extensions/PdfBook
+COPY vendor/Collection extensions/Collection
 COPY download-composer.sh /tmp/download-composer.sh
 
 
@@ -26,7 +26,7 @@ RUN patch /var/www/html/includes/OutputPage.php < /tmp/patches/OutputPage-403.pa
 RUN	chown -R www-data:www-data extensions skins cache images
 
 # Install composer and htmldoc
-RUN apt-get update && apt-get install -y unzip htmldoc --no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y unzip --no-install-recommends && rm -rf /var/lib/apt/lists/*
 RUN bash /tmp/download-composer.sh
 
 COPY composer.local.json composer.local.json

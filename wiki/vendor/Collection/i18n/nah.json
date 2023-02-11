@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Akapochtli",
+			"Fluence",
+			"Languaeditor"
+		]
+	},
+	"coll-download": "Xiktemowi",
+	"coll-remove": "Xikkixti",
+	"coll-show": "Xiknexti",
+	"coll-move_up": "Xiktlehkawi",
+	"coll-move_down": "Xikpanitlali",
+	"coll-title": "Tokaitl:",
+	"coll-yes": "Kena",
+	"coll-no": "Amo",
+	"coll-cancel": "Xikxolewa",
+	"coll-update": "Xikyankwili",
+	"coll-suggest_show": "xiknexti",
+	"coll-print_export": "Tlakopinalistli",
+	"coll-create_a_book": "Xikchiwa se amochtli",
+	"coll-book_creator": "Amoxchiwketl",
+	"coll-download_as": "Xiktemowi kensé $1",
+	"coll-bookscategory": "Amochmeh",
+	"coll-help": "Tlapalewilistli",
+	"coll-helppage": "Help:Amoxtli",
+	"coll-show_collection": "Xiknexti amochtli"
+}

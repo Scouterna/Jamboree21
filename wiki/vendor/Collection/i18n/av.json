@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gazimagomedov",
+			"Omarov M.",
+			"Аль-Гимравий"
+		]
+	},
+	"coll-remove": "Гилдизе",
+	"coll-show": "Бихьизабизе",
+	"coll-move_up": "ТӀадегӀан цузе",
+	"coll-move_down": "Гъоркьехун цузе",
+	"coll-print_export": "Зарбу/экпорт",
+	"coll-create_a_book": "ТӀехь гӀуцӀизе",
+	"coll-book_creator": "ТӀехь гӀуцӀунжо",
+	"coll-download_as": "$1 гӀадин жанибе реххизе",
+	"coll-disable": "свинабизе",
+	"coll-help": "Кумек",
+	"coll-helppage": "Help:ТӀахьал",
+	"coll-remove_this_page": "Гилдизабе гьаб гьумер дурго тӀехьалдаса",
+	"coll-show_collection": "ТӀехь бихьизабизе",
+	"coll-attribution-anons": "ЦӀаргьечӀ: $1"
+}
