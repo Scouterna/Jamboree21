@@ -1,4 +1,4 @@
-FROM mediawiki:stable
+FROM mediawiki:1.36
 
 COPY logo.png logo.png
 
