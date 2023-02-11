@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Michawiki"
+		]
+	},
+	"pdfbook-action": "Jako PDF ćišćeć",
+	"pdfbook-log": "$1 bu jako PDF-kniha eksportowany",
+	"pdfbook-desc": "Zestaja knihu ze stronow w kategoriji a eksportuje jako PDF-knihu"
+}

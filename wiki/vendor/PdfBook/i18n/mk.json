@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"pdfbook-action": "Испечати како PDF",
+	"pdfbook-log": "Извоз на $1 како PDF-книга",
+	"pdfbook-desc": "Составува книга од страници во извесна категорија и ја извезува во PDF-формат"
+}

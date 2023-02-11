@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jean-Frédéric"
+		]
+	},
+	"pdfbook-action": "Imprimer au format PDF",
+	"pdfbook-log": "$1 exporté sous forme de livre PDF",
+	"pdfbook-desc": "Compose un livre à partir des pages d’une catégorie et exporte comme un livre au format PDF"
+}

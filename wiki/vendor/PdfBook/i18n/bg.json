@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"ShockD"
+		]
+	},
+	"pdfbook-action": "Отпечатване като PDF",
+	"pdfbook-log": "$1 изведе като PDF книга",
+	"pdfbook-desc": "Съставя книга от страници в категория и ги изнася като книга в PDF формат"
+}

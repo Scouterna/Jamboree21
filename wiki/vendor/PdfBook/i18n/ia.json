@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"pdfbook-action": "Imprimer como PDF",
+	"pdfbook-log": "$1 exportate como libro in PDF",
+	"pdfbook-desc": "Compone un libro ex paginas in un categoria e exporta lo como libro in PDF"
+}

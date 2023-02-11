@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"IvanLanin"
+		]
+	},
+	"pdfbook-action": "Cetak sebagai PDF",
+	"pdfbook-log": "$1 diekspor sebagai buku PDF",
+	"pdfbook-desc": "Menyusun suatu buku dari halaman dalam kategori dan mengekspornya sebagai buku PDF"
+}

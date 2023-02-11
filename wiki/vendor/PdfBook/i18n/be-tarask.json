@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"EugeneZelenko",
+			"Wizardist"
+		]
+	},
+	"pdfbook-action": "Друкаваць у фармаце PDF",
+	"pdfbook-log": "$1 экспартаваная як кніга ў фармаце PDF",
+	"pdfbook-desc": "Стварае кнігу са старонак у катэгорыі і экспартуе яе ў фармат PDF"
+}

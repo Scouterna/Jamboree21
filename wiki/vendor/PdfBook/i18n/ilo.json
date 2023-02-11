@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lam-ang"
+		]
+	},
+	"pdfbook-action": "Imaldit a kasla PDF",
+	"pdfbook-log": "$1 iangkat a kasla PDF na libro",
+	"pdfbook-desc": "Agaramid ti libro nga naggapu kadagiti pampanid iti kategoria ken iangkat a kasla PDF a libro"
+}

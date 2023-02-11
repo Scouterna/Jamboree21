@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Iwai.masaharu",
+			"青子守歌"
+		]
+	},
+	"pdfbook-action": "PDFとして印刷する",
+	"pdfbook-log": "$1をPDFブックとしてエクスポート",
+	"pdfbook-desc": "カテゴリ内のページから本を構築し、PDFブックとしてエクスポートする"
+}

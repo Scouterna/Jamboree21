@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"pdfbook-action": "Imprimir como PDF",
+	"pdfbook-log": "$1 exportado como libro en PDF",
+	"pdfbook-desc": "Composición dun libro a partir das páxinas presentes nunha categoría e exportación como un libro en PDF"
+}

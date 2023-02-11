@@ -34,5 +34,9 @@ RUN COMPOSER=composer.local.json php composer.phar install
 # Run composer
 RUN COMPOSER=composer.local.json php composer.phar update --no-dev
 
+# Install HTMLDOC
+RUN apt-get install htmldoc
+
+# Copy conf
 COPY LocalSettings.php LocalSettings.php
 COPY smw.json /var/www/html/extensions/SemanticMediaWiki/.smw.json

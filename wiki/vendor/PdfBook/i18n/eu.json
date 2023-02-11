@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"An13sa"
+		]
+	},
+	"pdfbook-action": "PDF gisa inprimatu",
+	"pdfbook-log": "$1 PDF liburu bezala esportatu da",
+	"pdfbook-desc": "Kategoria bateko orriak hartu eta PDF liburu gisa esportatzen ditu"
+}

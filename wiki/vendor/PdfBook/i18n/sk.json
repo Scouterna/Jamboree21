@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Helix84"
+		]
+	},
+	"pdfbook-action": "Vytlačiť do PDF",
+	"pdfbook-log": "Stránka $1 bola exportovaná ako kniha vo formáte PDF",
+	"pdfbook-desc": "Zostavá knihu z stránok v kategórii a exportuje ju vo formáte PDF"
+}

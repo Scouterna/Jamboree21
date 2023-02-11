@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Diupwijk"
+		]
+	},
+	"pdfbook-action": "Skriv ut som PDF",
+	"pdfbook-log": "$1 exporterad som PDF-bok",
+	"pdfbook-desc": "Sätter samman en bok från sidorna i en kategori och exporterar dem som PDF"
+}

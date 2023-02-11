@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"BáthoryPéter"
+		]
+	},
+	"pdfbook-action": "Nyomtatás PDF formátumban",
+	"pdfbook-log": "$ 1 exportálva PDF-könyvként",
+	"pdfbook-desc": "Kiválasztott oldalakat kategóriába helyez, összeállít belőlük egy könyvet, és exportálja PDF-könyvként"
+}

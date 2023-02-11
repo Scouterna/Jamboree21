@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sp5uhe"
+		]
+	},
+	"pdfbook-action": "Drukuj do PDF",
+	"pdfbook-log": "wyeksportowano $1 jako książkę w formacie PDF",
+	"pdfbook-desc": "Tworzenie książki ze stron kategorii i eksportowanie w formacie PDF"
+}

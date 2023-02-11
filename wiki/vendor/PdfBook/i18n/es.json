@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Armando-Martin"
+		]
+	},
+	"pdfbook-action": "Imprimir en formato PDF",
+	"pdfbook-log": "$1 exportado como libro en PDF",
+	"pdfbook-desc": "Compone un libro a partir de las páginas presentes en una categoría y lo exporta como libro en PDF"
+}

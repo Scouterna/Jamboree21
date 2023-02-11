@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bellayet",
+			"Wikitanvir"
+		]
+	},
+	"pdfbook-action": "পিডিএফ হিসেবে মুদ্রণ",
+	"pdfbook-log": "$1 পিডিএফ বই হিসেবে তৈরিকৃত"
+}

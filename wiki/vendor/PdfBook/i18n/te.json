@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"రహ్మానుద్దీన్"
+		]
+	},
+	"pdfbook-action": "PDF గా ప్రచురించు",
+	"pdfbook-log": "$1 PDF పుస్తకంగా ఎగుమతి చేయబడింది"
+}
