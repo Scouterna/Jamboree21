@@ -1,7 +1,8 @@
 {
     "require": {
         "mediawiki/semantic-media-wiki": "^3.2",
-        "mediawiki/page-forms": "^5.2.1"
+        "mediawiki/page-forms": "^5.2.1",
+        "liuggio/statsd-php-client": "^1.0"
     },
     "config": {
         "allow-plugins": {
