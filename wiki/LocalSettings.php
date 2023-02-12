@@ -237,6 +237,7 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
 );
 
 # Load SMW
+wfLoadExtension( 'SemanticMediaWiki' );
 enableSemantics(getenv('MEDIAWIKI_BASE_URL'));
 
 # Increase max upload size

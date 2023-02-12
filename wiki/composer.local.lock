@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db7bf5b16501498809b18fd6239ee9b6",
+    "content-hash": "b2eb4c5f2bfdb04feeec3fe72eeffa17",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.11.0",
+            "version": "v1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "ae03311f45dfe194412081526be2e003960df74b"
+                "reference": "d20a64ed3c94748397ff5973488761b22f6d3f19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/ae03311f45dfe194412081526be2e003960df74b",
-                "reference": "ae03311f45dfe194412081526be2e003960df74b",
+                "url": "https://api.github.com/repos/composer/installers/zipball/d20a64ed3c94748397ff5973488761b22f6d3f19",
+                "reference": "d20a64ed3c94748397ff5973488761b22f6d3f19",
                 "shasum": ""
             },
             "require": {
@@ -116,6 +116,7 @@
                 "modx",
                 "moodle",
                 "osclass",
+                "pantheon",
                 "phpbb",
                 "piwik",
                 "ppi",
@@ -138,7 +139,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/installers/issues",
-                "source": "https://github.com/composer/installers/tree/v1.11.0"
+                "source": "https://github.com/composer/installers/tree/v1.12.0"
             },
             "funding": [
                 {
@@ -154,20 +155,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-04-28T06:42:17+00:00"
+            "time": "2021-09-13T08:19:44+00:00"
         },
         {
             "name": "data-values/common",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataValues/Common.git",
-                "reference": "315bd95ef8e5c360ce8a1cf02c0eef35bbb92561"
+                "reference": "9f5e6216ec66ac8f2281351b110bad0eded43e65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataValues/Common/zipball/315bd95ef8e5c360ce8a1cf02c0eef35bbb92561",
-                "reference": "315bd95ef8e5c360ce8a1cf02c0eef35bbb92561",
+                "url": "https://api.github.com/repos/DataValues/Common/zipball/9f5e6216ec66ac8f2281351b110bad0eded43e65",
+                "reference": "9f5e6216ec66ac8f2281351b110bad0eded43e65",
                 "shasum": ""
             },
             "require": {
@@ -189,8 +190,8 @@
             "autoload": {
                 "psr-4": {
                     "DataValues\\": "src/DataValues/",
-                    "ValueFormatters\\": "src/ValueFormatters/",
-                    "ValueParsers\\": "src/ValueParsers/"
+                    "ValueParsers\\": "src/ValueParsers/",
+                    "ValueFormatters\\": "src/ValueFormatters/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -217,22 +218,22 @@
             "support": {
                 "irc": "irc://irc.freenode.net/wikidata",
                 "issues": "https://github.com/DataValues/Common/issues",
-                "source": "https://github.com/DataValues/Common/tree/1.0.0"
+                "source": "https://github.com/DataValues/Common/tree/1.1.0"
             },
-            "time": "2021-01-25T15:31:52+00:00"
+            "time": "2022-10-21T14:13:11+00:00"
         },
         {
             "name": "data-values/data-values",
-            "version": "3.0.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataValues/DataValues.git",
-                "reference": "63dee286f8bb4ae7899c2d2e8d439e7b5332cc49"
+                "reference": "1084142918095dfedf9b6cc0de0755f8c4628264"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataValues/DataValues/zipball/63dee286f8bb4ae7899c2d2e8d439e7b5332cc49",
-                "reference": "63dee286f8bb4ae7899c2d2e8d439e7b5332cc49",
+                "url": "https://api.github.com/repos/DataValues/DataValues/zipball/1084142918095dfedf9b6cc0de0755f8c4628264",
+                "reference": "1084142918095dfedf9b6cc0de0755f8c4628264",
                 "shasum": ""
             },
             "require": {
@@ -242,8 +243,8 @@
                 "mediawiki/data-values": "*"
             },
             "require-dev": {
-                "phpunit/phpunit": "~8.0",
-                "wikibase/wikibase-codesniffer": "~1.2.0"
+                "mediawiki/mediawiki-codesniffer": "^38",
+                "phpunit/phpunit": "~8.0"
             },
             "type": "library",
             "extra": {
@@ -277,7 +278,7 @@
             ],
             "support": {
                 "issues": "https://github.com/DataValues/DataValues/issues",
-                "source": "https://github.com/DataValues/DataValues/tree/3.0.0"
+                "source": "https://github.com/DataValues/DataValues/tree/3.1.0"
             },
             "funding": [
                 {
@@ -285,7 +286,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-01-19T16:36:36+00:00"
+            "time": "2022-10-21T13:57:56+00:00"
         },
         {
             "name": "data-values/interfaces",
@@ -314,8 +315,8 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "ValueFormatters\\": "src/ValueFormatters/",
                     "ValueParsers\\": "src/ValueParsers/",
+                    "ValueFormatters\\": "src/ValueFormatters/",
                     "ValueValidators\\": "src/ValueValidators/"
                 }
             },
@@ -411,191 +412,98 @@
             "time": "2021-01-22T19:14:47+00:00"
         },
         {
-            "name": "elasticsearch/elasticsearch",
-            "version": "v6.8.2",
+            "name": "jeroen/file-fetcher",
+            "version": "6.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "619c78266999c6e431df9ca0f844e8f656ac145b"
+                "url": "https://github.com/JeroenDeDauw/FileFetcher.git",
+                "reference": "d38fb0587b52b28bd24fda599f2da69ac8530453"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/619c78266999c6e431df9ca0f844e8f656ac145b",
-                "reference": "619c78266999c6e431df9ca0f844e8f656ac145b",
+                "url": "https://api.github.com/repos/JeroenDeDauw/FileFetcher/zipball/d38fb0587b52b28bd24fda599f2da69ac8530453",
+                "reference": "d38fb0587b52b28bd24fda599f2da69ac8530453",
                 "shasum": ""
             },
             "require": {
-                "ext-json": ">=1.3.7",
-                "ezimuel/ringphp": "^1.1.2",
-                "php": "^7.3 || ^8.0",
-                "psr/log": "~1.0"
+                "php": ">=7.3",
+                "psr/log": "~3.0|~2.0|~1.0"
             },
             "require-dev": {
-                "doctrine/inflector": "^1.3",
-                "mockery/mockery": "^1.2",
-                "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "^9.3",
-                "squizlabs/php_codesniffer": "^3.4",
-                "symfony/finder": "~4.0",
-                "symfony/yaml": "~4.0",
-                "symplify/git-wrapper": ">=9.0 <9.3.27"
+                "jeroen/psr-log-test-doubles": "~3.1",
+                "phpstan/phpstan": "~1.6.0",
+                "phpunit/phpunit": "~9.5",
+                "squizlabs/php_codesniffer": "~3.2",
+                "vimeo/psalm": "^4.22.0"
             },
             "suggest": {
-                "ext-curl": "*",
-                "monolog/monolog": "Allows for client-level logging and tracing"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/autoload.php"
-                ],
-                "psr-4": {
-                    "Elasticsearch\\": "src/Elasticsearch/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Zachary Tong"
-                },
-                {
-                    "name": "Enrico Zimuel"
-                }
-            ],
-            "description": "PHP Client for Elasticsearch",
-            "keywords": [
-                "client",
-                "elasticsearch",
-                "search"
-            ],
-            "support": {
-                "issues": "https://github.com/elastic/elasticsearch-php/issues",
-                "source": "https://github.com/elastic/elasticsearch-php/tree/v6.8.2"
-            },
-            "time": "2021-07-14T14:41:55+00:00"
-        },
-        {
-            "name": "ezimuel/guzzlestreams",
-            "version": "3.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ezimuel/guzzlestreams.git",
-                "reference": "abe3791d231167f14eb80d413420d1eab91163a8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ezimuel/guzzlestreams/zipball/abe3791d231167f14eb80d413420d1eab91163a8",
-                "reference": "abe3791d231167f14eb80d413420d1eab91163a8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
+                "jeroen/file-fetcher-cache": "Provides a SimpleCache (PSR-16) decorator for file fetchers",
+                "jeroen/file-fetcher-stopwatch": "Provides a Symfony Stopwatch decorator for file fetchers"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "6.0.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "GuzzleHttp\\Stream\\": "src/"
+                    "FileFetcher\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
+                    "name": "Jeroen De Dauw",
+                    "email": "jeroendedauw@gmail.com",
+                    "homepage": "https://EntropyWins.wtf",
+                    "role": "Developer"
                 }
             ],
-            "description": "Fork of guzzle/streams (abandoned) to be used with elasticsearch-php",
-            "homepage": "http://guzzlephp.org/",
+            "description": "Simple file fetching interface",
+            "homepage": "https://github.com/JeroenDeDauw/FileFetcher",
             "keywords": [
-                "Guzzle",
-                "stream"
+                "Test Doubles",
+                "curl",
+                "file fetcher",
+                "file_get_contents",
+                "http",
+                "http client",
+                "http request",
+                "interface",
+                "mocks",
+                "request",
+                "spies",
+                "stubs",
+                "wget"
             ],
             "support": {
-                "source": "https://github.com/ezimuel/guzzlestreams/tree/3.0.1"
+                "issues": "https://github.com/JeroenDeDauw/FileFetcher/issues",
+                "source": "https://github.com/JeroenDeDauw/FileFetcher/tree/6.1.0"
             },
-            "time": "2020-02-14T23:11:50+00:00"
-        },
-        {
-            "name": "ezimuel/ringphp",
-            "version": "1.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ezimuel/ringphp.git",
-                "reference": "0b78f89d8e0bb9e380046c31adfa40347e9f663b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ezimuel/ringphp/zipball/0b78f89d8e0bb9e380046c31adfa40347e9f663b",
-                "reference": "0b78f89d8e0bb9e380046c31adfa40347e9f663b",
-                "shasum": ""
-            },
-            "require": {
-                "ezimuel/guzzlestreams": "^3.0.1",
-                "php": ">=5.4.0",
-                "react/promise": "~2.0"
-            },
-            "require-dev": {
-                "ext-curl": "*",
-                "phpunit/phpunit": "~4.0"
-            },
-            "suggest": {
-                "ext-curl": "Guzzle will use specific adapters if cURL is present"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\Ring\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
+            "funding": [
                 {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
+                    "url": "https://github.com/JeroenDeDauw",
+                    "type": "github"
                 }
             ],
-            "description": "Fork of guzzle/RingPHP (abandoned) to be used with elasticsearch-php",
-            "support": {
-                "source": "https://github.com/ezimuel/ringphp/tree/1.1.2"
-            },
-            "time": "2020-02-14T23:51:21+00:00"
+            "time": "2022-04-26T17:29:31+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "5.2.11",
+            "version": "5.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/justinrainbow/json-schema.git",
-                "reference": "2ab6744b7296ded80f8cc4f9509abbff393399aa"
+                "reference": "ad87d5a5ca981228e0e205c2bc7dfb8e24559b60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/2ab6744b7296ded80f8cc4f9509abbff393399aa",
-                "reference": "2ab6744b7296ded80f8cc4f9509abbff393399aa",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/ad87d5a5ca981228e0e205c2bc7dfb8e24559b60",
+                "reference": "ad87d5a5ca981228e0e205c2bc7dfb8e24559b60",
                 "shasum": ""
             },
             "require": {
@@ -650,22 +558,22 @@
             ],
             "support": {
                 "issues": "https://github.com/justinrainbow/json-schema/issues",
-                "source": "https://github.com/justinrainbow/json-schema/tree/5.2.11"
+                "source": "https://github.com/justinrainbow/json-schema/tree/5.2.12"
             },
-            "time": "2021-07-22T09:24:00+00:00"
+            "time": "2022-04-13T08:02:27+00:00"
         },
         {
             "name": "mediawiki/page-forms",
-            "version": "5.2.1",
+            "version": "5.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-extensions-PageForms.git",
-                "reference": "01a2363f7520668c1cde7d4568cb8b00da0b394b"
+                "reference": "74ebc5de5d1b515aeb59c848c3a9e3425da13114"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-PageForms/zipball/01a2363f7520668c1cde7d4568cb8b00da0b394b",
-                "reference": "01a2363f7520668c1cde7d4568cb8b00da0b394b",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-PageForms/zipball/74ebc5de5d1b515aeb59c848c3a9e3425da13114",
+                "reference": "74ebc5de5d1b515aeb59c848c3a9e3425da13114",
                 "shasum": ""
             },
             "require": {
@@ -673,13 +581,14 @@
                 "php": ">=5.5.9"
             },
             "require-dev": {
-                "mediawiki/mediawiki-codesniffer": "35.0.0",
+                "mediawiki/mediawiki-codesniffer": "40.0.1",
+                "mediawiki/mediawiki-phan-config": "0.12.0",
                 "mediawiki/minus-x": "1.1.1",
-                "php-parallel-lint/php-console-highlighter": "0.5.0",
-                "php-parallel-lint/php-parallel-lint": "1.2.0"
+                "php-parallel-lint/php-console-highlighter": "1.0.0",
+                "php-parallel-lint/php-parallel-lint": "1.3.2"
             },
             "suggest": {
-                "mediawiki/open-layers": "Allow us to use ResourceLoader for OpenLayers."
+                "mediawiki/open-layers": "Allow us to use a local version of OpenLayers."
             },
             "type": "mediawiki-extension",
             "extra": {
@@ -698,8 +607,7 @@
             ],
             "authors": [
                 {
-                    "name": "Yaron Koren",
-                    "homepage": "http://yaronkoren.com/"
+                    "name": "Yaron Koren"
                 }
             ],
             "description": "Forms for creating and editing wiki pages.",
@@ -708,15 +616,14 @@
                 "Forms",
                 "PF",
                 "Page Forms",
-                "SF",
                 "Semantic Forms",
                 "mediawiki",
                 "wiki"
             ],
             "support": {
-                "source": "https://github.com/wikimedia/mediawiki-extensions-PageForms/tree/5.2.1"
+                "source": "https://github.com/wikimedia/mediawiki-extensions-PageForms/tree/5.5.1"
             },
-            "time": "2021-04-28T17:05:07+00:00"
+            "time": "2022-12-01T17:46:28+00:00"
         },
         {
             "name": "mediawiki/parser-hooks",
@@ -779,22 +686,22 @@
         },
         {
             "name": "mediawiki/semantic-media-wiki",
-            "version": "3.2.3",
+            "version": "4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SemanticMediaWiki/SemanticMediaWiki.git",
-                "reference": "5619c2db49184e862eecc72375e190de0e103df7"
+                "reference": "0d6b0cb9ef4135a27adf02fea52d8089f4c5e147"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SemanticMediaWiki/SemanticMediaWiki/zipball/5619c2db49184e862eecc72375e190de0e103df7",
-                "reference": "5619c2db49184e862eecc72375e190de0e103df7",
+                "url": "https://api.github.com/repos/SemanticMediaWiki/SemanticMediaWiki/zipball/0d6b0cb9ef4135a27adf02fea52d8089f4c5e147",
+                "reference": "0d6b0cb9ef4135a27adf02fea52d8089f4c5e147",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "1.*,>=1.0.1",
-                "elasticsearch/elasticsearch": "^5.3|^6.0",
                 "ext-mbstring": "*",
+                "jeroen/file-fetcher": "^6|^5|^4.4",
                 "justinrainbow/json-schema": "~5.2",
                 "mediawiki/parser-hooks": "~1.4",
                 "onoi/blob-store": "~1.2",
@@ -804,13 +711,14 @@
                 "onoi/http-request": "~1.1",
                 "onoi/message-reporter": "~1.0",
                 "onoi/shared-resources": "~0.3",
-                "onoi/tesa": "~0.1",
                 "param-processor/param-processor": "~1.2",
-                "php": ">=7.1",
+                "php": ">=7.3",
                 "psr/log": "~1.0",
                 "seld/jsonlint": "^1.7",
                 "serialization/serialization": "~3.2|~4.0",
-                "symfony/css-selector": "^3.3"
+                "symfony/css-selector": "^5|^4|^3.3",
+                "wikimedia/cdb": "^2|^1",
+                "wikimedia/textcat": "^2|^1.1"
             },
             "replace": {
                 "mediawiki/semantic-mediawiki": "*"
@@ -825,19 +733,25 @@
             "type": "mediawiki-extension",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.x-dev"
+                    "dev-master": "4.x-dev"
                 }
             },
             "autoload": {
+                "files": [
+                    "includes/GlobalFunctions.php"
+                ],
+                "psr-0": {
+                    "SemanticMediaWiki": "includes/SemanticMediaWiki.php"
+                },
                 "psr-4": {
                     "SMW\\": "src/",
+                    "Onoi\\Tesa\\": "src/Tesa/src/",
+                    "SMW\\Tests\\": "tests/phpunit/",
                     "SMW\\Maintenance\\": "maintenance/"
                 },
-                "files": [
-                    "SemanticMediaWiki.php"
-                ],
                 "classmap": [
-                    "includes/"
+                    "includes/",
+                    "tests/phpunit/includes/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -887,7 +801,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-03-29T22:40:46+00:00"
+            "time": "2022-07-21T08:08:06+00:00"
         },
         {
             "name": "onoi/blob-store",
@@ -1257,53 +1171,6 @@
             "time": "2017-04-23T15:14:49+00:00"
         },
         {
-            "name": "onoi/tesa",
-            "version": "0.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/onoi/tesa.git",
-                "reference": "c8a07ca8738cf6d644e83d10ba2cb1ef93dffa7d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/onoi/tesa/zipball/c8a07ca8738cf6d644e83d10ba2cb1ef93dffa7d",
-                "reference": "c8a07ca8738cf6d644e83d10ba2cb1ef93dffa7d",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "php": ">=5.3.2",
-                "wikimedia/cdb": "~1.0",
-                "wikimedia/textcat": "~1.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Onoi\\Tesa\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "mwjames",
-                    "homepage": "https://github.com/mwjames"
-                }
-            ],
-            "description": "A simple library to sanitize text elements",
-            "homepage": "https://github.com/onoi/tesa",
-            "keywords": [
-                "transliteration"
-            ],
-            "support": {
-                "issues": "https://github.com/onoi/tesa/issues",
-                "source": "https://github.com/onoi/tesa/tree/master"
-            },
-            "time": "2016-08-07T10:40:08+00:00"
-        },
-        {
             "name": "param-processor/param-processor",
             "version": "1.12.0",
             "source": {
@@ -1337,12 +1204,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "ParamProcessor\\": "src"
-                },
                 "files": [
                     "DefaultConfig.php"
-                ]
+                ],
+                "psr-4": {
+                    "ParamProcessor\\": "src"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1431,74 +1298,25 @@
             "time": "2021-05-03T11:20:27+00:00"
         },
         {
-            "name": "react/promise",
-            "version": "v2.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/reactphp/promise.git",
-                "reference": "f3cff96a19736714524ca0dd1d4130de73dbbbc4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/f3cff96a19736714524ca0dd1d4130de73dbbbc4",
-                "reference": "f3cff96a19736714524ca0dd1d4130de73dbbbc4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^7.0 || ^6.5 || ^5.7 || ^4.8.36"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "React\\Promise\\": "src/"
-                },
-                "files": [
-                    "src/functions_include.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jan Sorgalla",
-                    "email": "jsorgalla@gmail.com"
-                }
-            ],
-            "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "keywords": [
-                "promise",
-                "promises"
-            ],
-            "support": {
-                "issues": "https://github.com/reactphp/promise/issues",
-                "source": "https://github.com/reactphp/promise/tree/v2.8.0"
-            },
-            "time": "2020-05-12T15:16:56+00:00"
-        },
-        {
             "name": "seld/jsonlint",
-            "version": "1.8.3",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/jsonlint.git",
-                "reference": "9ad6ce79c342fbd44df10ea95511a1b24dee5b57"
+                "reference": "4211420d25eba80712bff236a98960ef68b866b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/jsonlint/zipball/9ad6ce79c342fbd44df10ea95511a1b24dee5b57",
-                "reference": "9ad6ce79c342fbd44df10ea95511a1b24dee5b57",
+                "url": "https://api.github.com/repos/Seldaek/jsonlint/zipball/4211420d25eba80712bff236a98960ef68b866b7",
+                "reference": "4211420d25eba80712bff236a98960ef68b866b7",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.3 || ^7.0 || ^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.0"
+                "phpstan/phpstan": "^1.5",
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.0 || ^8.5.13"
             },
             "bin": [
                 "bin/jsonlint"
@@ -1529,7 +1347,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/jsonlint/issues",
-                "source": "https://github.com/Seldaek/jsonlint/tree/1.8.3"
+                "source": "https://github.com/Seldaek/jsonlint/tree/1.9.0"
             },
             "funding": [
                 {
@@ -1541,7 +1359,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-11-11T09:19:24+00:00"
+            "time": "2022-04-01T13:37:23+00:00"
         },
         {
             "name": "serialization/serialization",
@@ -1572,8 +1390,8 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Deserializers\\": "src/Deserializers/",
-                    "Serializers\\": "src/Serializers/"
+                    "Serializers\\": "src/Serializers/",
+                    "Deserializers\\": "src/Deserializers/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1606,20 +1424,21 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.4.47",
+            "version": "v5.4.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "da3d9da2ce0026771f5fe64cb332158f1bd2bc33"
+                "reference": "f4a7d150f5b9e8f974f6f127d8167e420d11fc62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/da3d9da2ce0026771f5fe64cb332158f1bd2bc33",
-                "reference": "da3d9da2ce0026771f5fe64cb332158f1bd2bc33",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/f4a7d150f5b9e8f974f6f127d8167e420d11fc62",
+                "reference": "f4a7d150f5b9e8f974f6f127d8167e420d11fc62",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5.9|>=7.0.8"
+                "php": ">=7.2.5",
+                "symfony/polyfill-php80": "^1.16"
             },
             "type": "library",
             "autoload": {
@@ -1648,10 +1467,10 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony CssSelector Component",
+            "description": "Converts CSS selectors to XPath expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/css-selector/tree/v3.4.47"
+                "source": "https://github.com/symfony/css-selector/tree/v5.4.19"
             },
             "funding": [
                 {
@@ -1667,29 +1486,115 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-24T10:57:07+00:00"
+            "time": "2023-01-01T08:32:19+00:00"
         },
         {
-            "name": "wikimedia/cdb",
-            "version": "1.4.1",
+            "name": "symfony/polyfill-php80",
+            "version": "v1.27.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/wikimedia/cdb.git",
-                "reference": "d49d96232f045311dc1f21bf0d7e40adf82a1f1d"
+                "url": "https://github.com/symfony/polyfill-php80.git",
+                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/cdb/zipball/d49d96232f045311dc1f21bf0d7e40adf82a1f1d",
-                "reference": "d49d96232f045311dc1f21bf0d7e40adf82a1f1d",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
+                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.2"
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.27-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php80\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ion Bazan",
+                    "email": "ion.bazan@gmail.com"
+                },
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.27.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-11-03T14:55:06+00:00"
+        },
+        {
+            "name": "wikimedia/cdb",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wikimedia/cdb.git",
+                "reference": "70c724f88faa74338c9918f5b999445a615593e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wikimedia/cdb/zipball/70c724f88faa74338c9918f5b999445a615593e8",
+                "reference": "70c724f88faa74338c9918f5b999445a615593e8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.9"
             },
             "require-dev": {
-                "jakub-onderka/php-parallel-lint": "0.9",
-                "mediawiki/mediawiki-codesniffer": "0.5.0",
-                "phpunit/phpunit": "4.6.*"
+                "mediawiki/mediawiki-codesniffer": "38.0.0",
+                "mediawiki/minus-x": "1.1.1",
+                "ockcyp/covers-validator": "1.3.3",
+                "php-parallel-lint/php-console-highlighter": "0.5.0",
+                "php-parallel-lint/php-parallel-lint": "1.3.1",
+                "phpunit/phpunit": "^8.5"
             },
             "type": "library",
             "autoload": {
@@ -1699,12 +1604,9 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
-                {
-                    "name": "Daniel Kinzler"
-                },
                 {
                     "name": "Tim Starling",
                     "email": "tstarling@wikimedia.org"
@@ -1716,39 +1618,43 @@
                 {
                     "name": "Ori Livneh",
                     "email": "ori@wikimedia.org"
+                },
+                {
+                    "name": "Daniel Kinzler"
                 }
             ],
             "description": "Constant Database (CDB) wrapper library for PHP. Provides pure-PHP fallback when dba_* functions are absent.",
             "homepage": "https://www.mediawiki.org/wiki/CDB",
             "support": {
-                "source": "https://github.com/wikimedia/cdb/tree/master"
+                "source": "https://github.com/wikimedia/cdb/tree/2.0.0"
             },
-            "time": "2016-05-29T07:39:26+00:00"
+            "time": "2021-12-21T22:49:31+00:00"
         },
         {
             "name": "wikimedia/textcat",
-            "version": "1.3.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/wikimedia/wikimedia-textcat.git",
-                "reference": "4f13aed2b32382c9d2fe9dc8b3e3fbb26ea4a2a9"
+                "url": "https://github.com/wikimedia/textcat.git",
+                "reference": "dfdfb1c41bb016814a9d4da3aa68b62437b54a82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/wikimedia-textcat/zipball/4f13aed2b32382c9d2fe9dc8b3e3fbb26ea4a2a9",
-                "reference": "4f13aed2b32382c9d2fe9dc8b3e3fbb26ea4a2a9",
+                "url": "https://api.github.com/repos/wikimedia/textcat/zipball/dfdfb1c41bb016814a9d4da3aa68b62437b54a82",
+                "reference": "dfdfb1c41bb016814a9d4da3aa68b62437b54a82",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.99"
+                "php": ">=7.2.9"
             },
             "require-dev": {
-                "jakub-onderka/php-console-highlighter": "0.3.2",
-                "jakub-onderka/php-parallel-lint": "1.0.0",
-                "mediawiki/mediawiki-codesniffer": "24.0.0",
-                "mediawiki/minus-x": "0.3.1",
-                "ockcyp/covers-validator": "0.5.1 || 0.6.1",
-                "phpunit/phpunit": "4.8.36 || ^6.5"
+                "mediawiki/mediawiki-codesniffer": "38.0.0",
+                "mediawiki/mediawiki-phan-config": "0.11.1",
+                "mediawiki/minus-x": "1.1.1",
+                "ockcyp/covers-validator": "1.3.3",
+                "php-parallel-lint/php-console-highlighter": "0.5.0",
+                "php-parallel-lint/php-parallel-lint": "1.3.1",
+                "phpunit/phpunit": "^8.5"
             },
             "type": "library",
             "autoload": {
@@ -1762,20 +1668,20 @@
             ],
             "authors": [
                 {
-                    "name": "Stanislav Malyshev",
-                    "email": "smalyshev@wikimedia.org"
-                },
-                {
                     "name": "Trey Jones",
                     "email": "tjones@wikimedia.org"
+                },
+                {
+                    "name": "Stanislav Malyshev",
+                    "email": "smalyshev@wikimedia.org"
                 }
             ],
             "description": "PHP port of the TextCat language guesser utility, see http://odur.let.rug.nl/~vannoord/TextCat/.",
             "homepage": "https://www.mediawiki.org/wiki/TextCat",
             "support": {
-                "source": "https://github.com/wikimedia/wikimedia-textcat/tree/master"
+                "source": "https://github.com/wikimedia/textcat/tree/2.0.0"
             },
-            "time": "2019-02-12T05:25:57+00:00"
+            "time": "2022-03-15T15:54:48+00:00"
         }
     ],
     "packages-dev": [],
@@ -1786,5 +1692,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
