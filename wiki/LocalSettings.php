@@ -185,7 +185,7 @@ wfLoadExtension( 'MobileFrontend' );
 wfLoadExtension( 'Auth_remoteuser' );
 
 # install Collection
-wfLoadExtension( 'Collection' );
+// wfLoadExtension( 'Collection' );
 
 # install masseditregex
 wfLoadExtension( 'MassEditRegex' );
