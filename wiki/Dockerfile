@@ -30,9 +30,10 @@ RUN apt-get update && apt-get install -y unzip --no-install-recommends && rm -rf
 RUN bash /tmp/download-composer.sh
 
 COPY composer.local.json composer.local.json
-RUN COMPOSER=composer.local.json php composer.phar install
+COPY composer.local.lock composer.local.lock
 
 # Run composer
+RUN COMPOSER=composer.local.json php composer.phar install
 RUN COMPOSER=composer.local.json php composer.phar update --no-dev
 
 # Copy conf
