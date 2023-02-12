@@ -1,12 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ajeje Brazorf",
 			"Aushulz",
 			"Gmelfi",
 			"Macofe",
 			"Pippinu",
-			"Sarvaturi"
+			"Sarvaturi",
+			"Ajeje Brazorf"
 		]
 	},
 	"coll-desc": "[[Special:Book|Crea libbri]]",
@@ -25,6 +25,7 @@
 	"coll-couldnotaddarticle_msg": "La pàggina dû wiki nun si potti agghiùnciri.",
 	"coll-couldnotremovearticle_title": "Nun si potti livari na pàggina dû wiki",
 	"coll-couldnotremovearticle_msg": "La pàggina dû wiki nun si potti livari.",
+	"coll-noscript_text": "<h1>Ci voli lu JavaScript!</h1>\n<strong>Lu tò browser nun supporta lu JavaScript o puru lu disattivau.\nSta pàggina nun pò funziunari bona senza lu JavaScript attivatu.</strong>",
 	"coll-savedbook_template": "libbru_sarvatu",
 	"coll-your_book": "Lu tò libbru",
 	"coll-download_title": "Scàrrica",

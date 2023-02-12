@@ -29,6 +29,8 @@
 	"coll-create_chapter": "Crià un capìturu",
 	"coll-rename": "Dà un althru/nobu nommu",
 	"coll-empty_collection": "Libru bióddu",
+	"coll-personal_collection_label": "Libru passunari:",
+	"coll-community_collection_label": "Libru comuniddai:",
 	"coll-save_collection": "Saivvà lu libru",
 	"coll-yes": "Éia",
 	"coll-no": "Noni",

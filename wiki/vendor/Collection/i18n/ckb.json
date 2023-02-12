@@ -3,11 +3,12 @@
 		"authors": [
 			"Asoxor",
 			"Calak",
-			"Halbast",
+			"Lost Whispers",
 			"Muhammed taha",
 			"Sarchia",
 			"Épine",
 			"ئارام بکر",
+			"Halbast",
 			"Aram"
 		]
 	},
@@ -29,7 +30,10 @@
 	"coll-contents": "ناوەڕۆکەکان",
 	"coll-sort_alphabetically": "بەپێی ئەلفوبێ ڕیز بکە",
 	"coll-rename": "گۆڕینی ناو",
+	"coll-error_reponse": "وه‌ڵامێک له‌ ڕاژه‌کار نه‌هاته‌وه‌",
 	"coll-empty_collection": "کتێبی واڵا",
+	"coll-revision": "پێداچوونەوەی $1",
+	"coll-personal_collection_label": "کتێبی تاکەکەسی:",
 	"coll-save_collection": "کتێبەکە پاشەکەوت بکە",
 	"coll-yes": "بەڵێ",
 	"coll-no": "نا",

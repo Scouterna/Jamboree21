@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\Collection;
+namespace MediaWiki\Extensions\Collection;
 
 use LogicException;
 
@@ -27,7 +27,7 @@ class HeadingCounter {
 	public function incrementAndGet( $level ) {
 		$top = reset( $this->headingNumbers );
 		$this->headingNumbers = array_filter( $this->headingNumbers,
-			static function ( $l ) use ( $level ) {
+			function ( $l ) use ( $level ) {
 				return $l <= $level;
 			}, ARRAY_FILTER_USE_KEY );
 		if ( !$this->headingNumbers && $top ) {

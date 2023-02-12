@@ -1,11 +1,11 @@
 <?php
 
-namespace MediaWiki\Extension\Collection\Specials;
+namespace MediaWiki\Extensions\Collection\Specials;
 
 use CollectionSession;
 use ErrorPageError;
 use Html;
-use MediaWiki\Extension\Collection\BookRenderingMediator;
+use MediaWiki\Extensions\Collection\BookRenderingMediator;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use SpecialPage;

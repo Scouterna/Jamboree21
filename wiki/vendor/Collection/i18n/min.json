@@ -2,11 +2,11 @@
 	"@metadata": {
 		"authors": [
 			"Ardzun",
-			"David Wadie Fisher-Freberg",
 			"Iwan Novirion",
 			"Naval Scene",
 			"SpartacksCompatriot",
-			"VoteITP"
+			"VoteITP",
+			"David Wadie Fisher-Freberg"
 		]
 	},
 	"coll-desc": "[[Special:Book|Buek buku]]",
@@ -25,6 +25,7 @@
 	"coll-couldnotaddarticle_msg": "Laman wiki ko indak dapek ditambahan.",
 	"coll-couldnotremovearticle_title": "Indak dapek mambuang laman wiki",
 	"coll-couldnotremovearticle_msg": "Laman wiki indak dapek dibuang.",
+	"coll-noscript_text": "<h1>Paralu JavaScript!</h1>\n<strong>Paramban web Sanak indak mandukuang JavaScript atau JavaScript nonaktip.\nLaman ko indak akan bakarajo sacaro elok, kacuali jikok JavaScript diaktipan.</strong>",
 	"coll-savedbook_template": "buku_tasimpan",
 	"coll-your_book": "Buku Sanak",
 	"coll-download_title": "Unduah",
@@ -46,8 +47,12 @@
 	"coll-sort_alphabetically": "Uruikan sacaro alfabet",
 	"coll-rename": "Ganti namo",
 	"coll-empty_collection": "Buku kosong",
+	"coll-revision": "Revisi: $1",
 	"coll-save_collection_title": "Simpan jo bagikan buku Sanak",
 	"coll-save_collection_text": "Piliah suatu tampek panyimpanan untuak buku Sanak:",
+	"coll-login_to_save": "Jikak Sanak ingin manyimpan buku untuak dipagunoan nanti, silakan [[Special:UserLogin|masuak log atau buek akun]].",
+	"coll-personal_collection_label": "Buku paribadi:",
+	"coll-community_collection_label": "Buku komunitas:",
 	"coll-save_collection": "Simpan buku",
 	"coll-save_category": "Sadonyo buku disimpan di kategori [[:Category:{{MediaWiki:Coll-bookscategory}}|{{MediaWiki:Coll-bookscategory}}]].",
 	"coll-overwrite_title": "Laman lah ado.\nTimpo?",
@@ -63,6 +68,7 @@
 	"coll-notfound_text": "Indak dapek manamuan laman buku.",
 	"coll-download_notfound_title": "Berkas indak basuo",
 	"coll-download_notfound_text": "Berkas nan Sanak cubo download indak ado:\nMungkin inyo lah dihapuih jo paralu dibuek ulang.",
+	"coll-download_failed_title": "Kasalahan salamo download",
 	"coll-suggest_reset_bans": "reset",
 	"coll-suggest_your_book": "Buku Sanak",
 	"coll-suggest_show": "tunjuakan",

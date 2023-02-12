@@ -1,17 +1,17 @@
 <?php
 
-namespace MediaWiki\Extension\Collection;
+namespace MediaWiki\Extensions\Collection;
 
 use LogicException;
-use MediaWikiIntegrationTestCase;
+use MediaWikiTestCase;
 use TemplateParser;
 use Title;
 
 /**
- * @covers \MediaWiki\Extension\Collection\BookRenderer
+ * @covers \MediaWiki\Extensions\Collection\BookRenderer
  */
-class BookRendererTest extends MediaWikiIntegrationTestCase {
-	private const TEMPLATE_DIR = '/../../../templates';
+class BookRendererTest extends MediaWikiTestCase {
+	const TEMPLATE_DIR = '/../../../templates';
 
 	/**
 	 * @dataProvider provideGetBookTemplateDataOutlineGeneration
@@ -72,9 +72,9 @@ class BookRendererTest extends MediaWikiIntegrationTestCase {
 		$renderer = new BookRenderer( $templateParser );
 		$collection = [ 'items' => [], 'title' => 'Empty book' ];
 		$data = $renderer->getBookTemplateData( $collection, [], [] );
-		$this->assertFalse( $data['license'], 'Template data for empty book has no license' );
-		$this->assertFalse( $data['images'], 'Template data for empty book has no images' );
-		$this->assertFalse( $data['contributors'],
+		$this->assertSame( $data['license'], false, 'Template data for empty book has no license' );
+		$this->assertSame( $data['images'], false, 'Template data for empty book has no images' );
+		$this->assertSame( $data['contributors'], false,
 			'Template data for empty book has no contributors' );
 		$this->assertArraySame( $data['toc']['tocitems'], [],
 			'Template data for empty book has empty outline' );

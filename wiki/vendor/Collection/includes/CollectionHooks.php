@@ -23,6 +23,32 @@
 use MediaWiki\Session\SessionManager;
 
 class CollectionHooks {
+
+	public static function registerExtension() {
+		global $wgAjaxExportList;
+
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxGetCollection';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxPostCollection';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxGetMWServeStatus';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionAddArticle';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionRemoveArticle';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionAddCategory';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionGetBookCreatorBoxContent';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionGetItemList';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionRemoveItem';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionAddChapter';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionRenameChapter';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionSetTitles';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionSetSorting';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionClear';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionGetPopupData';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionSuggestBanArticle';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionSuggestAddArticle';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionSuggestRemoveArticle';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionSuggestUndoArticle';
+		$wgAjaxExportList[] = 'CollectionAjaxFunctions::onAjaxCollectionSortItems';
+	}
+
 	/**
 	 * Callback for SidebarBeforeOutput hook
 	 *
@@ -32,7 +58,7 @@ class CollectionHooks {
 	public static function onSidebarBeforeOutput( Skin $skin, &$sidebar ) {
 		global $wgCollectionPortletForLoggedInUsersOnly;
 
-		if ( !$wgCollectionPortletForLoggedInUsersOnly || $skin->getUser()->isRegistered() ) {
+		if ( !$wgCollectionPortletForLoggedInUsersOnly || $skin->getUser()->isLoggedIn() ) {
 
 			$portlet = self::getPortlet( $skin );
 
@@ -231,37 +257,37 @@ class CollectionHooks {
 
 	/**
 	 * @param Title $title
-	 * @param string|null $hint Defaults to null
+	 * @param string|null $ajaxHint Defaults to null
 	 * @param null|int $oldid
 	 * @return string
 	 */
-	public static function getBookCreatorBoxContent( Title $title, $hint = null, $oldid = null ) {
+	public static function getBookCreatorBoxContent( Title $title, $ajaxHint = null, $oldid = null ) {
 		global $wgExtensionAssetsPath;
 
 		$imagePath = "$wgExtensionAssetsPath/Collection/images";
 
-		return self::getBookCreatorBoxAddRemoveLink( $imagePath, $hint, $title, $oldid )
-			. self::getBookCreatorBoxShowBookLink( $imagePath, $hint )
-			. self::getBookCreatorBoxSuggestLink( $imagePath, $hint );
+		return self::getBookCreatorBoxAddRemoveLink( $imagePath, $ajaxHint, $title, $oldid )
+			. self::getBookCreatorBoxShowBookLink( $imagePath, $ajaxHint )
+			. self::getBookCreatorBoxSuggestLink( $imagePath, $ajaxHint );
 	}
 
 	/**
 	 * @param string $imagePath
-	 * @param string $hint
+	 * @param string $ajaxHint
 	 * @param Title $title
 	 * @param int $oldid
 	 * @return string
 	 */
 	public static function getBookCreatorBoxAddRemoveLink(
 		$imagePath,
-		$hint,
+		$ajaxHint,
 		Title $title,
 		$oldid
 	) {
 		$namespace = $title->getNamespace();
 		$ptext = $title->getPrefixedText();
 
-		if ( $hint == 'suggest' || $hint == 'showbook' ) {
+		if ( $ajaxHint == 'suggest' || $ajaxHint == 'showbook' ) {
 			return Xml::tags( 'span',
 				[ 'style' => 'color: #777;' ],
 				Xml::element( 'img',
@@ -277,32 +303,34 @@ class CollectionHooks {
 			);
 		}
 
-		if ( $hint == 'addcategory' || $namespace == NS_CATEGORY ) {
+		if ( $ajaxHint == 'addcategory' || $namespace == NS_CATEGORY ) {
 			$id = 'coll-add_category';
 			$icon = 'silk-add.png';
 			$captionMsg = 'coll-add_category';
 			$tooltipMsg = 'coll-add_category_tooltip';
 			$query = [ 'bookcmd' => 'add_category', 'cattitle' => $title->getText() ];
-			$onclick = "collectionCall('addcategory', mw.config.get('wgNamespaceNumber')," .
+			$onclick = "collectionCall('AddCategory', ['addcategory', " .
 				"mw.config.get('wgTitle')]); return false;";
 		} else {
 			$collectionArgsJs = "mw.config.get('wgNamespaceNumber'), mw.config.get('wgTitle'), " .
 				Xml::encodeJsVar( $oldid );
-			if ( $hint == 'addarticle'
-				|| ( $hint == '' && CollectionSession::findArticle( $ptext, $oldid ) == -1 ) ) {
+			if ( $ajaxHint == 'addarticle'
+				|| ( $ajaxHint == '' && CollectionSession::findArticle( $ptext, $oldid ) == - 1 ) ) {
 				$id = 'coll-add_article';
 				$icon = 'silk-add.png';
 				$captionMsg = 'coll-add_this_page';
 				$tooltipMsg = 'coll-add_page_tooltip';
 				$query = [ 'bookcmd' => 'add_article', 'arttitle' => $ptext, 'oldid' => $oldid ];
-				$onclick = "collectionCall('addarticle', " . $collectionArgsJs . "); return false;";
+				$onclick = "collectionCall('AddArticle', ['removearticle'," .
+					$collectionArgsJs . "]); return false;";
 			} else {
 				$id = 'coll-remove_article';
 				$icon = 'silk-remove.png';
 				$captionMsg = 'coll-remove_this_page';
 				$tooltipMsg = 'coll-remove_page_tooltip';
 				$query = [ 'bookcmd' => 'remove_article', 'arttitle' => $ptext, 'oldid' => $oldid ];
-				$onclick = "collectionCall('removearticle', " . $collectionArgsJs . "); return false;";
+				$onclick = "collectionCall('RemoveArticle', ['addarticle', " .
+					$collectionArgsJs . "]); return false;";
 			}
 		}
 
@@ -329,13 +357,13 @@ class CollectionHooks {
 
 	/**
 	 * @param string $imagePath
-	 * @param string $hint
+	 * @param string $ajaxHint
 	 * @return string
 	 */
-	public static function getBookCreatorBoxShowBookLink( $imagePath, $hint ) {
+	public static function getBookCreatorBoxShowBookLink( $imagePath, $ajaxHint ) {
 		$numArticles = CollectionSession::countArticles();
 
-		if ( $hint == 'showbook' ) {
+		if ( $ajaxHint == 'showbook' ) {
 			return Xml::tags( 'strong',
 				[
 					'class' => 'collection-creatorbox-iconlink',
@@ -375,15 +403,15 @@ class CollectionHooks {
 
 	/**
 	 * @param string $imagePath
-	 * @param string $hint
+	 * @param string $ajaxHint
 	 * @return string
 	 */
-	public static function getBookCreatorBoxSuggestLink( $imagePath, $hint ) {
+	public static function getBookCreatorBoxSuggestLink( $imagePath, $ajaxHint ) {
 		if ( wfMessage( 'coll-suggest_enabled' )->escaped() != '1' ) {
 			return '';
 		}
 
-		if ( $hint == 'suggest' ) {
+		if ( $ajaxHint == 'suggest' ) {
 			return Xml::tags( 'strong',
 				[
 					'class' => 'collection-creatorbox-iconlink',
@@ -429,7 +457,7 @@ class CollectionHooks {
 	 */
 	public static function checkLastModified( $modifiedTimes ) {
 		$session = SessionManager::getGlobalSession();
-		if ( isset( $session['wsCollection']['timestamp'] ) ) {
+		if ( isset( $session['wsCollection'] ) ) {
 			$modifiedTimes['collection'] = $session['wsCollection']['timestamp'];
 		}
 		return true;

@@ -3,6 +3,8 @@
 		"authors": [
 			"Akapochtli",
 			"Fluence",
+			"Taresi",
+			"Teòtlalili",
 			"Languaeditor"
 		]
 	},
@@ -12,6 +14,7 @@
 	"coll-move_up": "Xiktlehkawi",
 	"coll-move_down": "Xikpanitlali",
 	"coll-title": "Tokaitl:",
+	"coll-revision": "Tlachiyaliztli: $1",
 	"coll-yes": "Kena",
 	"coll-no": "Amo",
 	"coll-cancel": "Xikxolewa",

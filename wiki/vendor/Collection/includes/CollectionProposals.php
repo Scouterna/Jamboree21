@@ -63,8 +63,8 @@ class CollectionProposals {
 	 */
 	public function __construct( $coll, $ban, $props ) {
 		$this->mPropList = [];
-		$this->mColl = is_array( $coll ) ? $coll : [];
-		$this->mBanList = is_array( $ban ) ? $ban : [];
+		$this->mColl = $coll;
+		$this->mBanList = $ban;
 		$this->mLinkList = is_array( $props ) ? $props : [];
 	}
 
@@ -151,13 +151,11 @@ class CollectionProposals {
 					continue;
 				}
 
-				$content = $article->getPage()->getContent();
 				$this->mLinkList[] = [
 					'name' => $articleName,
 					'links' => $this->getWeightedLinks(
 						$numItems,
-						( $content instanceof TextContent )
-							? $content->getText() : null
+						ContentHandler::getContentText( $article->getPage()->getContent() )
 					),
 				];
 			}
@@ -170,7 +168,7 @@ class CollectionProposals {
 	private function deleteUnusedArticles() {
 		$newList = [];
 		foreach ( $this->mLinkList as $item ) {
-			if ( CollectionSession::findArticle( $item['name'] ) != -1 ) {
+			if ( CollectionSession::findArticle( $item['name'] ) != - 1 ) {
 				$newList[] = $item;
 			}
 		}
@@ -328,7 +326,7 @@ class CollectionProposals {
 		}
 		usort(
 			$prop,
-			static function ( $a, $b ) {
+			function ( $a, $b ) {
 				if ( $a['val'] == $b['val'] ) {
 					return strcmp( $a['name'], $b['name'] );
 				}

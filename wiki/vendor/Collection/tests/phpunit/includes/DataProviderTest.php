@@ -1,16 +1,16 @@
 <?php
 
-namespace MediaWiki\Extension\Collection;
+namespace MediaWiki\Extensions\Collection;
 
 use LogicException;
-use MediaWikiIntegrationTestCase;
+use MediaWikiTestCase;
 use Title;
 use VirtualRESTServiceClient;
 
 /**
- * @covers \MediaWiki\Extension\Collection\DataProvider
+ * @covers \MediaWiki\Extensions\Collection\DataProvider
  */
-class DataProviderTest extends MediaWikiIntegrationTestCase {
+class DataProviderTest extends MediaWikiTestCase {
 
 	/**
 	 * @dataProvider provideFetchPages
@@ -21,12 +21,13 @@ class DataProviderTest extends MediaWikiIntegrationTestCase {
 	 */
 	public function testFetchPages( $response, $collection, $expectedUrls, $expectedPages ) {
 		$client = $this->getMockBuilder( VirtualRESTServiceClient::class )
-			->onlyMethods( [ 'runMulti' ] )
+			->setMethods( [ 'runMulti' ] )
 			->disableOriginalConstructor()
 			->getMock();
-		$client->method( 'runMulti' )
+		$client->expects( $this->any() )
+			->method( 'runMulti' )
 			->willReturnCallback( function ( $requests ) use ( $response, $expectedUrls ) {
-				$urls = array_map( static function ( $req ) {
+				$urls = array_map( function ( $req ) {
 					return $req['url'];
 				}, $requests );
 				$this->assertSame( $expectedUrls, $urls );
@@ -97,10 +98,11 @@ class DataProviderTest extends MediaWikiIntegrationTestCase {
 	 */
 	public function testFetchMetadata( $dbkeys, $parse, $contributors, $expectedMetadata ) {
 		$dataProvider = $this->getMockBuilder( DataProvider::class )
-			->onlyMethods( [ 'makeActionApiRequest' ] )
+			->setMethods( [ 'makeActionApiRequest' ] )
 			->disableOriginalConstructor()
 			->getMock();
-		$dataProvider->method( 'makeActionApiRequest' )
+		$dataProvider->expects( $this->any() )
+			->method( 'makeActionApiRequest' )
 			->willReturnCallback( function ( $params ) use ( $parse, $contributors ) {
 				if ( isset( $params['meta'] ) && $params['siprop'] === 'rightsinfo' ) {
 					return [

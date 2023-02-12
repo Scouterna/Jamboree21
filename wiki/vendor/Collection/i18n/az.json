@@ -5,9 +5,9 @@
 			"Dağlı95",
 			"Khan27",
 			"Macofe",
-			"NMW03",
 			"Vago",
 			"Wertuose",
+			"NMW03",
 			"Toghrul Rahimli"
 		]
 	},
@@ -37,7 +37,9 @@
 	"coll-create_chapter": "Bölmə yarat",
 	"coll-sort_alphabetically": "Əlifba sırasına görə çeşidlə",
 	"coll-rename": "Adını dəyiş",
+	"coll-error_reponse": "Serverdən xəta cavabı",
 	"coll-empty_collection": "Boş kitab",
+	"coll-revision": "Yoxlama: $1",
 	"coll-save_collection": "Kitabı saxla",
 	"coll-overwrite_title": "Kitab artıq mövcuddur.\nÜstünə yazmaq istəyirsiz?",
 	"coll-yes": "Bəli",

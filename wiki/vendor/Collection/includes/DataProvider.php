@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\Collection;
+namespace MediaWiki\Extensions\Collection;
 
 use ApiMain;
 use DerivativeRequest;
@@ -47,18 +47,18 @@ class DataProvider implements LoggerAwareInterface {
 	 * @return StatusValue A status with a result of array[]: map of prefixed DB key => Parsoid HTML.
 	 */
 	public function fetchPages( $collection ) {
-		$items = array_merge( array_filter( $collection['items'], static function ( array $item ) {
+		$items = array_merge( array_filter( $collection['items'], function ( array $item ) {
 			return $item['type'] === 'article';
 		} ) );
 		$linkBatch = new LinkBatch();
-		$titles = array_map( static function ( array $item ) use ( $linkBatch ) {
+		$titles = array_map( function ( array $item ) use ( $linkBatch ) {
 			$title = Title::newFromText( $item['title'] );
 			$linkBatch->addObj( $title );
 			return $title;
 		}, $items );
 		$linkBatch->execute();
 
-		$requests = array_map( static function ( array $item, Title $title ) {
+		$requests = array_map( function ( array $item, Title $title ) {
 			$url = '/restbase/local/v1/page/html/' . wfUrlencode( $title->getPrefixedDBkey() );
 			if ( isset( $item['revision'] ) ) {
 				$url .= '/' . $item['revision'];
@@ -76,7 +76,6 @@ class DataProvider implements LoggerAwareInterface {
 		$responses = $this->client->runMulti( $requests );
 
 		$status = StatusValue::newGood();
-		// @phan-suppress-next-line PhanPluginUseReturnValueInternalKnown Not intending to modify the arrays
 		array_map( function ( $req, $resp ) use ( $status ) {
 			if ( $resp['error'] !== '' ) {
 				// curl error. Logging will happen in MultiHttpClient.
@@ -101,10 +100,10 @@ class DataProvider implements LoggerAwareInterface {
 		}, $requests, $responses );
 		if ( $status->isOK() ) {
 			$status->setResult( true, array_combine(
-				array_map( static function ( Title $title ) {
+				array_map( function ( Title $title ) {
 					return $title->getPrefixedDBkey();
 				}, $titles ),
-				array_map( static function ( $item ) {
+				array_map( function ( $item ) {
 					return $item['body'];
 				}, $responses )
 			) );
@@ -244,7 +243,7 @@ class DataProvider implements LoggerAwareInterface {
 				'page' => $dbkey,
 			] );
 			$metadata['displaytitle'][$dbkey] = $data['parse']['displaytitle'];
-			$metadata['sections'][$dbkey] = array_map( static function ( $sectionData ) {
+			$metadata['sections'][$dbkey] = array_map( function ( $sectionData ) {
 				return [
 					'title' => $sectionData['line'],
 					'id' => $sectionData['anchor'],
