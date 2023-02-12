@@ -5,7 +5,7 @@
  * @ingroup Templates
  */
 
-use MediaWiki\Extension\Collection\MessageBoxHelper;
+use MediaWiki\Extensions\Collection\MessageBoxHelper;
 
 /**
  * HTML template for Special:Book
@@ -124,9 +124,6 @@ class CollectionPageTemplate extends QuickTemplate {
 		$context = new DerivativeContext( $this->data['context'] );
 		$context->setRequest( new FauxRequest( $data ) );
 
-		?>
-		<div class="mw-collection-container">
-		<?php
 		echo ( MessageBoxHelper::renderWarningBoxes() );
 
 		$form = new HTMLForm( $fields, $context );
@@ -212,14 +209,14 @@ class CollectionPageTemplate extends QuickTemplate {
 			}
 			echo $this->getDownloadForm( $context, $this->data['formats'] );
 			$user = $context->getUser();
-			if ( $user->isRegistered() ) {
+			if ( $user->isLoggedIn() ) {
 				$canSaveUserPage = $user->isAllowed( 'collectionsaveasuserpage' );
 				$canSaveCommunityPage = $user->isAllowed( 'collectionsaveascommunitypage' );
 			} else {
 				$canSaveUserPage = false;
 				$canSaveCommunityPage = false;
 			}
-			if ( !$user->getBlock() && ( $canSaveUserPage || $canSaveCommunityPage ) ) {
+			if ( $canSaveUserPage || $canSaveCommunityPage ) {
 				?>
 				<div class="collection-column-right-box" id="coll-savebox">
 					<h2><span class="mw-headline"><?php $this->msg( 'coll-save_collection_title' ) ?></span></h2>
@@ -270,7 +267,8 @@ class CollectionPageTemplate extends QuickTemplate {
 			<?php } ?>
 
 		</div>
-		</div> <!-- .mw-collection-container-->
+
+
 
 		<?php
 	}

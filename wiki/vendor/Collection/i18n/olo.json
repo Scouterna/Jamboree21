@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Denö",
 			"Ilja.mos",
 			"Mashoi7"
 		]
@@ -27,7 +28,9 @@
 	"coll-subtitle": "Alirubriekku:",
 	"coll-contents": "Syväindöt",
 	"coll-sort_alphabetically": "Jälletä kirjaimikon vuoh",
+	"coll-no_such_category": "Ei nengostu kategouriedu",
 	"coll-empty_collection": "Tyhjy kirju",
+	"coll-revision": "Versii: $1",
 	"coll-save_collection_title": "Tallenda da jua sinun kirju",
 	"coll-save_collection": "Tallenda kirju",
 	"coll-overwrite_title": "Sivu on jo olemas. Tallendetahgo piäle?",

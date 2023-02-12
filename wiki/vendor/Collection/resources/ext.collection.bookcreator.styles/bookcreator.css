@@ -1,9 +1,3 @@
-@import 'mediawiki.mixins.less';
-
-.mw-collection-container {
-	.mixin-clearfix();
-}
-
 #collectionpopup {
 	position: absolute;
 	padding: 4px;

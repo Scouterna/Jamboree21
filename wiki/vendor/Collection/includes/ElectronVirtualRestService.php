@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\Collection;
+namespace MediaWiki\Extensions\Collection;
 
 use Closure;
 use VirtualRESTService;

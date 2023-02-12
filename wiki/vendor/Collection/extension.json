@@ -11,20 +11,20 @@
 	"license-name": "GPL-2.0-or-later",
 	"type": "specialpage",
 	"requires": {
-		"MediaWiki": ">= 1.37.0"
+		"MediaWiki": ">= 1.34.0"
 	},
+	"callback": "CollectionHooks::registerExtension",
 	"AvailableRights": [
 		"collectionsaveasuserpage",
 		"collectionsaveascommunitypage"
 	],
 	"SpecialPages": {
 		"Book": "SpecialCollection",
-		"RenderBook": "MediaWiki\\Extension\\Collection\\Specials\\SpecialRenderBook"
+		"RenderBook": "MediaWiki\\Extensions\\Collection\\Specials\\SpecialRenderBook"
 	},
 	"MessagesDirs": {
 		"Collection": [
-			"i18n",
-			"i18n/api"
+			"i18n"
 		]
 	},
 	"ExtensionMessagesFiles": {
@@ -32,6 +32,7 @@
 	},
 	"AutoloadClasses": {
 		"SpecialCollection": "includes/Specials/SpecialCollection.php",
+		"CollectionAjaxFunctions": "includes/CollectionAjaxFunctions.php",
 		"CollectionSession": "includes/CollectionSession.php",
 		"CollectionHooks": "includes/CollectionHooks.php",
 		"CollectionSuggest": "includes/CollectionSuggest.php",
@@ -48,13 +49,8 @@
 		"MWServeRenderingAPI": "includes/rendering/MWServeRenderingAPI.php",
 		"CollectionAPIResult": "includes/rendering/CollectionAPIResult.php"
 	},
-	"APIModules": {
-		"collection": {
-			"class": "MediaWiki\\Extension\\Collection\\Api\\ApiCollection"
-		}
-	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\Collection\\": "includes/"
+		"MediaWiki\\Extensions\\Collection\\": "includes/"
 	},
 	"ResourceModules": {
 		"ext.collection": {
@@ -66,13 +62,12 @@
 			]
 		},
 		"ext.collection.bookcreator.styles": {
-			"styles": "ext.collection.bookcreator.styles/bookcreator.less"
+			"styles": "ext.collection.bookcreator.styles/bookcreator.css"
 		},
 		"ext.collection.bookcreator": {
 			"scripts": "ext.collection.bookcreator/bookcreator.js",
 			"dependencies": [
-				"mediawiki.storage",
-				"mediawiki.util",
+				"jquery.jStorage",
 				"ext.collection.bookcreator.styles"
 			]
 		},
@@ -81,7 +76,7 @@
 			"dependencies": [
 				"ext.collection",
 				"ext.collection.bookcreator.styles",
-				"mediawiki.storage"
+				"jquery.jStorage"
 			],
 			"messages": [
 				"coll-load_local_book"

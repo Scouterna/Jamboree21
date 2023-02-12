@@ -1,11 +1,11 @@
 <?php
 
-namespace MediaWiki\Extension\Collection;
+namespace MediaWiki\Extensions\Collection;
 
-use Wikimedia\RemexHtml\Serializer\Serializer;
-use Wikimedia\RemexHtml\Tokenizer\Attributes;
-use Wikimedia\RemexHtml\TreeBuilder\Element;
-use Wikimedia\RemexHtml\TreeBuilder\TreeHandler;
+use RemexHtml\Serializer\Serializer;
+use RemexHtml\Tokenizer\Attributes;
+use RemexHtml\TreeBuilder\Element;
+use RemexHtml\TreeBuilder\TreeHandler;
 
 /**
  * DOM tree munger for RemexHtml that makes small adjustments to a HTML document for including

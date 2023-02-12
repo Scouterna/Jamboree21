@@ -2,8 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Botuzhaleny-sodamo",
-			"Denö",
-			"Rueter"
+			"Rueter",
+			"Denö"
 		]
 	},
 	"coll-collection": "Кинига",
@@ -20,8 +20,10 @@
 	"coll-title": "Коняксозо:",
 	"coll-contents": "Потмокс",
 	"coll-rename": "Лемдемс одов",
+	"coll-no_such_category": "Истямо категория арась",
 	"coll-empty_collection": "Чаво кинига",
 	"coll-save_collection_title": "Ванстомс пурнавксот ды панжомс лиятненень",
+	"coll-community_collection_label": "Велень-сядонь пурнавксось:",
 	"coll-save_collection": "Ванстомс киниганть",
 	"coll-yes": "Истя",
 	"coll-no": "Арась",

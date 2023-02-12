@@ -20,7 +20,7 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-use MediaWiki\Extension\Collection\MessageBoxHelper;
+use MediaWiki\Extensions\Collection\MessageBoxHelper;
 use MediaWiki\MediaWikiServices;
 
 class SpecialCollection extends SpecialPage {
@@ -439,7 +439,8 @@ class SpecialCollection extends SpecialPage {
 		$title_string = $this->msg( 'coll-book_creator_text_article' )->inContentLanguage()->text();
 		$t = Title::newFromText( $title_string );
 		if ( $t !== null ) {
-			if ( $t->exists() ) {
+			$wikiPage = WikiPage::factory( $t );
+			if ( $wikiPage->exists() ) {
 				$out->addWikiTextAsInterface( '{{:' . $title_string . '}}' );
 				return;
 			}
@@ -578,7 +579,7 @@ class SpecialCollection extends SpecialPage {
 	 * @param array &$items
 	 */
 	private static function sortByTitle( array &$items ) {
-		usort( $items, static function ( $a, $b ) {
+		usort( $items, function ( $a, $b ) {
 			return strcasecmp( $a['title'], $b['title'] );
 		} );
 	}
@@ -632,14 +633,9 @@ class SpecialCollection extends SpecialPage {
 			return;
 		}
 		$collection = CollectionSession::getCollection();
-
-		// T293261: Make sure the index exist in the array
-		if ( !array_key_exists( $index, $collection['items'] ) ||
-			$collection['items'][$index]['type'] !== 'chapter'
-		) {
+		if ( $collection['items'][$index]['type'] != 'chapter' ) {
 			return;
 		}
-
 		$collection['items'][$index]['title'] = $name;
 		CollectionSession::setCollection( $collection );
 	}
@@ -675,7 +671,7 @@ class SpecialCollection extends SpecialPage {
 		$prefixedText = $title->getPrefixedText();
 
 		$index = CollectionSession::findArticle( $prefixedText, $oldid );
-		if ( $index != -1 ) {
+		if ( $index != - 1 ) {
 			return false;
 		}
 
@@ -728,7 +724,7 @@ class SpecialCollection extends SpecialPage {
 		}
 		$collection = CollectionSession::getCollection();
 		$index = CollectionSession::findArticle( $title->getPrefixedText(), $oldid );
-		if ( $index != -1 ) {
+		if ( $index != - 1 ) {
 			array_splice( $collection['items'], $index, 1 );
 		}
 		CollectionSession::setCollection( $collection );
@@ -779,11 +775,12 @@ class SpecialCollection extends SpecialPage {
 			}
 			if ( in_array( $row->page_namespace, $wgCollectionArticleNamespaces ) ) {
 				$articleTitle = Title::makeTitle( $row->page_namespace, $row->page_title );
-				if ( CollectionSession::findArticle( $articleTitle->getPrefixedText() ) == -1 ) {
+				if ( CollectionSession::findArticle( $articleTitle->getPrefixedText() ) == - 1 ) {
 					self::addArticle( $articleTitle );
 				}
 			}
 		}
+		$db->freeResult( $res );
 		return $limitExceeded;
 	}
 
@@ -921,7 +918,8 @@ class SpecialCollection extends SpecialPage {
 				return null;
 			}
 
-			if ( !$articleTitle->exists() ) {
+			$wikiPage = WikiPage::factory( $articleTitle );
+			if ( !$wikiPage->exists() ) {
 				return null;
 			}
 
@@ -931,7 +929,7 @@ class SpecialCollection extends SpecialPage {
 			if ( !$revision ) {
 				return null;
 			}
-			$latest = $articleTitle->getLatestRevID();
+			$latest = $wikiPage->getLatest();
 
 			if ( !$oldid ) {
 				$oldid = $latest;
@@ -1001,7 +999,8 @@ class SpecialCollection extends SpecialPage {
 	 * @return bool
 	 */
 	private function saveCollection( Title $title, $forceOverwrite = false ) {
-		if ( $title->exists() && !$forceOverwrite ) {
+		$wikiPage = WikiPage::factory( $title );
+		if ( $wikiPage->exists() && !$forceOverwrite ) {
 			return false;
 		}
 
@@ -1144,85 +1143,85 @@ class SpecialCollection extends SpecialPage {
 			. '&return_to=' . urlencode( $return_to );
 
 		switch ( $result->get( 'state' ) ) {
-			case 'pending':
-			case 'progress':
-				$out->addHeadItem(
-					'refresh-nojs',
-					'<noscript><meta http-equiv="refresh" content="2" /></noscript>'
-				);
-				$out->addInlineScript( 'var collection_id = "' . urlencode( $collectionId ) . '";' );
-				$out->addInlineScript( 'var writer = "' . urlencode( $writer ) . '";' );
-				$out->addInlineScript( 'var collection_rendering = true;' );
-				$out->addModules( 'ext.collection' );
-				$out->setPageTitle( $this->msg( 'coll-rendering_title' ) );
+		case 'pending':
+		case 'progress':
+			$out->addHeadItem(
+				'refresh-nojs',
+				'<noscript><meta http-equiv="refresh" content="2" /></noscript>'
+			);
+			$out->addInlineScript( 'var collection_id = "' . urlencode( $collectionId ) . '";' );
+			$out->addInlineScript( 'var writer = "' . urlencode( $writer ) . '";' );
+			$out->addInlineScript( 'var collection_rendering = true;' );
+			$out->addModules( 'ext.collection' );
+			$out->setPageTitle( $this->msg( 'coll-rendering_title' ) );
 
-				$statusText = $result->get( 'status', 'status' );
-				if ( $statusText ) {
-					if ( $result->get( 'status', 'article' ) ) {
-						$statusText .= ' ' . $this->msg(
-								'coll-rendering_article',
-								$result->get( 'status', 'article' )
-							)->text();
-					} elseif ( $result->get( 'status', 'page' ) ) {
-						$statusText .= ' ';
-						$statusText .= $this->msg( 'coll-rendering_page' )
-							->numParams( $result->get( 'status', 'page' ) )->text();
-					}
-					$status = $this->msg( 'coll-rendering_status', $statusText )->text();
-				} else {
-					$status = '';
+			$statusText = $result->get( 'status', 'status' );
+			if ( $statusText ) {
+				if ( $result->get( 'status', 'article' ) ) {
+					$statusText .= ' ' . $this->msg(
+							'coll-rendering_article',
+							$result->get( 'status', 'article' )
+						)->text();
+				} elseif ( $result->get( 'status', 'page' ) ) {
+					$statusText .= ' ';
+					$statusText .= $this->msg( 'coll-rendering_page' )
+						->numParams( $result->get( 'status', 'page' ) )->text();
 				}
+				$status = $this->msg( 'coll-rendering_status', $statusText )->text();
+			} else {
+				$status = '';
+			}
 
-				$template = new CollectionRenderingTemplate();
-				$template->set( 'status', $status );
-				$progress = $result->get( 'status', 'progress' );
-				if ( !$progress ) {
-					$progress = 0.00;
-				}
-				$template->set( 'progress', $progress );
-				$out->addTemplate( $template );
-				$stats->increment( 'collection.renderingpage.pending' );
-				break;
+			$template = new CollectionRenderingTemplate();
+			$template->set( 'status', $status );
+			$progress = $result->get( 'status', 'progress' );
+			if ( !$progress ) {
+				$progress = 0.00;
+			}
+			$template->set( 'progress', $progress );
+			$out->addTemplate( $template );
+			$stats->increment( 'collection.renderingpage.pending' );
+			break;
 
-			case 'finished':
-				$out->setPageTitle( $this->msg( 'coll-rendering_finished_title' ) );
+		case 'finished':
+			$out->setPageTitle( $this->msg( 'coll-rendering_finished_title' ) );
 
-				$template = new CollectionFinishedTemplate();
-				$template->set(
-					'download_url',
-					wfExpandUrl(
-						SkinTemplate::makeSpecialUrl( 'Book', 'bookcmd=download&' . $query ),
-						PROTO_CURRENT
-					)
-				);
-				$template->set( 'is_cached', $request->getVal( 'is_cached' ) );
-				$template->set( 'writer', $request->getVal( 'writer' ) );
-				$template->set( 'query', $query );
-				$template->set( 'return_to', $return_to );
-				$out->addTemplate( $template );
-				$stats->increment( 'collection.renderingpage.finished' );
-				break;
+			$template = new CollectionFinishedTemplate();
+			$template->set(
+				'download_url',
+				wfExpandUrl(
+					SkinTemplate::makeSpecialUrl( 'Book', 'bookcmd=download&' . $query ),
+					PROTO_CURRENT
+				)
+			);
+			$template->set( 'is_cached', $request->getVal( 'is_cached' ) );
+			$template->set( 'writer', $request->getVal( 'writer' ) );
+			$template->set( 'query', $query );
+			$template->set( 'return_to', $return_to );
+			$out->addTemplate( $template );
+			$stats->increment( 'collection.renderingpage.finished' );
+			break;
 
-			case 'failed':
-				$out->setPageTitle( $this->msg( 'coll-rendering_failed_title' ) );
-				$statusText = $result->get( 'status', 'status' );
-				if ( $statusText ) {
-					$status = $this->msg( 'coll-rendering_failed_status', $statusText )->text();
-				} else {
-					$status = '';
-				}
+		case 'failed':
+			$out->setPageTitle( $this->msg( 'coll-rendering_failed_title' ) );
+			$statusText = $result->get( 'status', 'status' );
+			if ( $statusText ) {
+				$status = $this->msg( 'coll-rendering_failed_status', $statusText )->text();
+			} else {
+				$status = '';
+			}
 
-				$template = new CollectionFailedTemplate();
-				$template->set( 'status', $status );
-				$template->set( 'query', $query );
-				$template->set( 'return_to', $return_to );
-				$out->addTemplate( $template );
-				$stats->increment( 'collection.renderingpage.failed' );
-				break;
+			$template = new CollectionFailedTemplate();
+			$template->set( 'status', $status );
+			$template->set( 'query', $query );
+			$template->set( 'return_to', $return_to );
+			$out->addTemplate( $template );
+			$stats->increment( 'collection.renderingpage.failed' );
+			break;
 
-			default:
-				$stats->increment( 'collection.renderingpage.unknown' );
-				throw new Exception( __METHOD__ . "(): unknown state '{$result->get( 'state' )}'" );
+		default:
+			$stats->increment( 'collection.renderingpage.unknown' );
+			throw new Exception( __METHOD__ . "(): unknown state '{$result->get( 'state' )}'" );
 		}
 	}
 

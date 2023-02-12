@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\Collection;
+namespace MediaWiki\Extensions\Collection;
 
 use Html;
 use LogicException;
@@ -34,10 +34,10 @@ class BookRenderer {
 	 * @return array with keys html representing the data needed to render the book
 	 */
 	public function getBookTemplateData( $collection, $pages, $metadata ) {
-		$hasChapters = !empty( array_filter( $collection['items'], static function ( $item ) {
+		$hasChapters = !empty( array_filter( $collection['items'], function ( $item ) {
 			return $item['type'] === 'chapter';
 		} ) );
-		$articleCount = count( array_filter( $collection['items'], static function ( $item ) {
+		$articleCount = count( array_filter( $collection['items'], function ( $item ) {
 			return $item['type'] === 'article';
 		} ) );
 		$hasArticles = $articleCount > 0;
@@ -53,8 +53,8 @@ class BookRenderer {
 		// First we need to render the articles as we can't know the TOC anchors for sure
 		// until we have resolved id conflicts.
 		// FastFormatter chokes on Parsoid HTML. HtmlFormatter is still plenty fast anyway.
-		$formatter = new \Wikimedia\RemexHtml\Serializer\HtmlFormatter();
-		$serializer = new \Wikimedia\RemexHtml\Serializer\Serializer( $formatter );
+		$formatter = new \RemexHtml\Serializer\HtmlFormatter();
+		$serializer = new \RemexHtml\Serializer\Serializer( $formatter );
 		$munger = new RemexCollectionMunger( $serializer, [
 			'topHeadingLevel' => $hasChapters ? 3 : 2,
 		] );
@@ -86,9 +86,9 @@ class BookRenderer {
 
 				$munger->startCollectionSection( './' . $dbkey, $metadata['sections'][$dbkey],
 					$headingCounter );
-				$treeBuilder = new \Wikimedia\RemexHtml\TreeBuilder\TreeBuilder( $munger, [] );
-				$dispatcher = new \Wikimedia\RemexHtml\TreeBuilder\Dispatcher( $treeBuilder );
-				$tokenizer = new \Wikimedia\RemexHtml\Tokenizer\Tokenizer( $dispatcher, $html, [
+				$treeBuilder = new \RemexHtml\TreeBuilder\TreeBuilder( $munger, [] );
+				$dispatcher = new \RemexHtml\TreeBuilder\Dispatcher( $treeBuilder );
+				$tokenizer = new \RemexHtml\Tokenizer\Tokenizer( $dispatcher, $html, [
 					// HTML comes from Parsoid so we can skip validation
 					'ignoreErrors' => true,
 					'ignoreCharRefs' => true,
@@ -96,7 +96,7 @@ class BookRenderer {
 					'skipPreprocess' => true,
 				] );
 				$tokenizer->execute( [
-					'fragmentNamespace' => \Wikimedia\RemexHtml\HTMLData::NS_HTML,
+					'fragmentNamespace' => \RemexHtml\HTMLData::NS_HTML,
 					'fragmentName' => 'body',
 				] );
 				$outline = array_merge( $outline,
@@ -314,7 +314,7 @@ class BookRenderer {
 			$item['children'] = [];
 
 			$level = $item['level'];
-			$lastItems = array_filter( $lastItems, static function ( $key ) use ( $level ) {
+			$lastItems = array_filter( $lastItems, function ( $key ) use ( $level ) {
 				return $key < $level;
 			}, ARRAY_FILTER_USE_KEY );
 
