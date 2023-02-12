@@ -44,7 +44,7 @@ $wgUsePathInfo = true;
 $wgScriptExtension = ".php";
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = getenv('MEDIAWIKI_BASE_URL');
+$wgServer = "localhost:8080";
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
@@ -58,19 +58,19 @@ $wgLogo = '/logo.png';
 $wgEnableEmail = false;
 $wgEnableUserEmail = true; # UPO
 
-$wgEmergencyContact = getenv('MEDIAWIKI_EMAIL');
-$wgPasswordSender = getenv('MEDIAWIKI_EMAIL');
+$wgEmergencyContact = "foo@example.com";
+$wgPasswordSender = "foo@example.com";
 
 $wgEnotifUserTalk = false; # UPO
 $wgEnotifWatchlist = false; # UPO
 $wgEmailAuthentication = true;
 
 ## Database settings
-$wgDBtype = getenv("MEDIAWIKI_DB_TYPE");
-$wgDBserver = getenv("MEDIAWIKI_DB_HOST");
-$wgDBname = getenv("MEDIAWIKI_DB_NAME");
-$wgDBuser = getenv("MEDIAWIKI_DB_USER");
-$wgDBpassword = getenv("MEDIAWIKI_DB_PASSWORD");
+$wgDBtype = "mysql";
+$wgDBserver = "127.0.0.1";
+$wgDBname = "mariadb";
+$wgDBuser = "example_user";
+$wgDBpassword = "my_cool_secret";
 
 # MySQL specific settings
 $wgDBprefix = "";
@@ -237,6 +237,7 @@ $wgFileExtensions = array_merge( $wgFileExtensions,
 );
 
 # Load SMW
+wfLoadExtension( 'SemanticMediaWiki' );
 enableSemantics(getenv('MEDIAWIKI_BASE_URL'));
 
 # Increase max upload size
