@@ -3,11 +3,20 @@ import * as React from "react";
 import { useState,useEffect,useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
+  useGridApiRef,
   DataGridPremium,
   GridActionsCellItem,
   GridRowModes,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarQuickFilter,
+  GridToolbarFilterButton,
   GridToolbar,
-  svSE } from "@mui/x-data-grid-premium";
+  svSE,
+  GridToolbarDensitySelector} from "@mui/x-data-grid-premium";
+import Button from '@mui/material/Button';
+
 import moment from 'moment';
 import { styled } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
@@ -52,6 +61,12 @@ const useScoutViewMutation = () => {
 };
 
 function Participants() {
+  const apiRef = useGridApiRef();
+
+  const getTableState = () => {
+    console.log(JSON.stringify(apiRef.current.exportState()));
+  };
+
   const [tableData,setTableData]=useState([]);
   const [loadingParticipants,setLoadingParticipants]=useState(true);
   const [statusColumns,setStatusColumns]=useState([]);
@@ -282,6 +297,18 @@ function Participants() {
           ];
       }}]
 
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer >
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarExport />
+        {/* <Button color="primary" onClick={getTableState}>Get State</Button> */}
+        <GridToolbarQuickFilter sx={{ marginLeft: "auto" }} />
+      </GridToolbarContainer>
+    );
+    }
+
   return (
     <Box style={{
       display: 'flex',
@@ -296,6 +323,7 @@ function Participants() {
             bgcolor: 'pink'
       }}}}>
       <DataGridPremium
+        apiRef={apiRef}
         rows={tableData}
         columns={[...columns, ...statusColumns, ...dataColumns, ...actions]}
         getRowId={(row) => row.member_no}
@@ -304,7 +332,7 @@ function Participants() {
         disableDensitySelector
         sx={{ fontSize: 16 }}
         getRowClassName={(params) => `cancelled--${params.row.cancelled_date != null}`}
-        components={{ Toolbar: GridToolbar}}
+        components={{ Toolbar: CustomToolbar}}
         pagination
         loading={loadingParticipants}
         experimentalFeatures={{ newEditingApi: true }}
@@ -316,11 +344,12 @@ function Participants() {
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
         onRowEditCommit={handleRowEditCommit}
-
-        componentsProps={{
-          toolbar: {
-            showQuickFilter: true,
-            quickFilterProps: { debounceMs: 500 },
+        initialState={{
+          ...tableData.initialState,
+          filter: {
+            filterModel: {
+              items: [{ columnField: 'cancelled_date', operatorValue: 'isEmpty'}],
+            },
           },
         }}
         getDetailPanelHeight={() => 'auto'}
