@@ -16,6 +16,8 @@ from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, BaseSettings, EmailStr, constr
 from requests_cache import CachedSession
 
+current_dir = Path(__file__).parent.resolve()
+
 T = TypeVar("T")
 class Params(BaseParams):
     size: int = Query(50, ge=1, le=50_000, description="Page size")
@@ -23,7 +25,9 @@ class Params(BaseParams):
 class Page(BasePage[T], Generic[T]):
     __params_type__ = Params
 
-session = CachedSession('access_cache', expire_after=timedelta(minutes=5), backend='memory')
+p_session = CachedSession('access_cache', expire_after=timedelta(minutes=10), backend='memory')
+f_session = CachedSession('access_cache', expire_after=timedelta(hours=6), backend='memory')
+q_session = CachedSession('access_cache', expire_after=timedelta(minutes=30), backend='memory')
 
 class Settings(BaseSettings):
     app_name: str = "ScoutView"
@@ -34,6 +38,7 @@ class Settings(BaseSettings):
     scoutnet_checkin_key: str = ''
     scoutview_debug_email: Optional[str] = None
     scoutview_roles: Optional[Dict[str, Set[str]]] = {}
+    local_files: bool = False
 
     class Config:
         env_file = ".env"
@@ -86,12 +91,27 @@ class ParticipantsOut(BaseModel):
 def get_participants():
     url = f'{settings.scoutnet_base}/project/get/participants?id={settings.scoutnet_activity_id}&key={settings.scoutnet_participants_key}'
     print(f'Fetching: {url}')
-    r = session.get(url)
+    r = p_session.get(url)
     data = json.loads(r.text)
-    return list(data['participants'].values())
+    return data
 
 def clean_participants_cache():
-    session.remove_expired_responses(expire_after=0)
+    p_session.remove_expired_responses(expire_after=0)
+
+
+def get_forms():
+    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}'
+    print(f'Fetching: {url}')
+    r = f_session.get(url)
+    data = json.loads(r.text)['forms']
+    return data
+
+def get_questions(form_id):
+    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
+    print(f'Fetching: {url}')
+    r = q_session.get(url)
+    data = json.loads(r.text)['questions']
+    return data
 
 def matchingKeys(dictionary, searchString):
     return [key for key,val in dictionary.items() if any(searchString in s for s in val)]
@@ -113,7 +133,7 @@ def get_active_user(request: Request) -> User:
     return user
 
 settings = Settings()
-print(settings.scoutview_roles)
+print(f"Roles: {settings.scoutview_roles}")
 
 app = FastAPI(reload=True)
 
@@ -156,12 +176,18 @@ def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None
     else: # unknown form (yet)
         return paginate([])
 
-    if (cached):
-        with session.cache_disabled():
+    if settings.local_files:
+        p_file = current_dir / "data" / "participants.json"
+        print(f"Using cached file: {p_file}")
+        with open(p_file) as pf:
+            p = json.loads(pf.read())
+    elif (cached):
+        with p_session.cache_disabled():
             p = get_participants()
     else:
         p = get_participants()
 
+    p = list(p['participants'].values())
     p = list(filter(lambda x: qualifier in x['questions'], p))
     if (q and q != 0):
         p = list(filter(lambda x: q_filter(q, q_val, x), p))
@@ -170,10 +196,15 @@ def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None
 
 @app.get("/questions", response_model=List[Question])
 def questions(form_id: int, user: User = Depends(get_active_user)) -> Dict[int, Question]:
-    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
-    print(f'Fetching: {url}')
-    r = session.get(url)
-    data = json.loads(r.text)['questions']
+
+    if settings.local_files:
+        file = current_dir / "data" / f"questions_{form_id}.json"
+        print(f"Using cached file: {file}")
+        with open(file) as pf:
+            data = json.loads(pf.read())
+    else:
+        data = get_forms(form_id)
+
     tabs = data['tabs']
     sections = data['sections']
     status_tabs = [v['id'] for (_,v) in data['tabs'].items() if v['title'] == 'Status']
@@ -197,10 +228,14 @@ def questions(form_id: int, user: User = Depends(get_active_user)) -> Dict[int, 
 
 @app.get("/forms", response_model=Dict[int, str])
 def forms() -> Dict[int, str]:
-    url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}'
-    print(f'Fetching: {url}')
-    r = session.get(url)
-    data = json.loads(r.text)['forms']
+    if settings.local_files:
+        file = current_dir / "data" / "forms.json"
+        print(f"Using cached file: {file}")
+        with open(file) as pf:
+            data = json.loads(pf.read())
+    else:
+        data = get_forms()
+
     # print(data)
     res = {key: value['title'] for (key, value) in data.items()}
     # print(res)
@@ -212,7 +247,7 @@ def update_status(member_no: int, answers: Dict[int, Union[int, str, None]]) -> 
     ans = {k:{'value': '' if v is None else str(v)} for (k,v) in answers.items()}
     body = {str(member_no): {'questions': ans}}
     print(f'Posting {body} to {url}')
-    r = session.post(url, json.dumps(body), headers={'Content-Type': 'application/json'})
+    r = p_session.post(url, json.dumps(body), headers={'Content-Type': 'application/json'})
     data = json.loads(r.text)
     clean_participants_cache()
     print(data)
