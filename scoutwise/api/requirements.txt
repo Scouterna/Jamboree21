@@ -1,7 +1,0 @@
-flask==2.2.2
-flask_restful==0.3.9
-flask_cors==3.0.10
-sqlalchemy==1.4.46
-flask_jwt_extended==4.4.4
-psycopg2-binary==2.9.5
-python-dotenv==0.21.0
