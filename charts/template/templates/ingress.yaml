@@ -14,9 +14,11 @@ spec:
     http:
       paths:
       - path: /
-        backend:
-          serviceName: template
-          servicePort: 8080
+        pathType: ImplementationSpecific
+          service:
+            name: template
+            port:
+              number: 8080
   {{- end }}
   tls:
   - hosts:
