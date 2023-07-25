@@ -14,9 +14,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: wsj2023-access
-          servicePort: 80
+          service:
+            name: wsj2023-access
+            port:
+              number: 80
   {{- end }}
   tls:
   - hosts:

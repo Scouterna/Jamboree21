@@ -14,9 +14,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: planera
-          servicePort: 8080
+          service:
+            name: planera
+            port:
+              number: 8080
   {{- end }}
   tls:
   - hosts:
