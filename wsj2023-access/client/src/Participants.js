@@ -109,7 +109,10 @@ function Participants() {
   const processRowUpdate = useCallback(
     async (newRow, oldRow) => {
       // filter only status
-      let statusAnswers = {};
+      let statusAnswers = {}
+      if (newRow['checked_in'] != oldRow['checked_in']) {
+        statusAnswers["checked_in"] = newRow['checked_in']
+      }
       for (let q in statusColumns) {
         let sid = statusColumns[q].field
         //if (newRow['questions'][sid] === oldRow['questions'][sid]) {continue};
@@ -161,7 +164,7 @@ function Participants() {
         return 'number'
       case 'boolean':
         return 'boolean'
-        default:
+      default:
         return 'string'
     }
   }
@@ -193,7 +196,7 @@ function Participants() {
             return {...copy}
           },
           type: getQuestionType(questions[q].type),
-          width: 10 * questions[q].question.length
+          width: 11 * questions[q].question.length
         }
         if (questions[q].type === 'choice') {
           let options = []
@@ -262,6 +265,7 @@ function Participants() {
     { field: 'sex', headerName: 'Kön', width: 50, type: 'singleSelect',
       valueOptions: [{value: 0, label: 'Okänt'},{value: 1, label: 'Man'},{value: 2, label: 'Kvinna'}, {value: 3, label: 'Annat'}],
       valueFormatter: choiceFormater, hide: true},
+    { field: 'checked_in', headerName: 'Incheckad', type: 'boolean', editable: true},
   ];
 
   const actions = [

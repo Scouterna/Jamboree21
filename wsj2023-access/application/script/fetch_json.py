@@ -20,7 +20,7 @@ with open(data_dir / "forms.json", "w") as p:
     forms = main.get_forms()
     p.write(json.dumps(forms))
 
-for form in forms.keys():
+for form in forms['forms'].keys():
     with open(data_dir / f"questions_{form}.json", "w") as p:
         questions = main.get_questions(form)
         p.write(json.dumps(questions))
