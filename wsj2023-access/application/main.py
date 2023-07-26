@@ -64,6 +64,7 @@ class Participant(BaseModel):
     sex: int
     date_of_birth: datetime.date
     primary_email: Union[EmailStr, constr(max_length=0)]
+    checked_in: bool
     questions: Any
 
 
@@ -103,14 +104,14 @@ def get_forms():
     url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}'
     print(f'Fetching: {url}')
     r = f_session.get(url)
-    data = json.loads(r.text)['forms']
+    data = json.loads(r.text)
     return data
 
 def get_questions(form_id):
     url = f'{settings.scoutnet_base}/project/get/questions?id={settings.scoutnet_activity_id}&key={settings.scoutnet_questions_key}&form_id={form_id}'
     print(f'Fetching: {url}')
     r = q_session.get(url)
-    data = json.loads(r.text)['questions']
+    data = json.loads(r.text)
     return data
 
 def matchingKeys(dictionary, searchString):
@@ -188,6 +189,7 @@ def participants(form: Optional[int] = None, q: Optional[Union[int, str]] = None
         p = get_participants()
 
     p = list(p['participants'].values())
+    # Filter out only participants of specific form
     p = list(filter(lambda x: qualifier in x['questions'], p))
     if (q and q != 0):
         p = list(filter(lambda x: q_filter(q, q_val, x), p))
@@ -205,15 +207,16 @@ def questions(form_id: int, user: User = Depends(get_active_user)) -> Dict[int, 
     else:
         data = get_questions(form_id)
 
-    tabs = data['tabs']
-    sections = data['sections']
-    status_tabs = [v['id'] for (_,v) in data['tabs'].items() if v['title'] == 'Status']
-    health_tabs = [v['id'] for (_,v) in data['tabs'].items() if v['title'] == 'Medicinsk information']
-    del data['tabs']
-    del data['sections']
+    q = data['questions']
+    tabs = q['tabs']
+    sections = q['sections']
+    status_tabs = [v['id'] for (_,v) in q['tabs'].items() if v['title'] == 'Status']
+    health_tabs = [v['id'] for (_,v) in q['tabs'].items() if v['title'] == 'Medicinsk information']
+    del q['tabs']
+    del q['sections']
     questions = []
     health_access = user.has_role('health')
-    for id, v in data.items():
+    for id, v in q.items():
         if (v['tab_id'] in health_tabs) and not health_access: continue
         questions.append(dict({
             'id': id,
@@ -237,15 +240,20 @@ def forms() -> Dict[int, str]:
         data = get_forms()
 
     # print(data)
-    res = {key: value['title'] for (key, value) in data.items()}
+    res = {key: value['title'] for (key, value) in data['forms'].items()}
     # print(res)
     return res
 
 @app.post("/update_status", response_model=bool)
-def update_status(member_no: int, answers: Dict[int, Union[int, str, None]]) -> bool:
+def update_status(member_no: int, answers: Dict[Union[int, str], Union[int, str, None]]) -> bool:
     url = f'{settings.scoutnet_base}/project/checkin?id={settings.scoutnet_activity_id}&key={settings.scoutnet_checkin_key}'
+    checked_in = answers['checked_in']
+    del answers['checked_in']
     ans = {k:{'value': '' if v is None else str(v)} for (k,v) in answers.items()}
     body = {str(member_no): {'questions': ans}}
+
+    if checked_in is not None:
+        body[str(member_no)]['checked_in'] = checked_in
     print(f'Posting {body} to {url}')
     r = p_session.post(url, json.dumps(body), headers={'Content-Type': 'application/json'})
     data = json.loads(r.text)
