@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -15,13 +15,19 @@ spec:
     http:
       paths:
       - path: /parsoid
+        pathType: ImplementationSpecific
         backend:
-          serviceName: parsoid
-          servicePort: 8142
+          service:
+            name: parsoid
+            port:
+              number: 8142
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: mediawiki
-          servicePort: 80
+          service:
+            name: mediawiki
+            port:
+              number: 80
   {{- end }}
   tls:
   - hosts:

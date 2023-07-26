@@ -203,7 +203,7 @@ def questions(form_id: int, user: User = Depends(get_active_user)) -> Dict[int, 
         with open(file) as pf:
             data = json.loads(pf.read())
     else:
-        data = get_forms(form_id)
+        data = get_questions(form_id)
 
     tabs = data['tabs']
     sections = data['sections']
