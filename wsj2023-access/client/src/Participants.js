@@ -223,12 +223,23 @@ function Participants() {
           headerName: questions[q].question,
           valueGetter: (params) => {
             let value = params?.row ? params.row.questions[questions[q].id] : params
-            if (questions[q].type === 'other_unsupported_by_api' && value?.includes('linked_id'))
+            if (questions[q].type === 'other_unsupported_by_api' && value?.includes('linked_id')) {
               return JSON.parse(value)['value']
-            if (questions[q].type === 'boolean')
+            }
+            if (questions[q].type === 'boolean') {
               return value ? 'Ja' : 'Nej'
-            if (questions[q].type === 'choice' && questions[q]['choices'][value])
+            }
+            if (questions[q].type === 'choice' && questions[q]['choices'][value]) {
               return questions[q]['choices'][value]['option']
+            }
+            else if (questions[q].type === 'choice' && value) {
+              let paragraph = '';
+              value.forEach((el, i) => {
+                  paragraph += questions[q]['choices'][el]['option']
+                  if(i < value.length-1) paragraph += ", "
+              });
+              return paragraph
+            }
             return value
           },
           type: getQuestionType(questions[q].type),
